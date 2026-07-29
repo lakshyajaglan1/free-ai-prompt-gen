@@ -1,0 +1,86 @@
+---
+// ApiKeySettings — Collapsed-by-default settings modal for Gemini API key (BYOK)
+---
+
+<!-- Overlay backdrop -->
+<div id="settings-backdrop" class="fixed inset-0 z-40 hidden" style="background: rgba(0,0,0,0.3); backdrop-filter: blur(2px);"></div>
+
+<!-- Modal -->
+<div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden" style="padding: var(--sp-lg);">
+  <div class="bg-canvas rounded-lg w-full" style="max-width: 480px; box-shadow: var(--shadow-level-5);">
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-hairline" style="padding: var(--sp-md) var(--sp-lg);">
+      <div class="flex items-center gap-2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+        </svg>
+        <span class="body-sm-strong text-ink">Settings</span>
+      </div>
+      <button id="btn-close-settings" class="btn-icon" aria-label="Close settings">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div style="padding: var(--sp-lg);">
+      <h3 class="body-sm-strong text-ink mb-1">Gemini API Key</h3>
+      <p class="caption text-body mb-3">
+        Optional — powers the "Refine with AI" feature.
+        <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" class="text-link hover:underline">Get a free key from Google AI Studio ↗</a>
+        (no credit card required).
+      </p>
+
+      <div class="flex gap-2 mb-3">
+        <div class="relative flex-1">
+          <input
+            id="input-api-key"
+            type="password"
+            class="form-input w-full"
+            placeholder="Paste your Gemini API key here…"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button
+            id="btn-toggle-key-visibility"
+            class="absolute right-2 top-1/2 -translate-y-1/2 text-mute hover:text-ink transition-colors"
+            aria-label="Toggle key visibility"
+            type="button"
+          >
+            <svg id="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <svg id="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path>
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+          </button>
+        </div>
+        <button id="btn-save-key" class="btn-primary-sm">Save</button>
+      </div>
+
+      <!-- Key status -->
+      <div id="key-status" class="mb-3 hidden">
+        <div class="flex items-center gap-2 caption">
+          <span id="key-status-icon"></span>
+          <span id="key-status-text"></span>
+        </div>
+      </div>
+
+      <!-- Clear button -->
+      <button id="btn-clear-key" class="caption text-error hover:underline cursor-pointer hidden">Clear my API key</button>
+
+      <!-- Disclaimer -->
+      <div class="mt-4 pt-3 border-t border-hairline">
+        <p class="caption text-mute" style="line-height: 18px;">
+          🔒 Your key stays in your browser only and is sent directly to Google's API — never to our servers. Usage counts against your own Google account's free daily limit.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

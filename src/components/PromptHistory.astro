@@ -1,0 +1,48 @@
+---
+// PromptHistory — Slide-in drawer showing saved prompts from localStorage
+---
+
+<!-- Overlay backdrop -->
+<div id="history-backdrop" class="fixed inset-0 z-40 hidden" style="background: rgba(0,0,0,0.3); backdrop-filter: blur(2px);"></div>
+
+<!-- Drawer -->
+<aside id="history-drawer" class="fixed top-0 right-0 z-50 h-full bg-canvas border-l border-hairline flex flex-col hidden" style="width: min(400px, 90vw); box-shadow: var(--shadow-level-5);">
+  <!-- Header -->
+  <div class="flex items-center justify-between border-b border-hairline" style="padding: var(--sp-md) var(--sp-lg); height: 64px;">
+    <div class="flex items-center gap-2">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      <span class="body-sm-strong text-ink">Saved Prompts</span>
+    </div>
+    <button id="btn-close-history" class="btn-icon" aria-label="Close history">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <!-- History list -->
+  <div id="history-list" class="flex-1 overflow-y-auto" style="padding: var(--sp-md);">
+    <!-- Populated by JS -->
+  </div>
+
+  <!-- Empty state -->
+  <div id="history-empty" class="flex-1 flex items-center justify-center hidden" style="padding: var(--sp-lg);">
+    <div class="text-center">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-mute)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      <p class="body-sm text-mute">No saved prompts yet.</p>
+      <p class="caption text-mute mt-1">Build a prompt and click "Save" to store it here.</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="border-t border-hairline" style="padding: var(--sp-sm) var(--sp-lg);">
+    <button id="btn-clear-history" class="caption text-error hover:underline w-full text-center cursor-pointer">Clear all history</button>
+  </div>
+</aside>

@@ -1,0 +1,90 @@
+---
+// CategoryPicker — 7 category cards in a responsive grid
+---
+
+<section id="category-picker" class="w-full">
+  <div class="flex items-center gap-3 mb-4">
+    <span class="caption-mono text-mute uppercase tracking-wider">Step 1</span>
+    <h2 class="display-sm text-ink">Pick your goal.</h2>
+  </div>
+  <div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
+    <button class="category-card" data-category="Writing" data-active="true">
+      <span class="category-icon">✍️</span>
+      <span class="category-name">Writing</span>
+      <span class="category-desc">Blog posts, emails, stories, docs</span>
+    </button>
+    <button class="category-card" data-category="Coding">
+      <span class="category-icon">💻</span>
+      <span class="category-name">Coding</span>
+      <span class="category-desc">Debug, write, review, explain code</span>
+    </button>
+    <button class="category-card" data-category="Image Generation">
+      <span class="category-icon">🎨</span>
+      <span class="category-name">Image Gen</span>
+      <span class="category-desc">AI art prompts, product photos</span>
+    </button>
+    <button class="category-card" data-category="Data / Analysis">
+      <span class="category-icon">📊</span>
+      <span class="category-name">Data</span>
+      <span class="category-desc">Analysis, SQL, visualization</span>
+    </button>
+    <button class="category-card" data-category="Research">
+      <span class="category-icon">🔬</span>
+      <span class="category-name">Research</span>
+      <span class="category-desc">Papers, literature, concepts</span>
+    </button>
+    <button class="category-card" data-category="Marketing / Copy">
+      <span class="category-icon">📢</span>
+      <span class="category-name">Marketing</span>
+      <span class="category-desc">Ads, landing pages, social posts</span>
+    </button>
+    <button class="category-card" data-category="Custom">
+      <span class="category-icon">⚡</span>
+      <span class="category-name">Custom</span>
+      <span class="category-desc">Build from scratch</span>
+    </button>
+  </div>
+</section>
+
+<style>
+  .category-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: var(--sp-md);
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    box-shadow: var(--shadow-level-2);
+  }
+  .category-card:hover {
+    border-color: var(--color-hairline-strong);
+    box-shadow: var(--shadow-level-3);
+    transform: translateY(-1px);
+  }
+  .category-card[data-active="true"] {
+    border-color: var(--color-ink);
+    box-shadow: 0 0 0 1px var(--color-ink), var(--shadow-level-3);
+  }
+  .category-icon {
+    font-size: 24px;
+    line-height: 1;
+  }
+  .category-name {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: -0.28px;
+    color: var(--color-ink);
+  }
+  .category-desc {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    color: var(--color-mute);
+  }
+</style>

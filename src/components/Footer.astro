@@ -1,0 +1,25 @@
+---
+// Footer — minimal footer with clear-all-data and credits
+---
+
+<footer class="border-t border-hairline mt-auto" style="background-color: var(--color-canvas); padding: var(--sp-xl) var(--sp-lg);">
+  <div class="mx-auto flex flex-col items-center gap-4 text-center" style="max-width: 1400px;" >
+    <div class="flex flex-wrap items-center justify-center gap-4">
+      <span class="caption-mono text-mute uppercase tracking-wider">Prompt Forge</span>
+      <span class="text-hairline">·</span>
+      <span class="caption text-mute">Free &amp; open-source prompt engineering tool</span>
+      <span class="text-hairline">·</span>
+      <button
+        id="btn-clear-all-data"
+        class="caption text-error hover:underline cursor-pointer"
+        title="Clear all saved prompts and API key from this browser"
+      >
+        Clear all saved data
+      </button>
+    </div>
+    <p class="caption text-mute">
+      Built with <a href="https://astro.build" class="text-link hover:underline" target="_blank" rel="noopener">Astro</a>.
+      No data is sent to any server. Everything stays in your browser.
+    </p>
+  </div>
+</footer>

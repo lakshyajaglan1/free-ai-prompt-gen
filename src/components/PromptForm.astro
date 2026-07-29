@@ -1,0 +1,145 @@
+---
+// PromptForm — Dynamic form fields based on framework × category
+// Fields render server-side; JS handles show/hide based on framework selection
+---
+
+<section id="prompt-form" class="w-full">
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center gap-3">
+      <span class="caption-mono text-mute uppercase tracking-wider">Step 2</span>
+      <h2 class="display-sm text-ink">Fill in your prompt.</h2>
+    </div>
+    <div class="flex gap-2">
+      <button id="btn-load-template" class="btn-secondary-sm" title="Load a starter template">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        Templates
+      </button>
+      <button id="btn-reset-fields" class="btn-secondary-sm" title="Clear all fields">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1 4 1 10 7 10"></polyline>
+          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+        </svg>
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <!-- Role / Persona -->
+    <div class="form-field" data-field="role">
+      <div class="flex items-center gap-2 mb-1.5">
+        <label for="field-role" class="body-sm-strong text-ink">Role / Persona</label>
+        <div class="tooltip-trigger field-tooltip" data-field-key="role" tabindex="0" role="button" aria-label="Why this field matters">?</div>
+      </div>
+      <textarea
+        id="field-role"
+        class="form-textarea"
+        data-field-key="role"
+        rows="2"
+        style="min-height: 64px;"
+      ></textarea>
+      <div class="field-tooltip-content caption text-body mt-1 hidden" data-tooltip-for="role"></div>
+    </div>
+
+    <!-- Context / Background -->
+    <div class="form-field" data-field="context">
+      <div class="flex items-center gap-2 mb-1.5">
+        <label for="field-context" class="body-sm-strong text-ink">Context / Background</label>
+        <div class="tooltip-trigger field-tooltip" data-field-key="context" tabindex="0" role="button" aria-label="Why this field matters">?</div>
+      </div>
+      <textarea
+        id="field-context"
+        class="form-textarea"
+        data-field-key="context"
+        rows="3"
+        style="min-height: 80px;"
+      ></textarea>
+      <div class="field-tooltip-content caption text-body mt-1 hidden" data-tooltip-for="context"></div>
+    </div>
+
+    <!-- Task -->
+    <div class="form-field" data-field="task">
+      <div class="flex items-center gap-2 mb-1.5">
+        <label for="field-task" class="body-sm-strong text-ink">Task</label>
+        <span class="badge" style="font-size: 10px; padding: 1px 6px;">Required</span>
+        <div class="tooltip-trigger field-tooltip" data-field-key="task" tabindex="0" role="button" aria-label="Why this field matters">?</div>
+      </div>
+      <textarea
+        id="field-task"
+        class="form-textarea"
+        data-field-key="task"
+        rows="3"
+        style="min-height: 80px;"
+      ></textarea>
+      <div class="field-tooltip-content caption text-body mt-1 hidden" data-tooltip-for="task"></div>
+    </div>
+
+    <!-- Output Format -->
+    <div class="form-field" data-field="outputFormat">
+      <div class="flex items-center gap-2 mb-1.5">
+        <label for="field-outputFormat" class="body-sm-strong text-ink">Output Format</label>
+        <div class="tooltip-trigger field-tooltip" data-field-key="outputFormat" tabindex="0" role="button" aria-label="Why this field matters">?</div>
+      </div>
+      <textarea
+        id="field-outputFormat"
+        class="form-textarea"
+        data-field-key="outputFormat"
+        rows="2"
+        style="min-height: 64px;"
+      ></textarea>
+      <div class="field-tooltip-content caption text-body mt-1 hidden" data-tooltip-for="outputFormat"></div>
+    </div>
+
+    <!-- Tone / Style -->
+    <div class="form-field" data-field="tone">
+      <div class="flex items-center gap-2 mb-1.5">
+        <label for="field-tone" class="body-sm-strong text-ink">Tone / Style</label>
+        <div class="tooltip-trigger field-tooltip" data-field-key="tone" tabindex="0" role="button" aria-label="Why this field matters">?</div>
+      </div>
+      <textarea
+        id="field-tone"
+        class="form-textarea"
+        data-field-key="tone"
+        rows="2"
+        style="min-height: 64px;"
+      ></textarea>
+      <div class="field-tooltip-content caption text-body mt-1 hidden" data-tooltip-for="tone"></div>
+    </div>
+
+    <!-- Constraints -->
+    <div class="form-field" data-field="constraints">
+      <div class="flex items-center gap-2 mb-1.5">
+        <label for="field-constraints" class="body-sm-strong text-ink">Constraints</label>
+        <div class="tooltip-trigger field-tooltip" data-field-key="constraints" tabindex="0" role="button" aria-label="Why this field matters">?</div>
+      </div>
+      <textarea
+        id="field-constraints"
+        class="form-textarea"
+        data-field-key="constraints"
+        rows="2"
+        style="min-height: 64px;"
+      ></textarea>
+      <div class="field-tooltip-content caption text-body mt-1 hidden" data-tooltip-for="constraints"></div>
+    </div>
+
+    <!-- Examples (Few-Shot) -->
+    <div class="form-field" data-field="examples">
+      <div class="flex items-center gap-2 mb-1.5">
+        <label for="field-examples" class="body-sm-strong text-ink">Examples (Few-Shot)</label>
+        <span class="badge" style="font-size: 10px; padding: 1px 6px;">Optional</span>
+        <div class="tooltip-trigger field-tooltip" data-field-key="examples" tabindex="0" role="button" aria-label="Why this field matters">?</div>
+      </div>
+      <textarea
+        id="field-examples"
+        class="form-textarea"
+        data-field-key="examples"
+        rows="3"
+        style="min-height: 80px;"
+      ></textarea>
+      <div class="field-tooltip-content caption text-body mt-1 hidden" data-tooltip-for="examples"></div>
+    </div>
+  </div>
+</section>

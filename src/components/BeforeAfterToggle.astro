@@ -1,0 +1,37 @@
+---
+// BeforeAfterToggle — Weak vs Strong prompt comparison per category
+---
+
+<section id="before-after-section" class="w-full">
+  <div class="card-lg">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"></polyline>
+          <polyline points="8 6 2 12 8 18"></polyline>
+        </svg>
+        <span class="display-sm text-ink">See the difference.</span>
+      </div>
+      <div class="flex gap-1" id="before-after-tabs">
+        <button class="tab-ghost ba-tab" data-ba="weak" data-active="true" style="font-size: 12px; padding: 4px 12px;">❌ Weak</button>
+        <button class="tab-ghost ba-tab" data-ba="strong" style="font-size: 12px; padding: 4px 12px;">✅ Strong</button>
+      </div>
+    </div>
+
+    <!-- Weak prompt view -->
+    <div id="ba-weak-view" class="ba-view">
+      <div class="code-surface mb-3" style="border: 1px solid var(--color-error); border-radius: var(--radius-md);">
+        <pre id="ba-weak-prompt" style="margin: 0; white-space: pre-wrap; word-break: break-word;"></pre>
+      </div>
+      <ul id="ba-weak-problems" class="flex flex-col gap-1.5" style="list-style: none; padding: 0; margin: 0;"></ul>
+    </div>
+
+    <!-- Strong prompt view -->
+    <div id="ba-strong-view" class="ba-view hidden">
+      <div class="code-surface mb-3" style="border: 1px solid var(--color-cyan-deep); border-radius: var(--radius-md);">
+        <pre id="ba-strong-prompt" style="margin: 0; white-space: pre-wrap; word-break: break-word;"></pre>
+      </div>
+      <ul id="ba-strong-strengths" class="flex flex-col gap-1.5" style="list-style: none; padding: 0; margin: 0;"></ul>
+    </div>
+  </div>
+</section>

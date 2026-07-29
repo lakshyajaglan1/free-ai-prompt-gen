@@ -1,0 +1,19 @@
+---
+// ModelPicker — 4 target model options as horizontal pills
+---
+
+<section id="model-picker" class="w-full">
+  <div class="flex items-center gap-3 mb-3">
+    <span class="caption-mono text-mute uppercase tracking-wider">Target Model</span>
+    <div class="tooltip-trigger" data-tooltip="Different AI models respond better to different formatting. This adjusts how your prompt is structured.">?</div>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <button class="tab-ghost model-tab" data-model="Generic / Any" data-active="true">Generic / Any</button>
+    <button class="tab-ghost model-tab" data-model="ChatGPT">ChatGPT</button>
+    <button class="tab-ghost model-tab" data-model="Claude">Claude</button>
+    <button class="tab-ghost model-tab" data-model="Gemini">Gemini</button>
+  </div>
+  <p id="model-description" class="caption text-body mt-2" style="min-height: 16px;">
+    Clean labeled sections — works well with any AI model.
+  </p>
+</section>

@@ -1,0 +1,46 @@
+---
+// Navbar — sticky top bar with brand + settings gear
+---
+
+<nav id="navbar" class="sticky top-0 z-50 bg-canvas border-b border-hairline" style="height: 64px;">
+  <div class="mx-auto flex items-center justify-between h-full" style="max-width: 1400px; padding: 0 var(--sp-lg);">
+    <!-- Brand -->
+    <a href="/" class="flex items-center gap-2 no-underline group" id="nav-brand">
+      <div class="w-8 h-8 rounded-md flex items-center justify-center bg-ink">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+      </div>
+      <span class="body-md-strong text-ink">Prompt Forge</span>
+    </a>
+
+    <!-- Right cluster -->
+    <div class="flex items-center gap-2">
+      <!-- History button -->
+      <button
+        id="btn-history"
+        class="btn-icon"
+        title="Prompt History"
+        aria-label="Open prompt history"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </button>
+
+      <!-- Settings button (API key) -->
+      <button
+        id="btn-settings"
+        class="btn-icon"
+        title="Settings & API Key"
+        aria-label="Open settings"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>

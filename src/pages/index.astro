@@ -1,11 +1,784 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import CategoryPicker from '../components/CategoryPicker.astro';
+import FrameworkPicker from '../components/FrameworkPicker.astro';
+import ModelPicker from '../components/ModelPicker.astro';
+import PromptForm from '../components/PromptForm.astro';
+import PreviewPanel from '../components/PreviewPanel.astro';
+import WhyThisWorksPanel from '../components/WhyThisWorksPanel.astro';
+import BeforeAfterToggle from '../components/BeforeAfterToggle.astro';
+import PromptHistory from '../components/PromptHistory.astro';
+import TemplateLibrary from '../components/TemplateLibrary.astro';
+import ApiKeySettings from '../components/ApiKeySettings.astro';
+import AiRefinePanel from '../components/AiRefinePanel.astro';
 ---
 
 <Layout>
-	<Welcome />
+  <Navbar />
+
+  <main class="flex-1">
+    <!-- ════════════════════════════════════
+         HERO SECTION
+         ════════════════════════════════════ -->
+    <section class="relative overflow-hidden" style="padding: var(--sp-4xl) var(--sp-lg);">
+      <!-- Mesh gradient backdrop -->
+      <div class="absolute inset-0 mesh-gradient opacity-70 pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative mx-auto text-center" style="max-width: 720px;">
+        <div class="badge-gradient mb-4 mx-auto" style="width: fit-content;">Free &amp; Open Source</div>
+        <h1 class="display-xl text-ink mb-4" style="line-height: 1.15;">
+          Build better prompts.<br/>
+          <span class="gradient-text">Every time.</span>
+        </h1>
+        <p class="body-lg text-body mb-6 mx-auto" style="max-width: 540px;">
+          A rule-based prompt engineering wizard that teaches you why each field matters — not a black box that wraps an AI call.
+        </p>
+        <div class="flex items-center justify-center gap-3">
+          <a href="#wizard" class="btn-primary">
+            Start building
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+          <a href="#before-after-section" class="btn-secondary">See an example</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         WIZARD SECTION
+         ════════════════════════════════════ -->
+    <section id="wizard" class="mx-auto" style="max-width: 1400px; padding: var(--sp-3xl) var(--sp-lg);">
+
+      <!-- Step 1: Category -->
+      <div class="mb-8">
+        <CategoryPicker />
+      </div>
+
+      <!-- Step 2: Framework + Model (side by side on desktop) -->
+      <div class="grid gap-6 mb-8" style="grid-template-columns: 1fr;">
+        <div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+          <FrameworkPicker />
+          <ModelPicker />
+        </div>
+      </div>
+
+      <!-- Step 3: Form + Preview (two-column on desktop) -->
+      <div class="grid gap-6" id="wizard-main-grid" style="grid-template-columns: 1fr;">
+        <!-- Left column: Form -->
+        <div class="flex flex-col gap-6" id="wizard-left-col">
+          <PromptForm />
+        </div>
+
+        <!-- Right column: Preview + Why + AI Refine -->
+        <div class="flex flex-col gap-4" id="wizard-right-col">
+          <div class="md:sticky md:top-[80px]" style="align-self: flex-start;">
+            <div class="flex flex-col gap-4">
+              <PreviewPanel />
+              <WhyThisWorksPanel />
+              <AiRefinePanel />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         BEFORE / AFTER SECTION
+         ════════════════════════════════════ -->
+    <section class="mx-auto" style="max-width: 1400px; padding: 0 var(--sp-lg) var(--sp-4xl);">
+      <BeforeAfterToggle />
+    </section>
+  </main>
+
+  <Footer />
+
+  <!-- Overlays (rendered at body level for z-index) -->
+  <PromptHistory />
+  <TemplateLibrary />
+  <ApiKeySettings />
 </Layout>
+
+<!-- ═══════════════════════════════════════════════════
+     RESPONSIVE GRID (two-column on desktop)
+     ═══════════════════════════════════════════════════ -->
+<style>
+  @media (min-width: 960px) {
+    #wizard-main-grid {
+      grid-template-columns: 1fr 1fr !important;
+    }
+  }
+</style>
+
+<!-- ═══════════════════════════════════════════════════
+     MASTER CLIENT-SIDE SCRIPT
+     All wizard interactivity wired here.
+     ═══════════════════════════════════════════════════ -->
+<script>
+  import { GoalCategory, TargetModel, Framework, EMPTY_FIELDS, FIELD_LABELS, ALL_FIELD_KEYS, type FieldKey, type SavedPrompt } from '../lib/types';
+  import { FRAMEWORK_META, getFrameworkFieldLabel, getFieldsForFramework } from '../lib/frameworks';
+  import { assemblePrompt } from '../lib/promptAssembler';
+  import { getHint, getTooltip } from '../lib/fieldHints';
+  import { getWhyNotes } from '../lib/whyThisWorks';
+  import { getTemplatesForCategory, PROMPT_TEMPLATES } from '../lib/promptTemplates';
+  import type { PromptTemplate } from '../lib/types';
+  import { BEFORE_AFTER_EXAMPLES } from '../lib/beforeAfterExamples';
+  import { getSavedPrompts, savePrompt, deletePrompt, clearPromptHistory, getApiKey, saveApiKey, clearApiKey, clearAllData } from '../lib/storage';
+  import { refinePrompt, RefineError } from '../lib/geminiRefine';
+
+  // ── State ──
+  let state = {
+    category: GoalCategory.Writing,
+    framework: Framework.RTF,
+    targetModel: TargetModel.Generic,
+    fields: { ...EMPTY_FIELDS },
+  };
+
+  // ── Helper: generate unique ID ──
+  function genId(): string {
+    return `pf_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  }
+
+  // ══════════════════════════════════════
+  // CATEGORY PICKER
+  // ══════════════════════════════════════
+  const categoryCards = document.querySelectorAll<HTMLElement>('.category-card');
+  categoryCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      const cat = card.dataset.category as string;
+      state.category = cat as GoalCategory;
+      categoryCards.forEach((c) => (c.dataset.active = 'false'));
+      card.dataset.active = 'true';
+      updateForm();
+      updateBeforeAfter();
+    });
+  });
+
+  // ══════════════════════════════════════
+  // FRAMEWORK PICKER
+  // ══════════════════════════════════════
+  const frameworkTabs = document.querySelectorAll<HTMLElement>('.framework-tab');
+  const frameworkDesc = document.getElementById('framework-description')!;
+  frameworkTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const fw = tab.dataset.framework as Framework;
+      state.framework = fw;
+      frameworkTabs.forEach((t) => (t.dataset.active = 'false'));
+      tab.dataset.active = 'true';
+      frameworkDesc.textContent = FRAMEWORK_META[fw].description;
+      updateForm();
+      reassemble();
+    });
+  });
+
+  // ══════════════════════════════════════
+  // MODEL PICKER
+  // ══════════════════════════════════════
+  const modelTabs = document.querySelectorAll<HTMLElement>('.model-tab');
+  const modelDesc = document.getElementById('model-description')!;
+  const modelBadge = document.getElementById('preview-model-badge')!;
+
+  const MODEL_DESCRIPTIONS: Record<string, string> = {
+    'Generic / Any': 'Clean labeled sections — works well with any AI model.',
+    'ChatGPT': 'Formatted with Markdown headers (## Role, ## Task) — ChatGPT\'s preferred structure.',
+    'Claude': 'Structured with XML tags (<role>, <task>) — Claude responds exceptionally well to this format.',
+    'Gemini': 'Bold-labeled sections (**Role:** ...) — Gemini handles this structured markdown cleanly.',
+  };
+
+  modelTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const model = tab.dataset.model as string;
+      state.targetModel = model as TargetModel;
+      modelTabs.forEach((t) => (t.dataset.active = 'false'));
+      tab.dataset.active = 'true';
+      modelDesc.textContent = MODEL_DESCRIPTIONS[model] ?? '';
+      modelBadge.textContent = model;
+      reassemble();
+    });
+  });
+
+  // ══════════════════════════════════════
+  // PROMPT FORM — Dynamic fields
+  // ══════════════════════════════════════
+  const formFields = document.querySelectorAll<HTMLElement>('.form-field');
+  const textareas = document.querySelectorAll<HTMLTextAreaElement>('.form-textarea[data-field-key]');
+  const tooltipTriggers = document.querySelectorAll<HTMLElement>('.field-tooltip');
+
+  function updateForm() {
+    const visibleFields = getFieldsForFramework(state.framework);
+
+    formFields.forEach((field) => {
+      const key = field.dataset.field as FieldKey;
+      if (visibleFields.includes(key)) {
+        field.style.display = '';
+        field.style.animation = 'fadeIn 0.25s ease';
+      } else {
+        field.style.display = 'none';
+      }
+    });
+
+    // Update labels and placeholders per framework × category
+    textareas.forEach((ta) => {
+      const key = ta.dataset.fieldKey as FieldKey;
+      const label = ta.closest('.form-field')?.querySelector('label');
+      if (label) {
+        label.textContent = getFrameworkFieldLabel(state.framework, key, FIELD_LABELS[key]);
+      }
+      const hint = getHint(key, state.category);
+      ta.placeholder = hint.placeholder;
+    });
+  }
+
+  // Tooltip toggle on click
+  tooltipTriggers.forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      const key = trigger.dataset.fieldKey as FieldKey;
+      const content = document.querySelector<HTMLElement>(`[data-tooltip-for="${key}"]`);
+      if (!content) return;
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        content.textContent = getTooltip(key);
+      } else {
+        content.classList.add('hidden');
+      }
+    });
+  });
+
+  // Real-time input → reassemble
+  textareas.forEach((ta) => {
+    ta.addEventListener('input', () => {
+      const key = ta.dataset.fieldKey as FieldKey;
+      state.fields[key] = ta.value;
+      reassemble();
+    });
+  });
+
+  // ══════════════════════════════════════
+  // PROMPT ASSEMBLY & PREVIEW
+  // ══════════════════════════════════════
+  const previewEmpty = document.getElementById('preview-empty')!;
+  const previewContent = document.getElementById('preview-content')!;
+  const previewText = document.getElementById('preview-text')!;
+  const btnCopy = document.getElementById('btn-copy-prompt')! as HTMLButtonElement;
+  const btnDownload = document.getElementById('btn-download-prompt')! as HTMLButtonElement;
+  const btnSave = document.getElementById('btn-save-prompt')! as HTMLButtonElement;
+  const copyLabel = document.getElementById('copy-label')!;
+
+  function reassemble() {
+    const prompt = assemblePrompt(state.fields, state.framework, state.targetModel);
+
+    if (prompt.trim()) {
+      previewEmpty.classList.add('hidden');
+      previewContent.classList.remove('hidden');
+      previewText.textContent = prompt;
+      btnCopy.disabled = false;
+      btnDownload.disabled = false;
+      btnSave.disabled = false;
+    } else {
+      previewEmpty.classList.remove('hidden');
+      previewContent.classList.add('hidden');
+      previewText.textContent = '';
+      btnCopy.disabled = true;
+      btnDownload.disabled = true;
+      btnSave.disabled = true;
+    }
+
+    updateWhyPanel();
+    updateRefineButton();
+  }
+
+  // Copy
+  btnCopy.addEventListener('click', async () => {
+    const text = previewText.textContent ?? '';
+    try {
+      await navigator.clipboard.writeText(text);
+      copyLabel.textContent = 'Copied!';
+      setTimeout(() => (copyLabel.textContent = 'Copy'), 1500);
+    } catch {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      copyLabel.textContent = 'Copied!';
+      setTimeout(() => (copyLabel.textContent = 'Copy'), 1500);
+    }
+  });
+
+  // Download
+  btnDownload.addEventListener('click', () => {
+    const text = previewText.textContent ?? '';
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `prompt-forge-${state.category.toLowerCase().replace(/\s+/g, '-')}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Save
+  btnSave.addEventListener('click', () => {
+    const prompt = previewText.textContent ?? '';
+    if (!prompt.trim()) return;
+
+    const saved: SavedPrompt = {
+      id: genId(),
+      title: state.fields.task.slice(0, 60) || state.category,
+      category: state.category,
+      framework: state.framework,
+      targetModel: state.targetModel,
+      fields: { ...state.fields },
+      assembledPrompt: prompt,
+      timestamp: Date.now(),
+    };
+    savePrompt(saved);
+
+    // Visual feedback
+    const origText = btnSave.querySelector('svg')?.nextSibling;
+    const textNode = Array.from(btnSave.childNodes).find(n => n.nodeType === Node.TEXT_NODE || (n as HTMLElement).tagName !== 'SVG');
+    btnSave.style.background = 'var(--color-cyan-deep)';
+    setTimeout(() => { btnSave.style.background = ''; }, 1000);
+  });
+
+  // ══════════════════════════════════════
+  // WHY THIS WORKS PANEL
+  // ══════════════════════════════════════
+  const whyList = document.getElementById('why-notes-list')!;
+
+  function updateWhyPanel() {
+    const notes = getWhyNotes(state.fields, state.framework);
+    whyList.innerHTML = notes
+      .map(
+        (n) => `<li class="why-note flex items-start gap-2">
+          <span class="why-icon" style="flex-shrink: 0;">${n.icon}</span>
+          <span class="caption text-body">${n.text}</span>
+        </li>`
+      )
+      .join('');
+  }
+
+  // ══════════════════════════════════════
+  // BEFORE / AFTER TOGGLE
+  // ══════════════════════════════════════
+  const baTabs = document.querySelectorAll<HTMLElement>('.ba-tab');
+  const baWeakView = document.getElementById('ba-weak-view')!;
+  const baStrongView = document.getElementById('ba-strong-view')!;
+
+  baTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const view = tab.dataset.ba;
+      baTabs.forEach((t) => (t.dataset.active = 'false'));
+      tab.dataset.active = 'true';
+      if (view === 'weak') {
+        baWeakView.classList.remove('hidden');
+        baStrongView.classList.add('hidden');
+      } else {
+        baWeakView.classList.add('hidden');
+        baStrongView.classList.remove('hidden');
+      }
+    });
+  });
+
+  function updateBeforeAfter() {
+    const example = BEFORE_AFTER_EXAMPLES[state.category];
+    if (!example) return;
+
+    document.getElementById('ba-weak-prompt')!.textContent = example.weak.prompt;
+    document.getElementById('ba-strong-prompt')!.textContent = example.strong.prompt;
+
+    document.getElementById('ba-weak-problems')!.innerHTML = example.weak.problems
+      .map((p) => `<li class="flex items-start gap-2"><span class="text-error" style="flex-shrink: 0;">✗</span><span class="caption text-body">${p}</span></li>`)
+      .join('');
+
+    document.getElementById('ba-strong-strengths')!.innerHTML = example.strong.strengths
+      .map((s) => `<li class="flex items-start gap-2"><span class="text-cyan-deep" style="flex-shrink: 0;">✓</span><span class="caption text-body">${s}</span></li>`)
+      .join('');
+  }
+
+  // ══════════════════════════════════════
+  // HISTORY DRAWER
+  // ══════════════════════════════════════
+  const historyDrawer = document.getElementById('history-drawer')!;
+  const historyBackdrop = document.getElementById('history-backdrop')!;
+  const historyList = document.getElementById('history-list')!;
+  const historyEmpty = document.getElementById('history-empty')!;
+
+  function openHistory() {
+    renderHistoryList();
+    historyDrawer.classList.remove('hidden');
+    historyBackdrop.classList.remove('hidden');
+    historyDrawer.style.animation = 'slideInRight 0.25s ease';
+  }
+
+  function closeHistory() {
+    historyDrawer.style.animation = 'slideOutRight 0.2s ease forwards';
+    setTimeout(() => {
+      historyDrawer.classList.add('hidden');
+      historyBackdrop.classList.add('hidden');
+    }, 200);
+  }
+
+  function renderHistoryList() {
+    const prompts = getSavedPrompts();
+    if (prompts.length === 0) {
+      historyList.classList.add('hidden');
+      historyEmpty.classList.remove('hidden');
+      return;
+    }
+
+    historyEmpty.classList.add('hidden');
+    historyList.classList.remove('hidden');
+    historyList.innerHTML = prompts
+      .map(
+        (p) => `
+        <div class="card mb-2 cursor-pointer history-item" data-prompt-id="${p.id}" style="padding: var(--sp-sm) var(--sp-md);">
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex-1 min-w-0">
+              <p class="body-sm-strong text-ink truncate">${escapeHtml(p.title)}</p>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="badge" style="font-size: 10px; padding: 1px 6px;">${escapeHtml(p.category)}</span>
+                <span class="caption text-mute">${timeAgo(p.timestamp)}</span>
+              </div>
+            </div>
+            <button class="btn-icon history-delete" data-delete-id="${p.id}" aria-label="Delete" style="width: 28px; height: 28px; flex-shrink: 0;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>`
+      )
+      .join('');
+
+    // Wire click-to-load
+    historyList.querySelectorAll('.history-item').forEach((item) => {
+      item.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).closest('.history-delete')) return;
+        const id = (item as HTMLElement).dataset.promptId!;
+        const prompt = prompts.find((p) => p.id === id);
+        if (prompt) loadSavedPrompt(prompt);
+        closeHistory();
+      });
+    });
+
+    // Wire delete
+    historyList.querySelectorAll('.history-delete').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = (btn as HTMLElement).dataset.deleteId!;
+        deletePrompt(id);
+        renderHistoryList();
+      });
+    });
+  }
+
+  function loadSavedPrompt(p: SavedPrompt) {
+    // Set category
+    state.category = p.category;
+    categoryCards.forEach((c) => (c.dataset.active = c.dataset.category === p.category ? 'true' : 'false'));
+
+    // Set framework
+    state.framework = p.framework;
+    frameworkTabs.forEach((t) => (t.dataset.active = t.dataset.framework === p.framework ? 'true' : 'false'));
+    frameworkDesc.textContent = FRAMEWORK_META[p.framework].description;
+
+    // Set model
+    state.targetModel = p.targetModel;
+    modelTabs.forEach((t) => (t.dataset.active = t.dataset.model === p.targetModel ? 'true' : 'false'));
+    modelDesc.textContent = MODEL_DESCRIPTIONS[p.targetModel] ?? '';
+    modelBadge.textContent = p.targetModel;
+
+    // Set fields
+    state.fields = { ...p.fields };
+    textareas.forEach((ta) => {
+      const key = ta.dataset.fieldKey as FieldKey;
+      ta.value = state.fields[key] ?? '';
+    });
+
+    updateForm();
+    reassemble();
+    updateBeforeAfter();
+
+    // Scroll to wizard
+    document.getElementById('wizard')?.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  document.getElementById('btn-history')!.addEventListener('click', openHistory);
+  document.getElementById('btn-close-history')!.addEventListener('click', closeHistory);
+  historyBackdrop.addEventListener('click', closeHistory);
+  document.getElementById('btn-clear-history')!.addEventListener('click', () => {
+    clearPromptHistory();
+    renderHistoryList();
+  });
+
+  // ══════════════════════════════════════
+  // TEMPLATE LIBRARY MODAL
+  // ══════════════════════════════════════
+  const templateModal = document.getElementById('template-modal')!;
+  const templateBackdrop = document.getElementById('template-backdrop')!;
+  const templateList = document.getElementById('template-list')!;
+
+  function openTemplates() {
+    renderTemplateList();
+    templateModal.classList.remove('hidden');
+    templateBackdrop.classList.remove('hidden');
+  }
+
+  function closeTemplates() {
+    templateModal.classList.add('hidden');
+    templateBackdrop.classList.add('hidden');
+  }
+
+  function renderTemplateList() {
+    const templates = getTemplatesForCategory(state.category);
+
+    templateList.innerHTML = `
+      <p class="caption text-mute mb-3">Showing templates for <strong>${state.category}</strong>. Pick a category first to see relevant templates.</p>
+      ${templates
+        .map(
+          (t) => `
+          <div class="card mb-2 template-item cursor-pointer" data-template-id="${t.id}" style="padding: var(--sp-sm) var(--sp-md); transition: border-color 0.15s ease;">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="body-sm-strong text-ink">${escapeHtml(t.name)}</p>
+                <p class="caption text-body mt-0.5">${escapeHtml(t.description)}</p>
+              </div>
+              <span class="btn-secondary-sm" style="font-size: 12px; height: 28px; padding: 0 8px; flex-shrink: 0;">Use</span>
+            </div>
+          </div>`
+        )
+        .join('')}
+    `;
+
+    templateList.querySelectorAll('.template-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        const id = (item as HTMLElement).dataset.templateId!;
+        const template = PROMPT_TEMPLATES.find((t) => t.id === id);
+        if (template) loadTemplate(template);
+        closeTemplates();
+      });
+    });
+  }
+
+  function loadTemplate(t: PromptTemplate) {
+    // Reset fields then apply template
+    state.fields = { ...EMPTY_FIELDS };
+    for (const [key, value] of Object.entries(t.fields)) {
+      if (value) (state.fields as Record<string, string>)[key] = value;
+    }
+    textareas.forEach((ta) => {
+      const key = ta.dataset.fieldKey as FieldKey;
+      ta.value = state.fields[key] ?? '';
+    });
+    updateForm();
+    reassemble();
+  }
+
+  document.getElementById('btn-load-template')!.addEventListener('click', openTemplates);
+  document.getElementById('btn-close-templates')!.addEventListener('click', closeTemplates);
+  templateBackdrop.addEventListener('click', closeTemplates);
+
+  // Reset fields button
+  document.getElementById('btn-reset-fields')!.addEventListener('click', () => {
+    state.fields = { ...EMPTY_FIELDS };
+    textareas.forEach((ta) => (ta.value = ''));
+    reassemble();
+  });
+
+  // ══════════════════════════════════════
+  // API KEY SETTINGS MODAL
+  // ══════════════════════════════════════
+  const settingsModal = document.getElementById('settings-modal')!;
+  const settingsBackdrop = document.getElementById('settings-backdrop')!;
+  const inputApiKey = document.getElementById('input-api-key')! as HTMLInputElement;
+  const keyStatus = document.getElementById('key-status')!;
+  const keyStatusIcon = document.getElementById('key-status-icon')!;
+  const keyStatusText = document.getElementById('key-status-text')!;
+  const btnClearKey = document.getElementById('btn-clear-key')! as HTMLButtonElement;
+  const btnToggleVis = document.getElementById('btn-toggle-key-visibility')!;
+  const iconEye = document.getElementById('icon-eye')!;
+  const iconEyeOff = document.getElementById('icon-eye-off')!;
+
+  function openSettings() {
+    settingsModal.classList.remove('hidden');
+    settingsBackdrop.classList.remove('hidden');
+    refreshKeyStatus();
+  }
+
+  function closeSettings() {
+    settingsModal.classList.add('hidden');
+    settingsBackdrop.classList.add('hidden');
+  }
+
+  function refreshKeyStatus() {
+    const key = getApiKey();
+    if (key) {
+      keyStatus.classList.remove('hidden');
+      keyStatusIcon.textContent = '✅';
+      keyStatusText.textContent = `Key saved (ending in …${key.slice(-4)})`;
+      keyStatusText.style.color = 'var(--color-cyan-deep)';
+      btnClearKey.classList.remove('hidden');
+      inputApiKey.value = '';
+      inputApiKey.placeholder = '••••••••' + key.slice(-4);
+    } else {
+      keyStatus.classList.add('hidden');
+      btnClearKey.classList.add('hidden');
+      inputApiKey.placeholder = 'Paste your Gemini API key here…';
+    }
+    updateRefineButton();
+  }
+
+  document.getElementById('btn-settings')!.addEventListener('click', openSettings);
+  document.getElementById('btn-close-settings')!.addEventListener('click', closeSettings);
+  settingsBackdrop.addEventListener('click', closeSettings);
+
+  document.getElementById('btn-save-key')!.addEventListener('click', () => {
+    const key = inputApiKey.value.trim();
+    if (!key) return;
+    saveApiKey(key);
+    refreshKeyStatus();
+  });
+
+  btnClearKey.addEventListener('click', () => {
+    clearApiKey();
+    refreshKeyStatus();
+  });
+
+  btnToggleVis.addEventListener('click', () => {
+    if (inputApiKey.type === 'password') {
+      inputApiKey.type = 'text';
+      iconEye.classList.add('hidden');
+      iconEyeOff.classList.remove('hidden');
+    } else {
+      inputApiKey.type = 'password';
+      iconEye.classList.remove('hidden');
+      iconEyeOff.classList.add('hidden');
+    }
+  });
+
+  // Also open from refine panel
+  document.getElementById('refine-open-settings')?.addEventListener('click', openSettings);
+
+  // ══════════════════════════════════════
+  // AI REFINE PANEL
+  // ══════════════════════════════════════
+  const refineNoKey = document.getElementById('refine-no-key')!;
+  const btnRefine = document.getElementById('btn-refine')! as HTMLButtonElement;
+  const refineLoading = document.getElementById('refine-loading')!;
+  const refineError = document.getElementById('refine-error')!;
+  const refineErrorText = document.getElementById('refine-error-text')!;
+  const refineResult = document.getElementById('refine-result')!;
+  const refineResultText = document.getElementById('refine-result-text')!;
+
+  function updateRefineButton() {
+    const hasKey = !!getApiKey();
+    const hasPrompt = !!(previewText.textContent?.trim());
+
+    if (hasKey) {
+      refineNoKey.classList.add('hidden');
+      btnRefine.classList.remove('hidden');
+      btnRefine.disabled = !hasPrompt;
+    } else {
+      refineNoKey.classList.remove('hidden');
+      btnRefine.classList.add('hidden');
+    }
+  }
+
+  btnRefine.addEventListener('click', async () => {
+    const prompt = previewText.textContent?.trim() ?? '';
+    const key = getApiKey();
+    if (!prompt || !key) return;
+
+    // Show loading
+    btnRefine.classList.add('hidden');
+    refineLoading.classList.remove('hidden');
+    refineError.classList.add('hidden');
+    refineResult.classList.add('hidden');
+
+    try {
+      const refined = await refinePrompt(prompt, key);
+      refineResultText.textContent = refined;
+      refineResult.classList.remove('hidden');
+    } catch (err) {
+      if (err instanceof RefineError) {
+        refineErrorText.textContent = err.message;
+      } else {
+        refineErrorText.textContent = 'An unexpected error occurred. Please try again.';
+      }
+      refineError.classList.remove('hidden');
+    } finally {
+      refineLoading.classList.add('hidden');
+      btnRefine.classList.remove('hidden');
+    }
+  });
+
+  // Copy refined
+  document.getElementById('btn-copy-refined')?.addEventListener('click', async () => {
+    const text = refineResultText.textContent ?? '';
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+  });
+
+  // ══════════════════════════════════════
+  // FOOTER — Clear all data
+  // ══════════════════════════════════════
+  document.getElementById('btn-clear-all-data')?.addEventListener('click', () => {
+    if (confirm('Clear all saved prompts and your API key from this browser?')) {
+      clearAllData();
+      refreshKeyStatus();
+    }
+  });
+
+  // ══════════════════════════════════════
+  // UTILITIES
+  // ══════════════════════════════════════
+  function escapeHtml(str: string): string {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function timeAgo(ts: number): string {
+    const diff = Date.now() - ts;
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    return `${days}d ago`;
+  }
+
+  // ══════════════════════════════════════
+  // KEYBOARD SHORTCUTS
+  // ══════════════════════════════════════
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeHistory();
+      closeTemplates();
+      closeSettings();
+    }
+  });
+
+  // ══════════════════════════════════════
+  // INITIAL RENDER
+  // ══════════════════════════════════════
+  updateForm();
+  updateBeforeAfter();
+  updateRefineButton();
+</script>
