@@ -5,14 +5,14 @@
 export class RefineError extends Error {
   constructor(
     message: string,
-    public readonly code: 'INVALID_KEY' | 'RATE_LIMIT' | 'NETWORK' | 'API_ERROR'
+    public readonly code: 'INVALID_KEY' | 'RATE_LIMIT' | 'NETWORK' | 'API_ERROR' | 'MODEL_ERROR'
   ) {
     super(message);
     this.name = 'RefineError';
   }
 }
 
-const GEMINI_MODEL = 'gemini-2.5-flash';
+const GEMINI_MODEL = 'gemini-flash-latest';
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 const SYSTEM_INSTRUCTION =
@@ -75,27 +75,25 @@ export async function refinePrompt(prompt: string, apiKey: string): Promise<stri
   if (!response.ok) {
     if (response.status === 401 || response.status === 403) {
       throw new RefineError(
-        'Invalid API key. Double-check your key at aistudio.google.com/apikey and try again.',
+        'Invalid or expired API key. Double-check your key at aistudio.google.com/apikey and try again.',
         'INVALID_KEY'
       );
     }
     if (response.status === 429) {
       throw new RefineError(
-        'Rate limit reached — Google\'s free tier has a daily limit. Wait a minute and try again, or check your usage at aistudio.google.com.',
+        "Rate limit reached — Google's free tier has a daily limit. Wait a minute and try again, or check your usage at aistudio.google.com.",
         'RATE_LIMIT'
       );
     }
-
-    let detail = '';
-    try {
-      const errBody = await response.json();
-      detail = errBody?.error?.message ?? '';
-    } catch {
-      // ignore parse errors
+    if (response.status === 404) {
+      throw new RefineError(
+        'Model error — the requested Gemini model could not be found. Your API key may be invalid/expired or the model configuration may need updating.',
+        'MODEL_ERROR'
+      );
     }
 
     throw new RefineError(
-      `API error (${response.status})${detail ? ': ' + detail : ''}. Try again in a moment.`,
+      `API error (${response.status}). Your API key may be invalid/expired or the model configuration may need updating.`,
       'API_ERROR'
     );
   }
