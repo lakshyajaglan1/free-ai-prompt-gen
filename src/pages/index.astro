@@ -22,7 +22,7 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
     <!-- ════════════════════════════════════
          HERO SECTION
          ════════════════════════════════════ -->
-    <section class="relative overflow-hidden" style="padding: var(--sp-4xl) var(--sp-lg);">
+    <section class="relative overflow-hidden" style="padding: var(--sp-4xl) clamp(1rem, 5vw, 4rem);">
       <!-- Mesh gradient backdrop -->
       <div class="absolute inset-0 mesh-gradient opacity-70 pointer-events-none" aria-hidden="true"></div>
 
@@ -51,7 +51,7 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
     <!-- ════════════════════════════════════
          WIZARD SECTION
          ════════════════════════════════════ -->
-    <section id="wizard" class="mx-auto" style="max-width: 1400px; padding: var(--sp-3xl) var(--sp-lg);">
+    <section id="wizard" class="w-full" style="padding: var(--sp-3xl) clamp(1rem, 5vw, 4rem);">
 
       <!-- Step 1: Category -->
       <div class="mb-8">
@@ -89,7 +89,7 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
     <!-- ════════════════════════════════════
          BEFORE / AFTER SECTION
          ════════════════════════════════════ -->
-    <section class="mx-auto" style="max-width: 1400px; padding: 0 var(--sp-lg) var(--sp-4xl);">
+    <section class="w-full" style="padding: 0 clamp(1rem, 5vw, 4rem) var(--sp-4xl);">
       <BeforeAfterToggle />
     </section>
   </main>
