@@ -52,7 +52,157 @@
   /* ── Colors: Selection ── */
   --color-selection-bg: #171717;
   --color-selection-fg: #f2f2f2;
+}
 
+/* ── Dark Mode Tokens Override (True Floating Elevation Theme) ── */
+:root[data-theme="dark"],
+.dark {
+  --color-ink: #ffffff;
+  --color-on-primary: #000000;
+  --color-canvas: #16161a;       /* Card & panel background (solid dark gray) */
+  --color-canvas-soft: #08080a;  /* Pure black main page backdrop */
+  --color-canvas-soft-2: #22222a;/* Input fields & sub-boxes (distinct dark gray) */
+  --color-hairline: #30303c;     /* Clear subtle border */
+  --color-hairline-strong: #4e4e5e;
+  --color-body: #a1a1aa;
+  --color-mute: #71717a;
+  --color-accent: #00f2fe;
+  --color-accent-hover: #38bdf8;
+  --color-selection-bg: #00f2fe;
+  --color-selection-fg: #000000;
+
+  --shadow-level-1: 0 1px 3px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --shadow-level-2: 0 2px 6px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --shadow-level-3: 0 4px 16px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --shadow-level-4: 0 10px 28px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --shadow-level-5: 0 20px 40px rgba(0, 0, 0, 0.98), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+/* Dark mode specific component adjustments for true floating card elevation */
+:root[data-theme="dark"] .btn-primary,
+.dark .btn-primary {
+  background-color: #ffffff;
+  color: #000000;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+}
+
+:root[data-theme="dark"] .btn-primary:hover,
+.dark .btn-primary:hover {
+  background-color: #f3f4f6;
+  opacity: 0.95;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.35);
+}
+
+:root[data-theme="dark"] .btn-primary-sm,
+.dark .btn-primary-sm {
+  background-color: #ffffff;
+  color: #000000;
+  font-weight: 600;
+}
+
+:root[data-theme="dark"] .btn-secondary,
+:root[data-theme="dark"] .btn-secondary-sm,
+:root[data-theme="dark"] .btn-icon,
+.dark .btn-secondary,
+.dark .btn-secondary-sm,
+.dark .btn-icon {
+  background-color: var(--color-canvas);
+  color: #ffffff;
+  border-color: var(--color-hairline);
+}
+
+:root[data-theme="dark"] .card,
+:root[data-theme="dark"] .card-lg,
+.dark .card,
+.dark .card-lg {
+  border: 1px solid var(--color-hairline);
+  background-color: var(--color-canvas);
+  box-shadow: var(--shadow-level-3);
+  color: #ffffff;
+}
+
+:root[data-theme="dark"] .card-soft,
+.dark .card-soft {
+  background-color: var(--color-canvas-soft-2);
+  border: 1px solid var(--color-hairline);
+  color: #ffffff;
+}
+
+:root[data-theme="dark"] .card-dark,
+.dark .card-dark {
+  background-color: #121216;
+  border: 1px solid var(--color-hairline);
+  color: #ffffff;
+}
+
+:root[data-theme="dark"] .code-surface,
+.dark .code-surface {
+  background-color: #22222a !important;
+  color: #ffffff !important;
+}
+
+:root[data-theme="dark"] .form-input,
+:root[data-theme="dark"] .form-textarea,
+.dark .form-input,
+.dark .form-textarea {
+  background-color: #22222a !important;
+  border: 1px solid var(--color-hairline) !important;
+  color: #ffffff !important;
+}
+
+:root[data-theme="dark"] .form-input::placeholder,
+:root[data-theme="dark"] .form-textarea::placeholder,
+.dark .form-input::placeholder,
+.dark .form-textarea::placeholder {
+  color: var(--color-mute) !important;
+}
+
+:root[data-theme="dark"] .form-input:focus,
+:root[data-theme="dark"] .form-textarea:focus,
+.dark .form-input:focus,
+.dark .form-textarea:focus {
+  border-color: #00f2fe !important;
+  box-shadow: 0 0 0 1px #00f2fe !important;
+}
+
+:root[data-theme="dark"] .tab-ghost,
+.dark .tab-ghost {
+  background-color: var(--color-canvas);
+  border-color: var(--color-hairline);
+  color: var(--color-body);
+}
+
+:root[data-theme="dark"] .tab-ghost[data-active="true"],
+:root[data-theme="dark"] .tab-ghost.active,
+.dark .tab-ghost[data-active="true"],
+.dark .tab-ghost.active {
+  background-color: rgba(0, 242, 254, 0.14);
+  color: #00f2fe;
+  border-color: #00f2fe;
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.25);
+}
+
+:root[data-theme="dark"] .category-card,
+.dark .category-card {
+  background-color: var(--color-canvas);
+  border-color: var(--color-hairline);
+}
+
+:root[data-theme="dark"] .category-card:hover,
+.dark .category-card:hover {
+  border-color: var(--color-hairline-strong);
+  background-color: #191920;
+}
+
+:root[data-theme="dark"] .category-card[data-active="true"],
+.dark .category-card[data-active="true"] {
+  border-color: #00f2fe !important;
+  background-color: #16222f !important;
+  box-shadow: 0 0 0 1px #00f2fe, 0 0 12px rgba(0, 242, 254, 0.25) !important;
+}
+
+@theme {
   /* ── Border Radius ── */
   --radius-xs: 4px;
   --radius-sm: 6px;
@@ -522,10 +672,11 @@
     color: var(--color-ink);
   }
 
-  /* ── Code preview surface (dark) ── */
+  /* ── Code preview surface ── */
   .code-surface {
-    background-color: var(--color-ink);
-    color: var(--color-on-primary);
+    background-color: var(--color-canvas-soft-2);
+    color: var(--color-ink);
+    border: 1px solid var(--color-hairline);
     font-family: var(--font-mono);
     font-size: 13px;
     line-height: 20px;

@@ -126,7 +126,7 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
   import { getTemplatesForCategory, PROMPT_TEMPLATES } from '../lib/promptTemplates';
   import type { PromptTemplate } from '../lib/types';
   import { BEFORE_AFTER_EXAMPLES } from '../lib/beforeAfterExamples';
-  import { getSavedPrompts, savePrompt, deletePrompt, clearPromptHistory, getApiKey, saveApiKey, clearApiKey, clearAllData } from '../lib/storage';
+  import { getSavedPrompts, savePrompt, deletePrompt, clearPromptHistory, getApiKey, saveApiKey, clearApiKey, clearAllData, getTheme, saveTheme } from '../lib/storage';
   import { refinePrompt, RefineError } from '../lib/geminiRefine';
 
   // ── State ──
@@ -776,9 +776,57 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
   });
 
   // ══════════════════════════════════════
+  // THEME TOGGLE (LIGHT / DARK)
+  // ══════════════════════════════════════
+  const btnThemeToggle = document.getElementById('btn-theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function updateThemeUI() {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      sunIcon?.classList.remove('hidden');
+      moonIcon?.classList.add('hidden');
+    } else {
+      sunIcon?.classList.add('hidden');
+      moonIcon?.classList.remove('hidden');
+    }
+  }
+
+  btnThemeToggle?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+      saveTheme('light');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      saveTheme('dark');
+    }
+    updateThemeUI();
+  });
+
+  // Listen to system preference changes if theme is system
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    const saved = getTheme();
+    if (saved === 'system') {
+      if (e.matches) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+      updateThemeUI();
+    }
+  });
+
+  // ══════════════════════════════════════
   // INITIAL RENDER
   // ══════════════════════════════════════
   updateForm();
   updateBeforeAfter();
   updateRefineButton();
+  updateThemeUI();
 </script>

@@ -81,12 +81,33 @@ export function clearApiKey(): void {
   }
 }
 
+// ── Theme Preference ──
+
+export function getTheme(): 'light' | 'dark' | 'system' {
+  try {
+    const raw = localStorage.getItem('promptforge_theme');
+    if (raw === 'dark' || raw === 'light' || raw === 'system') return raw;
+    return 'system';
+  } catch {
+    return 'system';
+  }
+}
+
+export function saveTheme(theme: 'light' | 'dark' | 'system'): void {
+  try {
+    localStorage.setItem('promptforge_theme', theme);
+  } catch {
+    // Fail silently
+  }
+}
+
 // ── Clear All ──
 
 export function clearAllData(): void {
   try {
     localStorage.removeItem(STORAGE_KEYS.history);
     localStorage.removeItem(STORAGE_KEYS.apiKey);
+    localStorage.removeItem('promptforge_theme');
   } catch {
     // Fail silently
   }
