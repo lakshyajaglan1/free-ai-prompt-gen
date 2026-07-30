@@ -741,12 +741,13 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
   });
 
   // ══════════════════════════════════════
-  // FOOTER — Clear all data
+  // DATA MANAGEMENT — Clear all data
   // ══════════════════════════════════════
   document.getElementById('btn-clear-all-data')?.addEventListener('click', () => {
     if (confirm('Clear all saved prompts and your API key from this browser?')) {
       clearAllData();
       refreshKeyStatus();
+      closeSettings();
     }
   });
 
