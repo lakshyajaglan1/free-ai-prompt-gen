@@ -112,6 +112,19 @@
   border-color: var(--color-hairline);
 }
 
+:root[data-theme="dark"] .btn-danger-sm,
+.dark .btn-danger-sm {
+  background-color: rgba(255, 77, 77, 0.12);
+  color: #ff5555;
+  border-color: rgba(255, 77, 77, 0.4);
+}
+:root[data-theme="dark"] .btn-danger-sm:hover,
+.dark .btn-danger-sm:hover {
+  background-color: rgba(255, 77, 77, 0.22);
+  border-color: #ff5555;
+  color: #ff5555;
+}
+
 :root[data-theme="dark"] .card,
 :root[data-theme="dark"] .card-lg,
 .dark .card,
@@ -422,6 +435,30 @@
   }
   .btn-secondary-sm:hover {
     border-color: var(--color-hairline-strong);
+  }
+
+  .btn-danger-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background-color: rgba(238, 0, 0, 0.06);
+    color: #ee0000;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    padding: 0 var(--sp-sm);
+    border-radius: var(--radius-pill);
+    height: 36px;
+    border: 1px solid rgba(238, 0, 0, 0.35);
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .btn-danger-sm:hover {
+    border-color: #ee0000;
+    background-color: rgba(238, 0, 0, 0.14);
+    color: #ee0000;
   }
 
   /* ── Icon Button ── */
