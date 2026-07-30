@@ -688,12 +688,12 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
     const hasPrompt = !!(previewText.textContent?.trim());
 
     if (hasKey) {
-      refineNoKey.classList.add('hidden');
-      btnRefine.classList.remove('hidden');
+      refineNoKey.style.display = 'none';
+      btnRefine.style.display = '';
       btnRefine.disabled = !hasPrompt;
     } else {
-      refineNoKey.classList.remove('hidden');
-      btnRefine.classList.add('hidden');
+      refineNoKey.style.display = 'flex';
+      btnRefine.style.display = 'none';
     }
   }
 
@@ -703,7 +703,7 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
     if (!prompt || !key) return;
 
     // Show loading
-    btnRefine.classList.add('hidden');
+    btnRefine.style.display = 'none';
     refineLoading.classList.remove('hidden');
     refineError.classList.add('hidden');
     refineResult.classList.add('hidden');
@@ -721,7 +721,7 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
       refineError.classList.remove('hidden');
     } finally {
       refineLoading.classList.add('hidden');
-      btnRefine.classList.remove('hidden');
+      btnRefine.style.display = '';
     }
   });
 
