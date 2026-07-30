@@ -15,11 +15,11 @@
     </a>
 
     <!-- Right cluster -->
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-3 sm:gap-4">
       <!-- Dark mode toggle button -->
       <button
         id="btn-theme-toggle"
-        class="btn-icon"
+        class="btn-icon shrink-0"
         title="Toggle Light / Dark theme"
         aria-label="Toggle theme"
       >
@@ -41,32 +41,34 @@
         </svg>
       </button>
 
-      <!-- History button -->
+      <!-- History / Saved Prompts button -->
       <button
         id="btn-history"
-        class="btn-icon"
-        title="Prompt History"
-        aria-label="Open prompt history"
+        class="btn-secondary-sm w-9 sm:w-auto px-0 sm:px-3.5 gap-2 shrink-0 justify-center"
+        title="Saved Prompts"
+        aria-label="Open saved prompts"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
           <circle cx="12" cy="12" r="10"></circle>
           <polyline points="12 6 12 12 16 14"></polyline>
         </svg>
+        <span class="hidden sm:inline body-sm-strong whitespace-nowrap">Saved Prompts</span>
       </button>
 
       <!-- Settings button (API key) -->
       <button
         id="btn-settings"
-        class="btn-icon"
+        class="btn-secondary-sm w-9 sm:w-auto px-0 sm:px-3.5 gap-2 shrink-0 justify-center"
         title="Settings & API Key"
         aria-label="Open settings"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
           <circle cx="7.5" cy="15.5" r="5.5"></circle>
           <path d="m21 2-9.6 9.6"></path>
           <path d="m15.5 7.5 3 3"></path>
           <path d="m18.5 4.5 3 3"></path>
         </svg>
+        <span class="hidden sm:inline body-sm-strong whitespace-nowrap">Settings</span>
       </button>
     </div>
   </div>
