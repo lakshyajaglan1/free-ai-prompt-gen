@@ -12,7 +12,7 @@ export class RefineError extends Error {
   }
 }
 
-const GEMINI_MODEL = 'gemini-flash-latest';
+const GEMINI_MODEL = 'gemini-1.5-flash';
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 const SYSTEM_INSTRUCTION =

@@ -410,6 +410,7 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
   const historyEmpty = document.getElementById('history-empty')!;
 
   function openHistory() {
+    document.body.style.overflow = 'hidden';
     renderHistoryList();
     historyDrawer.classList.remove('hidden');
     historyBackdrop.classList.remove('hidden');
@@ -417,6 +418,7 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
   }
 
   function closeHistory() {
+    document.body.style.overflow = '';
     historyDrawer.style.animation = 'slideOutRight 0.2s ease forwards';
     setTimeout(() => {
       historyDrawer.classList.add('hidden');
@@ -526,12 +528,14 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
   const templateList = document.getElementById('template-list')!;
 
   function openTemplates() {
+    document.body.style.overflow = 'hidden';
     renderTemplateList();
     templateModal.classList.remove('hidden');
     templateBackdrop.classList.remove('hidden');
   }
 
   function closeTemplates() {
+    document.body.style.overflow = '';
     templateModal.classList.add('hidden');
     templateBackdrop.classList.add('hidden');
   }
@@ -607,12 +611,14 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
   const iconEyeOff = document.getElementById('icon-eye-off')!;
 
   function openSettings() {
+    document.body.style.overflow = 'hidden';
     settingsModal.classList.remove('hidden');
     settingsBackdrop.classList.remove('hidden');
     refreshKeyStatus();
   }
 
   function closeSettings() {
+    document.body.style.overflow = '';
     settingsModal.classList.add('hidden');
     settingsBackdrop.classList.add('hidden');
   }
