@@ -52,6 +52,15 @@ const CATEGORY_PLACEHOLDERS: Record<GoalCategory, Record<FieldKey, string>> = {
     constraints: 'e.g. "16:9 aspect ratio. No text in the image. Neutral color palette."',
     examples: 'Paste an example image description you liked…',
   },
+  [GoalCategory.VideoGeneration]: {
+    role: 'e.g. "A cinematic director and AI video prompt engineer specializing in Sora and Runway Gen-2"',
+    context: 'e.g. "I\'m generating a 5-second video clip for a sci-fi film teaser"',
+    task: 'e.g. "Create a detailed prompt for a futuristic cyberpunk city at night with flying vehicles"',
+    outputFormat: 'e.g. "A detailed video prompt specifying camera motion, lighting, motion speed, and aspect ratio"',
+    tone: 'e.g. "Cinematic, atmospheric, photorealistic, epic"',
+    constraints: 'e.g. "16:9 aspect ratio, 24fps film look. Smooth slow camera pan right. No morphing artifacts."',
+    examples: 'Paste an example video prompt or cinematic camera direction…',
+  },
   [GoalCategory.DataAnalysis]: {
     role: 'e.g. "A senior data analyst at a Fortune 500 company"',
     context: 'e.g. "I have a CSV with 50K rows of customer purchase data from 2023-2024"',

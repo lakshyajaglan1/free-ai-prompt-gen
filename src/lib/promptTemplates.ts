@@ -120,7 +120,34 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
       task: 'Create an image generation prompt for a [platform] post about [topic]. The visual should stop the scroll and communicate the message instantly.',
       outputFormat: 'One primary prompt + 2 variations with different compositions',
       tone: 'Bold, modern, eye-catching',
-      constraints: 'Platform-specific aspect ratio. High contrast for mobile viewing. No small text.',
+    },
+  },
+
+  // ── Video Generation ──
+  {
+    id: 'video-cinematic-drone',
+    name: 'Cinematic Drone Shot',
+    description: 'Breathtaking aerial drone footage with precise camera movement details.',
+    category: GoalCategory.VideoGeneration,
+    fields: {
+      role: 'A master drone operator and aerial cinematographer',
+      task: 'Create a cinematic video generation prompt for a sweeping aerial drone shot revealing [location/subject]. Describe camera trajectory, speed, lighting, and environmental motion.',
+      outputFormat: 'Single fluid prompt paragraph specifying camera move, subject focus, lighting, and atmospheric details',
+      tone: 'Majestic, epic, serene, photorealistic',
+      constraints: '16:9 widescreen, 4K detail look. Smooth forward dolly zoom effect. Natural golden hour lighting. No jittery motion.',
+    },
+  },
+  {
+    id: 'video-animated-character',
+    name: 'Animated Character',
+    description: 'Dynamic video prompts for stylized 3D character motion and facial expressions.',
+    category: GoalCategory.VideoGeneration,
+    fields: {
+      role: 'An animation director specializing in 3D character animation and expressive motion',
+      task: 'Create a video prompt for an animated scene featuring [character] performing [action/expression]. Detail facial expression, movement dynamics, background elements, and art style.',
+      outputFormat: 'Structured prompt detailing Character Action, Expression, Camera Angle, and Rendering Style',
+      tone: 'Whimsical, expressive, vibrant, high-energy',
+      constraints: 'Stylized 3D animation style (Pixar/Disney inspired). Consistent character features. 24fps motion cadence.',
     },
   },
 

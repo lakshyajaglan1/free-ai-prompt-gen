@@ -4,6 +4,7 @@ export enum GoalCategory {
   Writing = 'Writing',
   Coding = 'Coding',
   ImageGeneration = 'Image Generation',
+  VideoGeneration = 'Video Gen',
   DataAnalysis = 'Data / Analysis',
   Research = 'Research',
   MarketingCopy = 'Marketing / Copy',

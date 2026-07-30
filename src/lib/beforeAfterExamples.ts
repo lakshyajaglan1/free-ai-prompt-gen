@@ -85,6 +85,31 @@ export const BEFORE_AFTER_EXAMPLES: Record<GoalCategory, BeforeAfterExample> = {
     },
   },
 
+  [GoalCategory.VideoGeneration]: {
+    category: GoalCategory.VideoGeneration,
+    weak: {
+      label: 'Weak Prompt',
+      prompt: 'Video of a car driving fast.',
+      problems: [
+        'No camera movement or angle specified',
+        'No environment, weather, or time of day details',
+        'No frame rate or motion speed guidance',
+        'High risk of morphing artifacts or static output',
+      ],
+    },
+    strong: {
+      label: 'Strong Prompt',
+      prompt:
+        '## Role\nCinematic director for automotive film commercials\n\n## Task\nGenerate a 5-second video tracking shot of a matte-black sports car driving along a coastal cliff road at sunset.\n\n## Camera Motion\nLow-angle tracking shot moving parallel to the car at 60fps, panning smoothly as the road curves toward the sun.\n\n## Lighting & Mood\nGolden hour sunlight, warm amber lens flares, wet asphalt reflections, dramatic sea spray mist.\n\n## Constraints\n- 16:9 aspect ratio\n- Photorealistic 35mm film aesthetic\n- Smooth motion with zero morphing or distortion',
+      strengths: [
+        'Specific camera trajectory and frame rate direction',
+        'Rich atmospheric details (wet asphalt, lens flare, mist)',
+        'Clear subject dynamics and motion pace',
+        'Constraints eliminate morphing and distortion artifacts',
+      ],
+    },
+  },
+
   [GoalCategory.DataAnalysis]: {
     category: GoalCategory.DataAnalysis,
     weak: {
