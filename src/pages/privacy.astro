@@ -1,0 +1,242 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import PromptHistory from '../components/PromptHistory.astro';
+import ApiKeySettings from '../components/ApiKeySettings.astro';
+---
+
+<Layout
+  title="Privacy Policy | Free AI Prompt Generator Tool"
+  description="Read our comprehensive Privacy Policy. The Free AI Prompt Generator is 100% privacy-first: zero server tracking, zero telemetry, local browser data storage, and client-side AI API execution."
+  canonicalUrl="https://aipromptgenerator.app/privacy"
+>
+  <!-- Structured Data JSON-LD for Privacy Policy Page -->
+  <script type="application/ld+json" is:inline>
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Privacy Policy - AI Prompt Generator",
+      "url": "https://aipromptgenerator.app/privacy",
+      "description": "Comprehensive Privacy Policy for AI Prompt Generator tool detailing client-side local storage, zero telemetry, and API key protection.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "AI Prompt Generator",
+        "url": "https://aipromptgenerator.app/"
+      }
+    }
+  </script>
+
+  <Navbar />
+
+  <main class="flex-1 w-full">
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden border-b border-hairline bg-canvas" style="padding: var(--sp-4xl) clamp(1rem, 5vw, 4rem);">
+      <div class="absolute inset-0 mesh-gradient opacity-50 pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative mx-auto text-center" style="max-width: 800px;">
+        <div class="badge-gradient mb-3 mx-auto" style="width: fit-content;">Last Updated: July 31, 2026</div>
+        <h1 class="display-xl text-ink mb-4" style="line-height: 1.15;">
+          Privacy Policy
+        </h1>
+        <p class="body-lg text-body mx-auto leading-relaxed" style="max-width: 650px;">
+          Your privacy is foundational to how we build software. We enforce strict client-side execution — <strong>no tracking, no telemetry, and no server databases.</strong>
+        </p>
+      </div>
+    </section>
+
+    <!-- Key Highlights Banner -->
+    <section class="w-full border-b border-hairline bg-canvas-soft" style="padding: var(--sp-2xl) clamp(1rem, 5vw, 4rem);">
+      <div class="mx-auto" style="max-width: 1000px;">
+        <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+          <div class="p-4 rounded-lg bg-canvas border border-hairline text-center">
+            <div class="text-xl mb-1">🔒</div>
+            <div class="body-sm-strong text-ink mb-1">100% Local Storage</div>
+            <div class="caption text-body">Saved prompts stay inside your browser storage</div>
+          </div>
+          <div class="p-4 rounded-lg bg-canvas border border-hairline text-center">
+            <div class="text-xl mb-1">🔑</div>
+            <div class="body-sm-strong text-ink mb-1">Direct API Execution</div>
+            <div class="caption text-body">Keys communicate directly with provider APIs</div>
+          </div>
+          <div class="p-4 rounded-lg bg-canvas border border-hairline text-center">
+            <div class="text-xl mb-1">🚫</div>
+            <div class="body-sm-strong text-ink mb-1">Zero Telemetry</div>
+            <div class="caption text-body">No analytics, no ad trackers, no background logging</div>
+          </div>
+          <div class="p-4 rounded-lg bg-canvas border border-hairline text-center">
+            <div class="text-xl mb-1">🗑️</div>
+            <div class="body-sm-strong text-ink mb-1">1-Click Erasure</div>
+            <div class="caption text-body">Clear all data instantly anytime with one click</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Policy Content -->
+    <section class="w-full" style="padding: var(--sp-4xl) clamp(1rem, 5vw, 4rem);">
+      <div class="mx-auto" style="max-width: 850px;">
+        <div class="prose max-w-none flex flex-col gap-10">
+          
+          <!-- Section 1 -->
+          <div class="card p-6 md:p-8 border border-hairline bg-canvas">
+            <h2 class="display-sm text-ink mb-3 flex items-center gap-2">
+              <span class="caption-mono text-link">01.</span>
+              Information Collection &amp; Storage
+            </h2>
+            <p class="body-sm text-body leading-relaxed mb-3">
+              The <strong>Free AI Prompt Generator</strong> operates as a static client-side Multi-Page Application (MPA). When you use our application:
+            </p>
+            <ul class="list-disc pl-5 body-sm text-body leading-relaxed flex flex-col gap-2">
+              <li><strong>No Personal Identifiable Information (PII)</strong> is collected, requested, or stored.</li>
+              <li><strong>No User Registration:</strong> You do not need to create an account, log in, or provide an email address.</li>
+              <li><strong>Local Storage Usage:</strong> Prompts you build and save, theme settings (light/dark mode), and API preferences are saved exclusively in your browser's local HTML5 <code class="font-mono text-xs">localStorage</code>.</li>
+            </ul>
+          </div>
+
+          <!-- Section 2 -->
+          <div class="card p-6 md:p-8 border border-hairline bg-canvas">
+            <h2 class="display-sm text-ink mb-3 flex items-center gap-2">
+              <span class="caption-mono text-link">02.</span>
+              API Keys &amp; Client-Side AI Refinement
+            </h2>
+            <p class="body-sm text-body leading-relaxed mb-3">
+              Our application offers an optional <strong>AI Refine</strong> feature that allows you to connect your own API keys (e.g. Google Gemini API, OpenAI, Anthropic, or custom local endpoints like Ollama / LM Studio).
+            </p>
+            <ul class="list-disc pl-5 body-sm text-body leading-relaxed flex flex-col gap-2">
+              <li><strong>Strict Client-Side Requests:</strong> API calls initiated through the AI Refine tool are dispatched <em>directly from your browser</em> to the corresponding AI provider's endpoint.</li>
+              <li><strong>No Intermediary Server:</strong> We do not operate an intermediate server, backend proxy, or database log. Your API key never passes through any third-party infrastructure controlled by us.</li>
+              <li><strong>Key Security:</strong> API keys are held locally in your browser memory and <code class="font-mono text-xs">localStorage</code>. You can remove your key at any time by clicking "Clear API Key" in the settings modal.</li>
+            </ul>
+          </div>
+
+          <!-- Section 3 -->
+          <div class="card p-6 md:p-8 border border-hairline bg-canvas">
+            <h2 class="display-sm text-ink mb-3 flex items-center gap-2">
+              <span class="caption-mono text-link">03.</span>
+              Cookies &amp; Tracking Technologies
+            </h2>
+            <p class="body-sm text-body leading-relaxed">
+              We respect user privacy and adhere to modern zero-tracking web principles:
+            </p>
+            <ul class="list-disc pl-5 body-sm text-body leading-relaxed flex flex-col gap-2 mt-2">
+              <li>We do <strong>not</strong> use third-party advertising cookies, cross-site tracking pixels, or fingerprinting scripts.</li>
+              <li>We do <strong>not</strong> use Google Analytics, Facebook Pixel, or telemetry trackers.</li>
+              <li>Standard web server hosting logs (IP addresses for DDoS defense) may be maintained by static web hosting providers (such as GitHub Pages or Vercel) strictly for operational security.</li>
+            </ul>
+          </div>
+
+          <!-- Section 4 -->
+          <div class="card p-6 md:p-8 border border-hairline bg-canvas">
+            <h2 class="display-sm text-ink mb-3 flex items-center gap-2">
+              <span class="caption-mono text-link">04.</span>
+              Third-Party AI Service Providers
+            </h2>
+            <p class="body-sm text-body leading-relaxed">
+              When you copy assembled prompts into third-party artificial intelligence models (such as ChatGPT, Google Gemini, Claude, or Midjourney) or use client-side API refinement, your usage is subject to those respective platforms' Terms of Service and Privacy Policies:
+            </p>
+            <ul class="list-disc pl-5 body-sm text-body leading-relaxed flex flex-col gap-2 mt-2">
+              <li><a href="https://openai.com/privacy" target="_blank" rel="noopener" class="text-link hover:underline">OpenAI Privacy Policy</a></li>
+              <li><a href="https://policies.google.com/privacy" target="_blank" rel="noopener" class="text-link hover:underline">Google AI &amp; Gemini Privacy Policy</a></li>
+              <li><a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener" class="text-link hover:underline">Anthropic Claude Privacy Policy</a></li>
+            </ul>
+          </div>
+
+          <!-- Section 5 -->
+          <div class="card p-6 md:p-8 border border-hairline bg-canvas">
+            <h2 class="display-sm text-ink mb-3 flex items-center gap-2">
+              <span class="caption-mono text-link">05.</span>
+              Data Erasure &amp; User Rights
+            </h2>
+            <p class="body-sm text-body leading-relaxed mb-3">
+              Because all data resides exclusively on your local device, you retain full control over your data at all times:
+            </p>
+            <p class="body-sm text-body leading-relaxed">
+              To wipe all saved prompts, API settings, and theme choices from your browser, simply click the <strong>Settings</strong> button in the top navigation bar and select <strong>"Clear All Data"</strong>, or clear your browser's site data in your browser preferences.
+            </p>
+          </div>
+
+          <!-- Section 6 -->
+          <div class="card p-6 md:p-8 border border-hairline bg-canvas">
+            <h2 class="display-sm text-ink mb-3 flex items-center gap-2">
+              <span class="caption-mono text-link">06.</span>
+              Contact Us Regarding Privacy
+            </h2>
+            <p class="body-sm text-body leading-relaxed mb-4">
+              If you have any questions or security disclosures regarding our privacy policy or zero-telemetry architecture, please contact us through our dedicated contact page:
+            </p>
+            <a href="/contact" class="btn-primary" style="width: fit-content;">
+              Go to Contact Us Page
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <PromptHistory />
+  <ApiKeySettings />
+</Layout>
+
+<script>
+  import { saveTheme } from '../lib/storage';
+
+  // Global settings modal & drawer handlers for MPA pages
+  const btnSettings = document.getElementById('btn-settings');
+  const btnHistory = document.getElementById('btn-history');
+  const settingsModal = document.getElementById('settings-modal');
+  const settingsBackdrop = document.getElementById('settings-backdrop');
+  const historyDrawer = document.getElementById('history-drawer');
+  const historyBackdrop = document.getElementById('history-backdrop');
+
+  if (btnSettings && settingsModal && settingsBackdrop) {
+    btnSettings.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      settingsModal.classList.remove('hidden');
+      settingsBackdrop.classList.remove('hidden');
+    });
+  }
+
+  if (btnHistory && historyDrawer && historyBackdrop) {
+    btnHistory.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      historyDrawer.classList.remove('hidden');
+      historyBackdrop.classList.remove('hidden');
+    });
+  }
+
+  // Theme toggle script for MPA
+  const btnThemeToggle = document.getElementById('btn-theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function updateThemeUI() {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      sunIcon?.classList.remove('hidden');
+      moonIcon?.classList.add('hidden');
+    } else {
+      sunIcon?.classList.add('hidden');
+      moonIcon?.classList.remove('hidden');
+    }
+  }
+
+  btnThemeToggle?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+      saveTheme('light');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      saveTheme('dark');
+    }
+    updateThemeUI();
+  });
+
+  updateThemeUI();
+</script>

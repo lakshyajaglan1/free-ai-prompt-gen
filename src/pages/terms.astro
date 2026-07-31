@@ -1,0 +1,215 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import PromptHistory from '../components/PromptHistory.astro';
+import ApiKeySettings from '../components/ApiKeySettings.astro';
+---
+
+<Layout
+  title="Terms & Conditions | Free AI Prompt Generator Tool"
+  description="Review the Terms and Conditions for using the Free AI Prompt Generator. Understand user rights, open-source software terms, intellectual property ownership of prompts, and AI provider disclaimers."
+  canonicalUrl="https://aipromptgenerator.app/terms"
+>
+  <!-- Structured Data JSON-LD for Terms & Conditions Page -->
+  <script type="application/ld+json" is:inline>
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Terms & Conditions - AI Prompt Generator",
+      "url": "https://aipromptgenerator.app/terms",
+      "description": "Terms of Service and Conditions of Use for the Free AI Prompt Generator web application.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "AI Prompt Generator",
+        "url": "https://aipromptgenerator.app/"
+      }
+    }
+  </script>
+
+  <Navbar />
+
+  <main class="flex-1 w-full">
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden border-b border-hairline bg-canvas" style="padding: var(--sp-4xl) clamp(1rem, 5vw, 4rem);">
+      <div class="absolute inset-0 mesh-gradient opacity-50 pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative mx-auto text-center" style="max-width: 800px;">
+        <div class="badge-gradient mb-3 mx-auto" style="width: fit-content;">Effective Date: July 31, 2026</div>
+        <h1 class="display-xl text-ink mb-4" style="line-height: 1.15;">
+          Terms &amp; Conditions
+        </h1>
+        <p class="body-lg text-body mx-auto leading-relaxed" style="max-width: 650px;">
+          Fair, transparent, and open-source terms. You retain <strong>100% ownership</strong> of every prompt you build using our tool.
+        </p>
+      </div>
+    </section>
+
+    <!-- Terms Content -->
+    <section class="w-full" style="padding: var(--sp-4xl) clamp(1rem, 5vw, 4rem);">
+      <div class="mx-auto" style="max-width: 850px;">
+        <div class="prose max-w-none flex flex-col gap-8">
+
+          <!-- Clause 1 -->
+          <div class="card p-6 md:p-8 border border-hairline bg-canvas">
+            <h2 class="display-sm text-ink mb-3 flex items-center gap-2">
+              <span class="caption-mono text-link">01.</span>
+              Acceptance of Terms
+            </h2>
+            <p class="body-sm text-body leading-relaxed">
+              By accessing, browsing, or using the <strong>Free AI Prompt Generator</strong> web application, you acknowledge that you have read, understood, and agree to be bound by these Terms &amp; Conditions. If you do not agree with any part of these terms, you should discontinue use of the web application.
+            </p>
+          </div>
+
+          <!-- Clause 2 -->
+          <div class="card p-6 md:p-8 border border-hairline bg-canvas">
+            <h2 class="display-sm text-ink mb-3 flex items-center gap-2">
+              <span class="caption-mono text-link">02.</span>
+              Intellectual Property &amp; Prompt Ownership
+            </h2>
+            <p class="body-sm text-body leading-relaxed mb-3">
+              We believe in creator autonomy and open access:
+            </p>
+            <ul class="list-disc pl-5 body-sm text-body leading-relaxed flex flex-col gap-2">
+              <li><strong>You Retain Full Ownership:</strong> You retain 100% full legal ownership, copyright, and commercial exploitation rights to all text, prompts, templates, and outputs assembled using our tool.</li>
+              <li><strong>Zero Royalty Claims:</strong> We claim zero intellectual property rights, licensing fees, or royalties on your generated prompts or AI outputs.</li>
+              <li><strong>Open-Source Codebase:</strong> The web application source code is distributed under the MIT Open Source License. You are free to inspect, fork, or modify the code in accordance with the MIT license terms.</li>
+            </ul>
+          </div>
+
+          <!-- Clause 3 -->
+          <div class="card p-6 md:p-8 border border-hairline bg-canvas">
+            <h2 class="display-sm text-ink mb-3 flex items-center gap-2">
+              <span class="caption-mono text-link">03.</span>
+              Acceptable Use Policy
+            </h2>
+            <p class="body-sm text-body leading-relaxed mb-3">
+              You agree to use the <strong>AI Prompt Generator</strong> responsibly and in compliance with all applicable local, national, and international laws. Specifically, you agree not to:
+            </p>
+            <ul class="list-disc pl-5 body-sm text-body leading-relaxed flex flex-col gap-2">
+              <li>Formulate prompts intended to generate illegal, abusive, hate speech, or harmful content prohibited by law or third-party AI provider guidelines.</li>
+              <li>Attempt to reverse-engineer, exploit, or disrupt the operation of third-party AI model APIs connected via client-side integration.</li>
+              <li>Misrepresent prompts created via our tool as official communications from AI model developers (such as OpenAI, Google, Anthropic, or Midjourney).</li>
+            </ul>
+          </div>
+
+          <!-- Clause 4 -->
+          <div class="card p-6 md:p-8 border border-hairline bg-canvas">
+            <h2 class="display-sm text-ink mb-3 flex items-center gap-2">
+              <span class="caption-mono text-link">04.</span>
+              Third-Party AI Service Disclaimer
+            </h2>
+            <p class="body-sm text-body leading-relaxed mb-3">
+              The <strong>AI Prompt Generator</strong> is an independent prompt engineering utility. It is not affiliated with, endorsed by, or sponsored by OpenAI, Google LLC, Anthropic PBC, Midjourney Inc., or any other AI model vendor.
+            </p>
+            <p class="body-sm text-body leading-relaxed">
+              You acknowledge that outputs generated by artificial intelligence models (such as ChatGPT, Gemini, Claude, or Midjourney) when consuming prompts built with our tool are governed by those respective third-party platforms. We do not guarantee specific model output accuracy, response quality, or uptime.
+            </p>
+          </div>
+
+          <!-- Clause 5 -->
+          <div class="card p-6 md:p-8 border border-hairline bg-canvas">
+            <h2 class="display-sm text-ink mb-3 flex items-center gap-2">
+              <span class="caption-mono text-link">05.</span>
+              Disclaimer of Warranties
+            </h2>
+            <p class="body-sm text-body leading-relaxed">
+              THE WEB APPLICATION IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. WE DO NOT WARRANT THAT THE FUNCTIONALITY OF THE TOOL WILL BE UNINTERRUPTED OR ERROR-FREE.
+            </p>
+          </div>
+
+          <!-- Clause 6 -->
+          <div class="card p-6 md:p-8 border border-hairline bg-canvas">
+            <h2 class="display-sm text-ink mb-3 flex items-center gap-2">
+              <span class="caption-mono text-link">06.</span>
+              Limitation of Liability
+            </h2>
+            <p class="body-sm text-body leading-relaxed">
+              IN NO EVENT SHALL THE AUTHORS, CONTRIBUTORS, OR COPYRIGHT HOLDERS OF THE AI PROMPT GENERATOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE USE OF OR INABILITY TO USE THE WEB APPLICATION.
+            </p>
+          </div>
+
+          <!-- Clause 7 -->
+          <div class="card p-6 md:p-8 border border-hairline bg-canvas">
+            <h2 class="display-sm text-ink mb-3 flex items-center gap-2">
+              <span class="caption-mono text-link">07.</span>
+              Questions &amp; Legal Notices
+            </h2>
+            <p class="body-sm text-body leading-relaxed mb-4">
+              If you have any questions regarding these Terms &amp; Conditions or wish to submit a legal inquiry, please reach out via our contact page:
+            </p>
+            <a href="/contact" class="btn-primary" style="width: fit-content;">
+              Contact Us
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <PromptHistory />
+  <ApiKeySettings />
+</Layout>
+
+<script>
+  import { saveTheme } from '../lib/storage';
+
+  // Global settings modal & drawer handlers for MPA pages
+  const btnSettings = document.getElementById('btn-settings');
+  const btnHistory = document.getElementById('btn-history');
+  const settingsModal = document.getElementById('settings-modal');
+  const settingsBackdrop = document.getElementById('settings-backdrop');
+  const historyDrawer = document.getElementById('history-drawer');
+  const historyBackdrop = document.getElementById('history-backdrop');
+
+  if (btnSettings && settingsModal && settingsBackdrop) {
+    btnSettings.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      settingsModal.classList.remove('hidden');
+      settingsBackdrop.classList.remove('hidden');
+    });
+  }
+
+  if (btnHistory && historyDrawer && historyBackdrop) {
+    btnHistory.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      historyDrawer.classList.remove('hidden');
+      historyBackdrop.classList.remove('hidden');
+    });
+  }
+
+  // Theme toggle script for MPA
+  const btnThemeToggle = document.getElementById('btn-theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function updateThemeUI() {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      sunIcon?.classList.remove('hidden');
+      moonIcon?.classList.add('hidden');
+    } else {
+      sunIcon?.classList.add('hidden');
+      moonIcon?.classList.remove('hidden');
+    }
+  }
+
+  btnThemeToggle?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+      saveTheme('light');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      saveTheme('dark');
+    }
+    updateThemeUI();
+  });
+
+  updateThemeUI();
+</script>

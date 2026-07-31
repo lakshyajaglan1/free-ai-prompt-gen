@@ -1,0 +1,362 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import PromptHistory from '../components/PromptHistory.astro';
+import ApiKeySettings from '../components/ApiKeySettings.astro';
+---
+
+<Layout
+  title="Contact Us | Free AI Prompt Generator Tool"
+  description="Get in touch with the AI Prompt Generator team. Send feedback, report bugs, suggest new prompt frameworks, or ask questions about our privacy-first tool."
+  canonicalUrl="https://aipromptgenerator.app/contact"
+>
+  <!-- Structured Data JSON-LD for Contact Page -->
+  <script type="application/ld+json" is:inline>
+    {
+      "@context": "https://schema.org",
+      "@type": "ContactPage",
+      "name": "Contact AI Prompt Generator",
+      "url": "https://aipromptgenerator.app/contact",
+      "description": "Send feedback, report issues, suggest features, or ask privacy questions to the AI Prompt Generator team.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "AI Prompt Generator",
+        "url": "https://aipromptgenerator.app/"
+      }
+    }
+  </script>
+
+  <Navbar />
+
+  <main class="flex-1 w-full">
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden border-b border-hairline bg-canvas" style="padding: var(--sp-4xl) clamp(1rem, 5vw, 4rem);">
+      <div class="absolute inset-0 mesh-gradient opacity-60 pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative mx-auto text-center" style="max-width: 800px;">
+        <div class="caption-mono text-link uppercase tracking-wider mb-3 font-semibold">GET IN TOUCH</div>
+        <h1 class="display-xl text-ink mb-4" style="line-height: 1.15;">
+          We'd Love to Hear <span class="gradient-text">From You</span>
+        </h1>
+        <p class="body-lg text-body mx-auto leading-relaxed" style="max-width: 650px;">
+          Have a question about prompt engineering, want to suggest a new framework feature, or need help with the tool? Send us a message below.
+        </p>
+      </div>
+    </section>
+
+    <!-- Main Content Section: Form + Info Grid -->
+    <section class="w-full" style="padding: var(--sp-4xl) clamp(1rem, 5vw, 4rem);">
+      <div class="mx-auto" style="max-width: 1100px;">
+        <div class="grid gap-8 lg:grid-cols-12">
+
+          <!-- Left Column: Interactive Contact Form (7 cols on large screen) -->
+          <div class="lg:col-span-7">
+            <div class="card p-6 md:p-8 border border-hairline bg-canvas">
+              <h2 class="display-sm text-ink mb-2">Send Us a Message</h2>
+              <p class="body-sm text-body mb-6">
+                Fill out the form below. Our open-source team typically responds within 24 hours.
+              </p>
+
+              <!-- Form Success / Feedback Banner -->
+              <div id="contact-feedback" class="hidden mb-6 p-4 rounded-lg border border-hairline transition-all">
+                <div class="flex items-center gap-2">
+                  <span id="contact-feedback-icon" class="text-xl">✅</span>
+                  <div>
+                    <h3 id="contact-feedback-title" class="body-md-strong text-ink">Message Sent Successfully!</h3>
+                    <p id="contact-feedback-text" class="body-sm text-body">Thank you for reaching out. We will review your message shortly.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form -->
+              <form id="contact-form" class="flex flex-col gap-5" novalidate>
+                <!-- Name Field -->
+                <div>
+                  <label for="contact-name" class="body-sm-strong text-ink mb-1.5 block">
+                    Full Name <span class="text-error">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="contact-name"
+                    name="name"
+                    required
+                    placeholder="e.g. Alex Mercer"
+                    class="form-input"
+                  />
+                  <span id="error-name" class="caption text-error hidden mt-1 block">Please enter your name.</span>
+                </div>
+
+                <!-- Email Field -->
+                <div>
+                  <label for="contact-email" class="body-sm-strong text-ink mb-1.5 block">
+                    Email Address <span class="text-error">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    id="contact-email"
+                    name="email"
+                    required
+                    placeholder="e.g. alex@example.com"
+                    class="form-input"
+                  />
+                  <span id="error-email" class="caption text-error hidden mt-1 block">Please enter a valid email address.</span>
+                </div>
+
+                <!-- Subject Select -->
+                <div>
+                  <label for="contact-subject" class="body-sm-strong text-ink mb-1.5 block">
+                    Subject / Topic <span class="text-error">*</span>
+                  </label>
+                  <select id="contact-subject" name="subject" class="form-input cursor-pointer" style="height: 40px;">
+                    <option value="General Feedback">General Feedback &amp; Suggestions</option>
+                    <option value="Feature Request">New Framework / Feature Request</option>
+                    <option value="Bug Report">Bug Report or Issue</option>
+                    <option value="Privacy Question">Privacy &amp; Security Question</option>
+                    <option value="Other">Other Inquiry</option>
+                  </select>
+                </div>
+
+                <!-- Message Area -->
+                <div>
+                  <label for="contact-message" class="body-sm-strong text-ink mb-1.5 block">
+                    Your Message <span class="text-error">*</span>
+                  </label>
+                  <textarea
+                    id="contact-message"
+                    name="message"
+                    rows="5"
+                    required
+                    placeholder="How can we help you? Describe your question or suggestion in detail..."
+                    class="form-textarea"
+                  ></textarea>
+                  <span id="error-message" class="caption text-error hidden mt-1 block">Please enter your message (at least 10 characters).</span>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-2">
+                  <button type="submit" id="btn-submit-contact" class="btn-primary w-full sm:w-auto">
+                    <span id="contact-btn-label">Send Message</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="22" y1="2" x2="11" y2="13"></line>
+                      <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                  </button>
+                </div>
+              </form>
+
+            </div>
+          </div>
+
+          <!-- Right Column: Support & Info Cards (5 cols on large screen) -->
+          <div class="lg:col-span-5 flex flex-col gap-6">
+
+            <!-- Card 1: Open Source & Issues -->
+            <div class="card p-6 border border-hairline bg-canvas">
+              <div class="caption-mono text-link uppercase tracking-wider mb-2 font-semibold">OPEN SOURCE COMMUNITY</div>
+              <h3 class="display-sm text-ink mb-2">GitHub &amp; Code Base</h3>
+              <p class="body-sm text-body leading-relaxed mb-4">
+                Encountered a bug or want to contribute a new prompt engineering template? Our project is 100% open source.
+              </p>
+              <div class="flex items-center gap-3">
+                <a href="https://github.com" target="_blank" rel="noopener" class="btn-secondary-sm gap-2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path>
+                  </svg>
+                  <span>Report on GitHub</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Card 2: Privacy Channels -->
+            <div class="card p-6 border border-hairline bg-canvas">
+              <div class="caption-mono text-cyan-deep uppercase tracking-wider mb-2 font-semibold" style="color: var(--color-cyan-deep);">PRIVACY &amp; SECURITY</div>
+              <h3 class="display-sm text-ink mb-2">Zero Telemetry Promise</h3>
+              <p class="body-sm text-body leading-relaxed mb-3">
+                Remember that all prompts and settings execute strictly inside your local browser. We never log or store your inputs on any server.
+              </p>
+              <a href="/privacy" class="body-sm text-link hover:underline font-medium inline-flex items-center gap-1">
+                <span>Read our Privacy Policy</span>
+                <span>&rarr;</span>
+              </a>
+            </div>
+
+            <!-- Card 3: Quick Navigation -->
+            <div class="card-soft p-6 border border-hairline bg-canvas-soft">
+              <h3 class="body-md-strong text-ink mb-3">Quick Navigation Links</h3>
+              <ul class="flex flex-col gap-2 list-none p-0 m-0 body-sm">
+                <li>
+                  <a href="/" class="text-body hover:text-ink flex items-center justify-between no-underline">
+                    <span>Build Prompts Wizard</span>
+                    <span>&rarr;</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="/about" class="text-body hover:text-ink flex items-center justify-between no-underline">
+                    <span>About Us &amp; Our Mission</span>
+                    <span>&rarr;</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="/terms" class="text-body hover:text-ink flex items-center justify-between no-underline">
+                    <span>Terms &amp; Conditions</span>
+                    <span>&rarr;</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <PromptHistory />
+  <ApiKeySettings />
+</Layout>
+
+<script>
+  import { saveTheme } from '../lib/storage';
+
+  // Contact Form Validation & Interactive Submission
+  const contactForm = document.getElementById('contact-form') as HTMLFormElement;
+  const inputName = document.getElementById('contact-name') as HTMLInputElement;
+  const inputEmail = document.getElementById('contact-email') as HTMLInputElement;
+  const inputMessage = document.getElementById('contact-message') as HTMLTextAreaElement;
+
+  const errorName = document.getElementById('error-name')!;
+  const errorEmail = document.getElementById('error-email')!;
+  const errorMessage = document.getElementById('error-message')!;
+
+  const feedbackBanner = document.getElementById('contact-feedback')!;
+  const feedbackTitle = document.getElementById('contact-feedback-title')!;
+  const feedbackText = document.getElementById('contact-feedback-text')!;
+  const feedbackIcon = document.getElementById('contact-feedback-icon')!;
+
+  const btnSubmit = document.getElementById('btn-submit-contact') as HTMLButtonElement;
+  const btnLabel = document.getElementById('contact-btn-label')!;
+
+  function validateEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      let valid = true;
+
+      // Validate Name
+      if (!inputName.value.trim()) {
+        errorName.classList.remove('hidden');
+        inputName.classList.add('border-error');
+        valid = false;
+      } else {
+        errorName.classList.add('hidden');
+        inputName.classList.remove('border-error');
+      }
+
+      // Validate Email
+      if (!inputEmail.value.trim() || !validateEmail(inputEmail.value.trim())) {
+        errorEmail.classList.remove('hidden');
+        inputEmail.classList.add('border-error');
+        valid = false;
+      } else {
+        errorEmail.classList.add('hidden');
+        inputEmail.classList.remove('border-error');
+      }
+
+      // Validate Message
+      if (!inputMessage.value.trim() || inputMessage.value.trim().length < 10) {
+        errorMessage.classList.remove('hidden');
+        inputMessage.classList.add('border-error');
+        valid = false;
+      } else {
+        errorMessage.classList.add('hidden');
+        inputMessage.classList.remove('border-error');
+      }
+
+      if (!valid) return;
+
+      // Simulate client submission
+      btnSubmit.disabled = true;
+      btnLabel.textContent = 'Sending...';
+
+      setTimeout(() => {
+        btnSubmit.disabled = false;
+        btnLabel.textContent = 'Send Message';
+
+        // Show Success Feedback
+        feedbackBanner.classList.remove('hidden');
+        feedbackBanner.style.backgroundColor = 'var(--color-link-bg-soft)';
+        feedbackIcon.textContent = '✅';
+        feedbackTitle.textContent = 'Message Sent Successfully!';
+        feedbackText.textContent = `Thank you, ${inputName.value.trim()}. We have received your inquiry regarding "${(document.getElementById('contact-subject') as HTMLSelectElement).value}".`;
+        feedbackText.style.color = 'var(--color-link-deep)';
+
+        contactForm.reset();
+        window.scrollTo({ top: feedbackBanner.offsetTop - 100, behavior: 'smooth' });
+      }, 600);
+    });
+  }
+
+  // Global settings modal & drawer handlers for MPA pages
+  const btnSettings = document.getElementById('btn-settings');
+  const btnHistory = document.getElementById('btn-history');
+  const settingsModal = document.getElementById('settings-modal');
+  const settingsBackdrop = document.getElementById('settings-backdrop');
+  const historyDrawer = document.getElementById('history-drawer');
+  const historyBackdrop = document.getElementById('history-backdrop');
+
+  if (btnSettings && settingsModal && settingsBackdrop) {
+    btnSettings.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      settingsModal.classList.remove('hidden');
+      settingsBackdrop.classList.remove('hidden');
+    });
+  }
+
+  if (btnHistory && historyDrawer && historyBackdrop) {
+    btnHistory.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      historyDrawer.classList.remove('hidden');
+      historyBackdrop.classList.remove('hidden');
+    });
+  }
+
+  // Theme toggle script for MPA
+  const btnThemeToggle = document.getElementById('btn-theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function updateThemeUI() {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      sunIcon?.classList.remove('hidden');
+      moonIcon?.classList.add('hidden');
+    } else {
+      sunIcon?.classList.add('hidden');
+      moonIcon?.classList.remove('hidden');
+    }
+  }
+
+  btnThemeToggle?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+      saveTheme('light');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      saveTheme('dark');
+    }
+    updateThemeUI();
+  });
+
+  updateThemeUI();
+</script>

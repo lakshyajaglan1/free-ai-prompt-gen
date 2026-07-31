@@ -1,21 +1,57 @@
 ---
-// Navbar — sticky top bar with brand + settings gear
+// Navbar — sticky top bar with brand, page navigation links, theme toggle & settings gear
+const pathname = Astro.url ? Astro.url.pathname : '/';
+
+const navLinks = [
+  { name: 'Home', href: '/' },
+  { name: 'About', href: '/about' },
+  { name: 'Privacy Policy', href: '/privacy' },
+  { name: 'Terms', href: '/terms' },
+  { name: 'Contact', href: '/contact' },
+];
+
+function isActive(href: string) {
+  if (href === '/') {
+    return pathname === '/' || pathname === '';
+  }
+  return pathname.startsWith(href);
+}
 ---
 
-<nav id="navbar" class="sticky top-0 z-50 bg-canvas border-b border-hairline" style="height: 64px;">
+<header id="navbar" class="sticky top-0 z-50 bg-canvas border-b border-hairline transition-colors duration-200" style="height: 64px;">
   <div class="w-full flex items-center justify-between h-full" style="padding: 0 clamp(1rem, 5vw, 4rem);">
-    <!-- Brand -->
-    <a href="/" class="flex items-center gap-2 no-underline group" id="nav-brand">
-      <div class="w-8 h-8 rounded-md flex items-center justify-center bg-ink border border-hairline">
+    <!-- Left: Brand -->
+    <a href="/" class="flex items-center gap-2.5 no-underline group shrink-0" id="nav-brand" aria-label="AI Prompt Generator Home">
+      <div class="w-8 h-8 rounded-md flex items-center justify-center bg-ink border border-hairline transition-transform duration-150 group-hover:scale-105">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-on-primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
         </svg>
       </div>
-      <span class="body-md-strong text-ink">Free AI Prompt Gen</span>
+      <span class="body-md-strong text-ink tracking-tight">Free AI Prompt Gen</span>
     </a>
 
-    <!-- Right cluster -->
-    <div class="flex items-center gap-3 sm:gap-4">
+    <!-- Center: Desktop Navigation Links (Visible on home & all pages) -->
+    <nav class="hidden md:flex items-center gap-1 bg-canvas-soft p-1 rounded-full border border-hairline" id="desktop-nav-links" aria-label="Main Navigation">
+      {navLinks.map((link) => {
+        const active = isActive(link.href);
+        return (
+          <a
+            href={link.href}
+            class={`body-sm px-3.5 py-1 rounded-full transition-all duration-150 ${
+              active
+                ? 'bg-ink text-on-primary font-medium shadow-sm'
+                : 'text-body hover:text-ink hover:bg-canvas'
+            }`}
+            aria-current={active ? 'page' : undefined}
+          >
+            {link.name}
+          </a>
+        );
+      })}
+    </nav>
+
+    <!-- Right Cluster: Actions -->
+    <div class="flex items-center gap-2 sm:gap-3">
       <!-- Dark mode toggle button -->
       <button
         id="btn-theme-toggle"
@@ -70,6 +106,67 @@
         </svg>
         <span class="hidden sm:inline body-sm-strong whitespace-nowrap">Settings</span>
       </button>
+
+      <!-- Mobile menu hamburger button -->
+      <button
+        id="btn-mobile-menu"
+        class="md:hidden btn-icon shrink-0"
+        title="Toggle mobile menu"
+        aria-label="Toggle mobile menu"
+        aria-expanded="false"
+      >
+        <svg id="icon-menu-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+        <svg id="icon-menu-close" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
     </div>
   </div>
-</nav>
+
+  <!-- Mobile Dropdown Navigation Menu -->
+  <div id="mobile-menu" class="hidden md:hidden absolute top-[64px] left-0 right-0 bg-canvas border-b border-hairline shadow-level-4 p-4 z-50">
+    <nav class="flex flex-col gap-1.5" aria-label="Mobile Navigation">
+      {navLinks.map((link) => {
+        const active = isActive(link.href);
+        return (
+          <a
+            href={link.href}
+            class={`body-md px-4 py-2.5 rounded-lg transition-colors flex items-center justify-between ${
+              active
+                ? 'bg-ink text-on-primary font-medium'
+                : 'text-body hover:text-ink hover:bg-canvas-soft'
+            }`}
+          >
+            <span>{link.name}</span>
+            {active && (
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan inline-block"></span>
+            )}
+          </a>
+        );
+      })}
+    </nav>
+  </div>
+</header>
+
+<script>
+  // Mobile Menu Toggle Script
+  const btnMobileMenu = document.getElementById('btn-mobile-menu');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const iconMenuOpen = document.getElementById('icon-menu-open');
+  const iconMenuClose = document.getElementById('icon-menu-close');
+
+  if (btnMobileMenu && mobileMenu) {
+    btnMobileMenu.addEventListener('click', () => {
+      const isExpanded = btnMobileMenu.getAttribute('aria-expanded') === 'true';
+      btnMobileMenu.setAttribute('aria-expanded', (!isExpanded).toString());
+      mobileMenu.classList.toggle('hidden');
+      iconMenuOpen?.classList.toggle('hidden');
+      iconMenuClose?.classList.toggle('hidden');
+    });
+  }
+</script>

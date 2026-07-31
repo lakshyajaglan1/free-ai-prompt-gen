@@ -1,17 +1,127 @@
 ---
-// Footer — minimal footer with clear-all-data and credits
+// Footer — structured multi-column navigation footer with brand overview, pages, frameworks & legal links
 ---
 
-<footer class="border-t border-hairline mt-auto" style="background-color: var(--color-canvas); padding: var(--sp-xl) clamp(1rem, 5vw, 4rem);">
-  <div class="w-full flex flex-col items-center gap-4 text-center">
-    <div class="flex flex-wrap items-center justify-center gap-4">
-      <span class="caption-mono text-mute uppercase tracking-wider">Free AI Prompt Gen</span>
-      <span class="text-hairline">·</span>
-      <span class="caption text-mute">Free &amp; open-source prompt engineering tool</span>
+<footer class="border-t border-hairline bg-canvas mt-auto transition-colors duration-200" style="padding: var(--sp-4xl) clamp(1rem, 5vw, 4rem) var(--sp-2xl);">
+  <div class="w-full mx-auto" style="max-width: 1200px;">
+    <!-- Top Grid: 4 Columns -->
+    <div class="grid gap-10 mb-12" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+      
+      <!-- Col 1: Brand & Mission -->
+      <div class="flex flex-col gap-3">
+        <a href="/" class="flex items-center gap-2 no-underline group" aria-label="AI Prompt Generator">
+          <div class="w-7 h-7 rounded flex items-center justify-center bg-ink border border-hairline">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-on-primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <span class="body-md-strong text-ink">AI Prompt Gen</span>
+        </a>
+        <p class="body-sm text-body leading-relaxed">
+          The free, privacy-first AI prompt generator and engineering wizard. Craft optimal prompts for ChatGPT, Claude, Gemini &amp; Midjourney locally in your browser.
+        </p>
+        <div class="flex items-center gap-2 mt-1">
+          <span class="badge" style="font-size: 11px; padding: 2px 8px;">100% Client-Side</span>
+          <span class="badge" style="font-size: 11px; padding: 2px 8px;">Zero Telemetry</span>
+        </div>
+      </div>
+
+      <!-- Col 2: Navigation & Legal Pages -->
+      <div class="flex flex-col gap-3">
+        <div class="caption-mono text-mute uppercase tracking-wider font-semibold">PAGES &amp; LEGAL</div>
+        <ul class="flex flex-col gap-2 list-none p-0 m-0 body-sm">
+          <li>
+            <a href="/" class="text-body hover:text-ink no-underline transition-colors">Home</a>
+          </li>
+          <li>
+            <a href="/about" class="text-body hover:text-ink no-underline transition-colors">About Us</a>
+          </li>
+          <li>
+            <a href="/privacy" class="text-body hover:text-ink no-underline transition-colors">Privacy Policy</a>
+          </li>
+          <li>
+            <a href="/terms" class="text-body hover:text-ink no-underline transition-colors">Terms &amp; Conditions</a>
+          </li>
+          <li>
+            <a href="/contact" class="text-body hover:text-ink no-underline transition-colors">Contact Us</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Prompt Frameworks -->
+      <div class="flex flex-col gap-3">
+        <div class="caption-mono text-mute uppercase tracking-wider font-semibold">FRAMEWORKS &amp; GUIDES</div>
+        <ul class="flex flex-col gap-2 list-none p-0 m-0 body-sm">
+          <li>
+            <a href="/#wizard" class="text-body hover:text-ink no-underline transition-colors">RTF (Role-Task-Format)</a>
+          </li>
+          <li>
+            <a href="/#wizard" class="text-body hover:text-ink no-underline transition-colors">CO-STAR Framework</a>
+          </li>
+          <li>
+            <a href="/#wizard" class="text-body hover:text-ink no-underline transition-colors">TAG &amp; APE Frameworks</a>
+          </li>
+          <li>
+            <a href="/#before-after-section" class="text-body hover:text-ink no-underline transition-colors">Before &amp; After Examples</a>
+          </li>
+          <li>
+            <a href="/#faq-section" class="text-body hover:text-ink no-underline transition-colors">Prompt Engineering FAQ</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Supported Models & Technology -->
+      <div class="flex flex-col gap-3">
+        <div class="caption-mono text-mute uppercase tracking-wider font-semibold">AI MODEL TARGETS</div>
+        <ul class="flex flex-col gap-2 list-none p-0 m-0 body-sm">
+          <li>
+            <a href="/#wizard" class="text-body hover:text-ink no-underline transition-colors">ChatGPT (Markdown Headers)</a>
+          </li>
+          <li>
+            <a href="/#wizard" class="text-body hover:text-ink no-underline transition-colors">Claude (XML Structured Tags)</a>
+          </li>
+          <li>
+            <a href="/#wizard" class="text-body hover:text-ink no-underline transition-colors">Google Gemini (Bold Labels)</a>
+          </li>
+          <li>
+            <a href="/#wizard" class="text-body hover:text-ink no-underline transition-colors">Midjourney &amp; Video AI</a>
+          </li>
+          <li>
+            <a href="/#wizard" class="text-body hover:text-ink no-underline transition-colors">Local Ollama &amp; LM Studio</a>
+          </li>
+        </ul>
+      </div>
+
     </div>
-    <p class="caption text-mute">
-      Built with <a href="https://astro.build" class="text-link hover:underline" target="_blank" rel="noopener">Astro</a>.
-      No data is sent to any server. Everything stays in your browser.
-    </p>
+
+    <!-- Bottom Row: Copyright, Tech stack, Back to Top -->
+    <div class="pt-8 border-t border-hairline flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+      <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 caption text-mute">
+        <span>&copy; {new Date().getFullYear()} AI Prompt Generator. Open source under MIT.</span>
+        <span class="hidden sm:inline text-hairline">&middot;</span>
+        <span>Built with <a href="https://astro.build" class="text-link hover:underline" target="_blank" rel="noopener">Astro</a></span>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <button
+          id="btn-back-to-top"
+          class="caption text-mute hover:text-ink flex items-center gap-1 transition-colors cursor-pointer"
+          title="Scroll to top"
+        >
+          <span>Back to top</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="19" x2="12" y2="5"></line>
+            <polyline points="5 12 12 5 19 12"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
 </footer>
+
+<script>
+  // Back to Top button
+  document.getElementById('btn-back-to-top')?.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>

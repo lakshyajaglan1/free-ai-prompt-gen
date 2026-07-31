@@ -1,0 +1,235 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import PromptHistory from '../components/PromptHistory.astro';
+import ApiKeySettings from '../components/ApiKeySettings.astro';
+---
+
+<Layout
+  title="About Us | Free AI Prompt Generator Tool"
+  description="Learn about the mission, engineering philosophy, and privacy-first architecture behind the Free AI Prompt Generator. Discover how we empower developers, marketers, and creators with structured prompt frameworks."
+  canonicalUrl="https://aipromptgenerator.app/about"
+>
+  <!-- Structured Data JSON-LD for AboutPage -->
+  <script type="application/ld+json" is:inline>
+    {
+      "@context": "https://schema.org",
+      "@type": "AboutPage",
+      "name": "About AI Prompt Generator",
+      "url": "https://aipromptgenerator.app/about",
+      "description": "Learn about the mission, engineering philosophy, and privacy-first architecture behind the Free AI Prompt Generator.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "AI Prompt Generator",
+        "url": "https://aipromptgenerator.app/"
+      }
+    }
+  </script>
+
+  <Navbar />
+
+  <main class="flex-1 w-full">
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden border-b border-hairline bg-canvas" style="padding: var(--sp-4xl) clamp(1rem, 5vw, 4rem);">
+      <div class="absolute inset-0 mesh-gradient opacity-60 pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative mx-auto text-center" style="max-width: 800px;">
+        <div class="caption-mono text-link uppercase tracking-wider mb-3 font-semibold">OUR MISSION &amp; PHILOSOPHY</div>
+        <h1 class="display-xl text-ink mb-6" style="line-height: 1.15;">
+          Democratizing <span class="gradient-text">AI Prompt Engineering</span> for Everyone.
+        </h1>
+        <p class="body-lg text-body mx-auto leading-relaxed" style="max-width: 680px;">
+          We built the <strong>Free AI Prompt Generator</strong> because we believe mastering artificial intelligence shouldn't require paying monthly subscriptions for opaque prompt templates or relying on trial-and-error guesswork.
+        </p>
+      </div>
+    </section>
+
+    <!-- Content Section: Our 4 Pillars -->
+    <section class="w-full" style="padding: var(--sp-4xl) clamp(1rem, 5vw, 4rem);">
+      <div class="mx-auto" style="max-width: 1100px;">
+        <div class="text-center mb-12">
+          <div class="caption-mono text-mute uppercase tracking-wider mb-2">FOUNDATIONAL PRINCIPLES</div>
+          <h2 class="display-lg text-ink mb-4">Built on 4 Core Pillars</h2>
+          <p class="body-md text-body mx-auto" style="max-width: 600px;">
+            Our web application is designed from the ground up to empower users with understanding, control, and absolute privacy.
+          </p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2 mb-16">
+          <!-- Pillar 1 -->
+          <div class="card p-6 border border-hairline bg-canvas flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-lg bg-canvas-soft border border-hairline flex items-center justify-center text-link font-mono font-bold mb-4">
+                01
+              </div>
+              <h3 class="display-sm text-ink mb-3">Rule-Based Transparency</h3>
+              <p class="body-sm text-body leading-relaxed mb-4">
+                Unlike opaque AI wrappers that obscure how prompts are constructed, our tool uses a deterministic rule-based wizard. We show you exactly how <strong>Role</strong>, <strong>Task</strong>, <strong>Context</strong>, <strong>Constraints</strong>, and <strong>Format</strong> combine to create high-performing prompts.
+              </p>
+            </div>
+            <div class="caption-mono text-mute">Clear input &rarr; Deterministic output</div>
+          </div>
+
+          <!-- Pillar 2 -->
+          <div class="card p-6 border border-hairline bg-canvas flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-lg bg-canvas-soft border border-hairline flex items-center justify-center text-cyan-deep font-mono font-bold mb-4" style="color: var(--color-cyan-deep);">
+                02
+              </div>
+              <h3 class="display-sm text-ink mb-3">100% Privacy &amp; Local Storage</h3>
+              <p class="body-sm text-body leading-relaxed mb-4">
+                Your prompts, ideas, and API keys belong to you. All prompt assembly occurs 100% locally in your web browser. We run no telemetry, no tracking servers, and no database logs. When you save prompts or enter API keys, they stay securely in your browser's <code class="font-mono text-xs">localStorage</code>.
+              </p>
+            </div>
+            <div class="caption-mono text-mute">Zero server logs &rarr; Absolute privacy</div>
+          </div>
+
+          <!-- Pillar 3 -->
+          <div class="card p-6 border border-hairline bg-canvas flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-lg bg-canvas-soft border border-hairline flex items-center justify-center text-violet font-mono font-bold mb-4" style="color: var(--color-violet-deep);">
+                03
+              </div>
+              <h3 class="display-sm text-ink mb-3">Model-Native Formatting</h3>
+              <p class="body-sm text-body leading-relaxed mb-4">
+                Different AI models respond best to different syntax structures. We format outputs tailored specifically for each model target: Markdown headers for <strong>ChatGPT</strong>, XML tags for <strong>Claude</strong>, bold parameter blocks for <strong>Gemini</strong>, and weighted style parameters for <strong>Midjourney</strong>.
+              </p>
+            </div>
+            <div class="caption-mono text-mute">Tailored syntax &rarr; Zero model confusion</div>
+          </div>
+
+          <!-- Pillar 4 -->
+          <div class="card p-6 border border-hairline bg-canvas flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-lg bg-canvas-soft border border-hairline flex items-center justify-center text-warning-deep font-mono font-bold mb-4" style="color: var(--color-warning-deep);">
+                04
+              </div>
+              <h3 class="display-sm text-ink mb-3">Free &amp; Open Source Forever</h3>
+              <p class="body-sm text-body leading-relaxed mb-4">
+                Prompt engineering is an essential skill for the modern digital era. Our core tool is 100% free with no account creation, credit limits, or hidden paywalls. Anyone from student researchers to senior engineers can use it daily without restriction.
+              </p>
+            </div>
+            <div class="caption-mono text-mute">No accounts &rarr; Immediate access</div>
+          </div>
+        </div>
+
+        <!-- The Frameworks We Teach -->
+        <div class="card-soft p-8 border border-hairline bg-canvas-soft mb-16">
+          <div class="text-center mb-8">
+            <div class="caption-mono text-link uppercase tracking-wider mb-2">PROVEN METHODOLOGY</div>
+            <h2 class="display-md text-ink mb-3">Supported Prompt Frameworks</h2>
+            <p class="body-sm text-body mx-auto" style="max-width: 600px;">
+              Our tool implements standard frameworks developed by leading AI researchers and prompt engineering practitioners.
+            </p>
+          </div>
+
+          <div class="grid gap-6 md:grid-cols-3">
+            <div class="card p-5 border border-hairline bg-canvas">
+              <h4 class="body-md-strong text-ink mb-2">RTF (Role - Task - Format)</h4>
+              <p class="body-sm text-body leading-relaxed">
+                The standard baseline framework for rapid prompt creation. Ideal for general writing, code snippets, summaries, and quick Q&amp;A sessions where direct structure is required.
+              </p>
+            </div>
+
+            <div class="card p-5 border border-hairline bg-canvas">
+              <h4 class="body-md-strong text-ink mb-2">CO-STAR (Context - Objective - Style - Tone - Audience - Response)</h4>
+              <p class="body-sm text-body leading-relaxed">
+                The premiere framework for complex marketing, copywriting, strategic planning, and business communication. Ensures nuance, tone alignment, and target audience targeting.
+              </p>
+            </div>
+
+            <div class="card p-5 border border-hairline bg-canvas">
+              <h4 class="body-md-strong text-ink mb-2">TAG &amp; APE Frameworks</h4>
+              <p class="body-sm text-body leading-relaxed">
+                Task-Action-Goal and Action-Purpose-Expectation frameworks built for technical documentation, step-by-step problem solving, and analytical data extraction.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tech Stack & Open Source Callout -->
+        <div class="card p-8 border border-hairline bg-canvas text-center">
+          <h2 class="display-sm text-ink mb-3">Built with Modern Web Technologies</h2>
+          <p class="body-sm text-body mx-auto mb-6" style="max-width: 650px;">
+            This Multi-Page Application is crafted with <strong>Astro framework</strong> for lightning-fast HTML delivery, zero JS runtime overhead where unnecessary, and styled with a clean Vercel-inspired design system.
+          </p>
+          <div class="flex items-center justify-center gap-4 flex-wrap">
+            <a href="/" class="btn-primary">
+              Try Prompt Generator
+            </a>
+            <a href="/contact" class="btn-secondary">
+              Get in Touch
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <PromptHistory />
+  <ApiKeySettings />
+</Layout>
+
+<script>
+  import { saveTheme } from '../lib/storage';
+
+  // Global settings modal & drawer handlers for MPA pages
+  const btnSettings = document.getElementById('btn-settings');
+  const btnHistory = document.getElementById('btn-history');
+  const settingsModal = document.getElementById('settings-modal');
+  const settingsBackdrop = document.getElementById('settings-backdrop');
+  const historyDrawer = document.getElementById('history-drawer');
+  const historyBackdrop = document.getElementById('history-backdrop');
+
+  if (btnSettings && settingsModal && settingsBackdrop) {
+    btnSettings.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      settingsModal.classList.remove('hidden');
+      settingsBackdrop.classList.remove('hidden');
+    });
+  }
+
+  if (btnHistory && historyDrawer && historyBackdrop) {
+    btnHistory.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      historyDrawer.classList.remove('hidden');
+      historyBackdrop.classList.remove('hidden');
+    });
+  }
+
+  // Theme toggle script for MPA
+  const btnThemeToggle = document.getElementById('btn-theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function updateThemeUI() {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      sunIcon?.classList.remove('hidden');
+      moonIcon?.classList.add('hidden');
+    } else {
+      sunIcon?.classList.add('hidden');
+      moonIcon?.classList.remove('hidden');
+    }
+  }
+
+  btnThemeToggle?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+      saveTheme('light');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      saveTheme('dark');
+    }
+    updateThemeUI();
+  });
+
+  updateThemeUI();
+</script>
