@@ -1,23 +1,21 @@
 ---
-// ApiKeySettings — Collapsed-by-default settings modal for Gemini API key (BYOK)
+// ApiKeySettings — Multi-Provider AI Configuration Modal
 ---
 
 <!-- Overlay backdrop -->
-<div id="settings-backdrop" class="fixed inset-0 z-40 hidden" style="background: rgba(0,0,0,0.3); backdrop-filter: blur(2px);"></div>
+<div id="settings-backdrop" class="fixed inset-0 z-40 hidden" style="background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);"></div>
 
 <!-- Modal -->
 <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden" style="padding: var(--sp-lg);">
-  <div class="bg-canvas rounded-lg w-full" style="max-width: 480px; box-shadow: var(--shadow-level-5);">
+  <div class="bg-canvas rounded-lg w-full max-h-[90vh] overflow-y-auto" style="max-width: 520px; box-shadow: var(--shadow-level-5); border: 1px solid var(--color-hairline);">
     <!-- Header -->
-    <div class="flex items-center justify-between border-b border-hairline" style="padding: var(--sp-md) var(--sp-lg);">
+    <div class="flex items-center justify-between border-b border-hairline sticky top-0 bg-canvas z-10" style="padding: var(--sp-md) var(--sp-lg);">
       <div class="flex items-center gap-2">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="7.5" cy="15.5" r="5.5"></circle>
-          <path d="m21 2-9.6 9.6"></path>
-          <path d="m15.5 7.5 3 3"></path>
-          <path d="m18.5 4.5 3 3"></path>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
-        <span class="body-sm-strong text-ink">Settings</span>
+        <span class="body-sm-strong text-ink">AI Provider Settings</span>
       </div>
       <button id="btn-close-settings" class="btn-icon" aria-label="Close settings">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -28,27 +26,80 @@
     </div>
 
     <!-- Body -->
-    <div style="padding: var(--sp-lg);">
-      <h3 class="body-sm-strong text-ink mb-1">Gemini API Key</h3>
-      <p class="caption text-body mb-3">
-        Optional — powers the "Refine with AI" feature.
-        <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" class="text-link hover:underline">Get a free key from Google AI Studio ↗</a>
-        (no credit card required).
-      </p>
+    <div style="padding: var(--sp-lg);" class="flex flex-col gap-4">
+      
+      <!-- Provider Selector -->
+      <div>
+        <label for="select-ai-provider" class="body-sm-strong text-ink block mb-1">AI Provider</label>
+        <select id="select-ai-provider" class="form-input w-full cursor-pointer bg-canvas text-ink">
+          <option value="gemini">Google Gemini (Free tier available)</option>
+          <option value="openai">OpenAI (GPT-4o, GPT-4, GPT-3.5)</option>
+          <option value="claude">Anthropic Claude (Claude 3.5 Sonnet, Opus)</option>
+          <option value="cohere">Cohere (Command R+)</option>
+          <option value="local">Local LLM (Ollama, LM Studio, vLLM)</option>
+        </select>
+      </div>
 
-      <div class="flex gap-2 mb-3">
-        <div class="relative flex-1">
+      <!-- Provider Info Card -->
+      <div id="provider-info-card" class="card-soft" style="padding: var(--sp-sm) var(--sp-md); border: 1px solid var(--color-hairline); border-radius: var(--radius-md);">
+        <div class="flex items-center justify-between mb-1">
+          <div class="flex items-center gap-1.5">
+            <span id="provider-card-icon" class="text-base">✨</span>
+            <span id="provider-card-name" class="body-sm-strong text-ink">Google Gemini</span>
+            <span id="provider-card-badge" class="badge" style="font-size: 10px; padding: 1px 6px;">Free Tier</span>
+          </div>
+          <a id="provider-card-docs" href="https://ai.google.dev/docs" target="_blank" rel="noopener" class="caption text-link hover:underline">
+            Docs ↗
+          </a>
+        </div>
+        <p id="provider-card-desc" class="caption text-body mb-1" style="line-height: 1.4;">
+          Gemini 2.0 Flash & 1.5 Pro. High speed with generous free tier.
+        </p>
+        <div id="provider-card-status" class="caption text-mute mt-1 flex items-center gap-1.5">
+          <span id="provider-status-dot" class="w-2 h-2 rounded-full bg-hairline-strong inline-block"></span>
+          <span id="provider-status-text">Not Configured</span>
+        </div>
+      </div>
+
+      <!-- Model Name Input -->
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <label for="input-ai-model" class="body-sm-strong text-ink">Model Name</label>
+          <span id="model-help-hint" class="caption text-mute">Default for provider</span>
+        </div>
+        <input
+          id="input-ai-model"
+          type="text"
+          class="form-input w-full"
+          placeholder="e.g. gemini-2.0-flash"
+          autocomplete="off"
+        />
+        <!-- Quick model selection pills -->
+        <div id="model-pills-container" class="flex flex-wrap gap-1.5 mt-2">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- API Key Input -->
+      <div id="key-input-container">
+        <div class="flex items-center justify-between mb-1">
+          <label for="input-api-key" class="body-sm-strong text-ink">API Key</label>
+          <a id="key-get-link" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" class="caption text-link hover:underline">
+            Get API key ↗
+          </a>
+        </div>
+        <div class="relative">
           <input
             id="input-api-key"
             type="password"
-            class="form-input w-full"
-            placeholder="Paste your Gemini API key here…"
+            class="form-input w-full pr-9"
+            placeholder="AIzaSyxxxxxxxxxxxxxxxxxxxxxxx"
             autocomplete="off"
             spellcheck="false"
           />
           <button
             id="btn-toggle-key-visibility"
-            class="absolute right-2 top-1/2 -translate-y-1/2 text-mute hover:text-ink transition-colors"
+            class="absolute right-2 top-1/2 -translate-y-1/2 text-mute hover:text-ink transition-colors cursor-pointer"
             aria-label="Toggle key visibility"
             type="button"
           >
@@ -63,35 +114,55 @@
             </svg>
           </button>
         </div>
-        <button id="btn-save-key" class="btn-primary-sm">Save</button>
       </div>
 
-      <!-- Key status -->
-      <div id="key-status" class="mb-3 hidden">
-        <div class="flex items-center gap-2 caption">
-          <span id="key-status-icon"></span>
-          <span id="key-status-text"></span>
-        </div>
-      </div>
-
-      <!-- Clear button -->
-      <button id="btn-clear-key" class="caption text-error hover:underline cursor-pointer hidden">Clear my API key</button>
-
-      <!-- Disclaimer -->
-      <div class="mt-4 pt-3 border-t border-hairline">
-        <p class="caption text-mute" style="line-height: 18px;">
-          🔒 Your key stays in your browser only and is sent directly to Google's API — never to our servers. Usage counts against your own Google account's free daily limit.
+      <!-- Custom Endpoint Input (Visible for Local LLMs) -->
+      <div id="endpoint-input-container" class="hidden">
+        <label for="input-custom-endpoint" class="body-sm-strong text-ink block mb-1">Custom Endpoint URL</label>
+        <input
+          id="input-custom-endpoint"
+          type="url"
+          class="form-input w-full"
+          placeholder="http://localhost:11434/api/generate"
+          autocomplete="off"
+        />
+        <p class="caption text-mute mt-1">
+          Ollama: <code class="caption-mono">http://localhost:11434/api/generate</code> | OpenAI-compatible: <code class="caption-mono">http://localhost:1234/v1/chat/completions</code>
         </p>
       </div>
 
+      <!-- Action Buttons Row: Save & Test Connection -->
+      <div class="flex items-center gap-2 pt-1">
+        <button id="btn-save-key" class="btn-primary-sm flex-1">Save Settings</button>
+        <button id="btn-test-connection" type="button" class="btn-secondary-sm flex-1 flex items-center justify-center gap-1.5 cursor-pointer">
+          <div id="test-spinner" class="spinner hidden" style="width: 14px; height: 14px;"></div>
+          <span id="test-btn-label">Test Connection</span>
+        </button>
+      </div>
+
+      <!-- Status / Feedback Box -->
+      <div id="settings-feedback" class="hidden rounded-md p-2.5 caption">
+        <div class="flex items-start gap-2">
+          <span id="settings-feedback-icon" style="flex-shrink: 0;"></span>
+          <span id="settings-feedback-text"></span>
+        </div>
+      </div>
+
+      <!-- Clear provider config button -->
+      <div class="flex justify-between items-center pt-2 border-t border-hairline">
+        <button id="btn-clear-key" type="button" class="caption text-error hover:underline cursor-pointer">Clear AI Provider Config</button>
+        <span class="caption text-mute">Stored in browser localStorage</span>
+      </div>
+
       <!-- Data Management -->
-      <div class="mt-4 pt-4 border-t border-hairline">
+      <div class="pt-3 border-t border-hairline">
         <h3 class="body-sm-strong text-ink mb-1">Data Management</h3>
-        <p class="caption text-mute mb-3">
+        <p class="caption text-mute mb-2">
           Wipe all saved prompt templates, history, and stored API key configuration from your browser.
         </p>
         <button
           id="btn-clear-all-data"
+          type="button"
           class="btn-danger-sm"
           title="Clear all saved prompts and API key from this browser"
         >

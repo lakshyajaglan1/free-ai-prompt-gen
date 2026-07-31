@@ -126,8 +126,28 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
   import { getTemplatesForCategory, PROMPT_TEMPLATES } from '../lib/promptTemplates';
   import type { PromptTemplate } from '../lib/types';
   import { BEFORE_AFTER_EXAMPLES } from '../lib/beforeAfterExamples';
-  import { getSavedPrompts, savePrompt, deletePrompt, clearPromptHistory, getApiKey, saveApiKey, clearApiKey, clearAllData, getTheme, saveTheme } from '../lib/storage';
-  import { refinePrompt, RefineError } from '../lib/geminiRefine';
+  import {
+    getSavedPrompts,
+    savePrompt,
+    deletePrompt,
+    clearPromptHistory,
+    getApiKey,
+    saveApiKey,
+    clearApiKey,
+    clearAllData,
+    getTheme,
+    saveTheme,
+    getAIProvider,
+    saveAIProvider,
+    getAIModel,
+    saveAIModel,
+    getCustomEndpoint,
+    saveCustomEndpoint,
+    getProviderConfig,
+    saveProviderConfig,
+  } from '../lib/storage';
+  import { refinePrompt, ProviderError } from '../lib/geminiRefine';
+  import { PROVIDER_INFO, type ProviderType, refinePromptWithAI } from '../lib/aiProviders';
 
   // ── State ──
   let state = {
@@ -183,7 +203,7 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
 
   const MODEL_DESCRIPTIONS: Record<string, string> = {
     'Generic / Any': 'Clean labeled sections — works well with any AI model.',
-    'ChatGPT': 'Formatted with Markdown headers (## Role, ## Task) — ChatGPT\'s preferred structure.',
+    'ChatGPT': "Formatted with Markdown headers (## Role, ## Task) — ChatGPT's preferred structure.",
     'Claude': 'Structured with XML tags (<role>, <task>) — Claude responds exceptionally well to this format.',
     'Gemini': 'Bold-labeled sections (**Role:** ...) — Gemini handles this structured markdown cleanly.',
   };
@@ -340,10 +360,10 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
     savePrompt(saved);
 
     // Visual feedback
-    const origText = btnSave.querySelector('svg')?.nextSibling;
-    const textNode = Array.from(btnSave.childNodes).find(n => n.nodeType === Node.TEXT_NODE || (n as HTMLElement).tagName !== 'SVG');
     btnSave.style.background = 'var(--color-cyan-deep)';
-    setTimeout(() => { btnSave.style.background = ''; }, 1000);
+    setTimeout(() => {
+      btnSave.style.background = '';
+    }, 1000);
   });
 
   // ══════════════════════════════════════
@@ -393,11 +413,17 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
     document.getElementById('ba-strong-prompt')!.textContent = example.strong.prompt;
 
     document.getElementById('ba-weak-problems')!.innerHTML = example.weak.problems
-      .map((p) => `<li class="flex items-start gap-2"><span class="text-error" style="flex-shrink: 0;">✗</span><span class="caption text-body">${p}</span></li>`)
+      .map(
+        (p) =>
+          `<li class="flex items-start gap-2"><span class="text-error" style="flex-shrink: 0;">✗</span><span class="caption text-body">${p}</span></li>`
+      )
       .join('');
 
     document.getElementById('ba-strong-strengths')!.innerHTML = example.strong.strengths
-      .map((s) => `<li class="flex items-start gap-2"><span class="text-cyan-deep" style="flex-shrink: 0;">✓</span><span class="caption text-body">${s}</span></li>`)
+      .map(
+        (s) =>
+          `<li class="flex items-start gap-2"><span class="text-cyan-deep" style="flex-shrink: 0;">✓</span><span class="caption text-body">${s}</span></li>`
+      )
       .join('');
   }
 
@@ -597,24 +623,144 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
   });
 
   // ══════════════════════════════════════
-  // API KEY SETTINGS MODAL
+  // MULTI-PROVIDER AI SETTINGS MODAL
   // ══════════════════════════════════════
   const settingsModal = document.getElementById('settings-modal')!;
   const settingsBackdrop = document.getElementById('settings-backdrop')!;
-  const inputApiKey = document.getElementById('input-api-key')! as HTMLInputElement;
-  const keyStatus = document.getElementById('key-status')!;
-  const keyStatusIcon = document.getElementById('key-status-icon')!;
-  const keyStatusText = document.getElementById('key-status-text')!;
-  const btnClearKey = document.getElementById('btn-clear-key')! as HTMLButtonElement;
+  const selectProvider = document.getElementById('select-ai-provider') as HTMLSelectElement;
+  const inputModel = document.getElementById('input-ai-model') as HTMLInputElement;
+  const inputApiKey = document.getElementById('input-api-key') as HTMLInputElement;
+  const keyInputContainer = document.getElementById('key-input-container')!;
+  const keyGetLink = document.getElementById('key-get-link') as HTMLAnchorElement;
+  const inputEndpoint = document.getElementById('input-custom-endpoint') as HTMLInputElement;
+  const endpointContainer = document.getElementById('endpoint-input-container')!;
+
+  const providerCardIcon = document.getElementById('provider-card-icon')!;
+  const providerCardName = document.getElementById('provider-card-name')!;
+  const providerCardBadge = document.getElementById('provider-card-badge')!;
+  const providerCardDocs = document.getElementById('provider-card-docs') as HTMLAnchorElement;
+  const providerCardDesc = document.getElementById('provider-card-desc')!;
+  const providerStatusDot = document.getElementById('provider-status-dot')!;
+  const providerStatusText = document.getElementById('provider-status-text')!;
+  const modelPillsContainer = document.getElementById('model-pills-container')!;
+
+  const btnSaveConfig = document.getElementById('btn-save-key')!;
+  const btnTestConn = document.getElementById('btn-test-connection')!;
+  const testSpinner = document.getElementById('test-spinner')!;
+  const testBtnLabel = document.getElementById('test-btn-label')!;
+  const settingsFeedback = document.getElementById('settings-feedback')!;
+  const settingsFeedbackIcon = document.getElementById('settings-feedback-icon')!;
+  const settingsFeedbackText = document.getElementById('settings-feedback-text')!;
+  const btnClearKey = document.getElementById('btn-clear-key')!;
   const btnToggleVis = document.getElementById('btn-toggle-key-visibility')!;
   const iconEye = document.getElementById('icon-eye')!;
   const iconEyeOff = document.getElementById('icon-eye-off')!;
+
+  function updateProviderUI(pType: ProviderType) {
+    const info = PROVIDER_INFO[pType] || PROVIDER_INFO.gemini;
+
+    providerCardIcon.textContent = info.icon;
+    providerCardName.textContent = info.name;
+    providerCardDesc.textContent = info.description;
+    providerCardDocs.href = info.docs;
+
+    if (info.freeAvailable) {
+      providerCardBadge.classList.remove('hidden');
+      providerCardBadge.textContent = pType === 'local' ? 'Local / Offline' : 'Free Tier Available';
+    } else {
+      providerCardBadge.classList.add('hidden');
+    }
+
+    if (info.requiresApiKey || pType === 'local') {
+      keyInputContainer.classList.remove('hidden');
+      inputApiKey.placeholder =
+        pType === 'local'
+          ? 'Optional (Bearer token if required by LM Studio / vLLM)'
+          : info.keyPlaceholder;
+      if (info.keyHelpUrl && pType !== 'local') {
+        keyGetLink.href = info.keyHelpUrl;
+        keyGetLink.classList.remove('hidden');
+      } else {
+        keyGetLink.classList.add('hidden');
+      }
+    } else {
+      keyInputContainer.classList.add('hidden');
+    }
+
+    if (pType === 'local') {
+      endpointContainer.classList.remove('hidden');
+      inputEndpoint.placeholder = 'http://localhost:11434/api/generate';
+    } else {
+      endpointContainer.classList.add('hidden');
+    }
+
+    // Model pills
+    modelPillsContainer.innerHTML = '';
+    info.commonModels.forEach((m) => {
+      const pill = document.createElement('button');
+      pill.type = 'button';
+      pill.className = 'badge cursor-pointer hover:border-hairline-strong transition-colors';
+      pill.style.fontSize = '11px';
+      pill.style.padding = '2px 8px';
+      pill.textContent = m;
+      pill.addEventListener('click', () => {
+        inputModel.value = m;
+      });
+      modelPillsContainer.appendChild(pill);
+    });
+  }
+
+  function refreshSettingsUI() {
+    const config = getProviderConfig();
+    selectProvider.value = config.provider;
+    updateProviderUI(config.provider);
+
+    inputModel.value = config.model;
+    inputEndpoint.value = config.customEndpoint || '';
+
+    const currentKey = getApiKey();
+    if (currentKey) {
+      inputApiKey.value = '';
+      inputApiKey.placeholder = `••••••••${currentKey.slice(-4)}`;
+    } else if (config.provider === 'local') {
+      inputApiKey.value = '';
+      inputApiKey.placeholder = 'Optional (Bearer token if required by LM Studio / vLLM)';
+    } else {
+      inputApiKey.value = '';
+    }
+
+    const isConfigured = config.provider === 'local' || !!currentKey;
+    if (isConfigured) {
+      providerStatusDot.style.background = 'var(--color-cyan-deep)';
+      providerStatusText.textContent =
+        config.provider === 'local'
+          ? currentKey
+            ? `Configured (Local LLM with key …${currentKey.slice(-4)})`
+            : 'Configured (Local LLM)'
+          : `Configured (Key ending in …${currentKey.slice(-4)})`;
+    } else {
+      providerStatusDot.style.background = 'var(--color-hairline-strong)';
+      providerStatusText.textContent = 'Not Configured';
+    }
+
+    settingsFeedback.classList.add('hidden');
+    updateRefineButton();
+  }
+
+  selectProvider.addEventListener('change', () => {
+    const pType = selectProvider.value as ProviderType;
+    updateProviderUI(pType);
+    inputModel.value = PROVIDER_INFO[pType].defaultModel;
+    if (pType === 'local') {
+      inputEndpoint.value = 'http://localhost:11434/api/generate';
+    }
+  });
 
   function openSettings() {
     document.body.style.overflow = 'hidden';
     settingsModal.classList.remove('hidden');
     settingsBackdrop.classList.remove('hidden');
-    refreshKeyStatus();
+    refreshSettingsUI();
   }
 
   function closeSettings() {
@@ -623,38 +769,90 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
     settingsBackdrop.classList.add('hidden');
   }
 
-  function refreshKeyStatus() {
-    const key = getApiKey();
-    if (key) {
-      keyStatus.classList.remove('hidden');
-      keyStatusIcon.textContent = '✅';
-      keyStatusText.textContent = `Key saved (ending in …${key.slice(-4)})`;
-      keyStatusText.style.color = 'var(--color-cyan-deep)';
-      btnClearKey.classList.remove('hidden');
-      inputApiKey.value = '';
-      inputApiKey.placeholder = '••••••••' + key.slice(-4);
-    } else {
-      keyStatus.classList.add('hidden');
-      btnClearKey.classList.add('hidden');
-      inputApiKey.placeholder = 'Paste your Gemini API key here…';
-    }
-    updateRefineButton();
-  }
-
   document.getElementById('btn-settings')!.addEventListener('click', openSettings);
   document.getElementById('btn-close-settings')!.addEventListener('click', closeSettings);
   settingsBackdrop.addEventListener('click', closeSettings);
 
-  document.getElementById('btn-save-key')!.addEventListener('click', () => {
-    const key = inputApiKey.value.trim();
-    if (!key) return;
-    saveApiKey(key);
-    refreshKeyStatus();
+  btnSaveConfig.addEventListener('click', () => {
+    const provider = selectProvider.value as ProviderType;
+    const model = inputModel.value.trim() || PROVIDER_INFO[provider].defaultModel;
+    const typedKey = inputApiKey.value.trim();
+    const endpoint = inputEndpoint.value.trim();
+
+    saveAIProvider(provider);
+    saveAIModel(model);
+    if (typedKey) {
+      saveApiKey(typedKey);
+    }
+    if (endpoint) {
+      saveCustomEndpoint(endpoint);
+    } else if (provider === 'local') {
+      saveCustomEndpoint('http://localhost:11434/api/generate');
+    }
+
+    settingsFeedback.classList.remove('hidden');
+    settingsFeedback.style.background = 'var(--color-link-bg-soft)';
+    settingsFeedbackIcon.textContent = '✅';
+    settingsFeedbackText.textContent = 'Provider settings saved successfully!';
+    settingsFeedbackText.style.color = 'var(--color-link-deep)';
+
+    refreshSettingsUI();
+  });
+
+  btnTestConn.addEventListener('click', async () => {
+    const provider = selectProvider.value as ProviderType;
+    const model = inputModel.value.trim() || PROVIDER_INFO[provider].defaultModel;
+    const typedKey = inputApiKey.value.trim() || getApiKey();
+    const endpoint =
+      inputEndpoint.value.trim() || (provider === 'local' ? 'http://localhost:11434/api/generate' : undefined);
+
+    if (provider !== 'local' && !typedKey) {
+      settingsFeedback.classList.remove('hidden');
+      settingsFeedback.style.background = 'var(--color-error-soft)';
+      settingsFeedbackIcon.textContent = '❌';
+      settingsFeedbackText.textContent = 'Please enter an API key to test connection.';
+      settingsFeedbackText.style.color = 'var(--color-error-deep)';
+      return;
+    }
+
+    testSpinner.classList.remove('hidden');
+    testBtnLabel.textContent = 'Testing...';
+    btnTestConn.setAttribute('disabled', 'true');
+    settingsFeedback.classList.add('hidden');
+
+    try {
+      await refinePromptWithAI('Test connection prompt.', {
+        provider,
+        model,
+        apiKey: typedKey,
+        customEndpoint: endpoint,
+        maxTokens: 20,
+      });
+
+      settingsFeedback.classList.remove('hidden');
+      settingsFeedback.style.background = 'var(--color-link-bg-soft)';
+      settingsFeedbackIcon.textContent = '✅';
+      settingsFeedbackText.textContent = `Successfully connected to ${PROVIDER_INFO[provider].name}!`;
+      settingsFeedbackText.style.color = 'var(--color-link-deep)';
+    } catch (err: any) {
+      settingsFeedback.classList.remove('hidden');
+      settingsFeedback.style.background = 'var(--color-error-soft)';
+      settingsFeedbackIcon.textContent = '❌';
+      settingsFeedbackText.textContent = err?.message || 'Failed to connect to AI provider.';
+      settingsFeedbackText.style.color = 'var(--color-error-deep)';
+    } finally {
+      testSpinner.classList.add('hidden');
+      testBtnLabel.textContent = 'Test Connection';
+      btnTestConn.removeAttribute('disabled');
+    }
   });
 
   btnClearKey.addEventListener('click', () => {
     clearApiKey();
-    refreshKeyStatus();
+    saveAIProvider('gemini');
+    saveAIModel(PROVIDER_INFO.gemini.defaultModel);
+    saveCustomEndpoint('');
+    refreshSettingsUI();
   });
 
   btnToggleVis.addEventListener('click', () => {
@@ -669,8 +867,8 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
     }
   });
 
-  // Also open from refine panel
   document.getElementById('refine-open-settings')?.addEventListener('click', openSettings);
+  document.getElementById('refine-error-fix-btn')?.addEventListener('click', openSettings);
 
   // ══════════════════════════════════════
   // AI REFINE PANEL
@@ -684,10 +882,11 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
   const refineResultText = document.getElementById('refine-result-text')!;
 
   function updateRefineButton() {
-    const hasKey = !!getApiKey();
-    const hasPrompt = !!(previewText.textContent?.trim());
+    const config = getProviderConfig();
+    const hasConfig = config.provider === 'local' ? true : !!config.apiKey;
+    const hasPrompt = !!previewText.textContent?.trim();
 
-    if (hasKey) {
+    if (hasConfig) {
       refineNoKey.style.display = 'none';
       btnRefine.style.display = '';
       btnRefine.disabled = !hasPrompt;
@@ -699,21 +898,19 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
 
   btnRefine.addEventListener('click', async () => {
     const prompt = previewText.textContent?.trim() ?? '';
-    const key = getApiKey();
-    if (!prompt || !key) return;
+    if (!prompt) return;
 
-    // Show loading
     btnRefine.style.display = 'none';
     refineLoading.classList.remove('hidden');
     refineError.classList.add('hidden');
     refineResult.classList.add('hidden');
 
     try {
-      const refined = await refinePrompt(prompt, key);
+      const refined = await refinePrompt(prompt);
       refineResultText.textContent = refined;
       refineResult.classList.remove('hidden');
     } catch (err) {
-      if (err instanceof RefineError) {
+      if (err instanceof ProviderError) {
         refineErrorText.textContent = err.message;
       } else {
         refineErrorText.textContent = 'An unexpected error occurred. Please try again.';
@@ -746,7 +943,7 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
   document.getElementById('btn-clear-all-data')?.addEventListener('click', () => {
     if (confirm('Clear all saved prompts and your API key from this browser?')) {
       clearAllData();
-      refreshKeyStatus();
+      refreshSettingsUI();
       closeSettings();
     }
   });
