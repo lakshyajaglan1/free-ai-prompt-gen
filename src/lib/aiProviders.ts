@@ -78,13 +78,13 @@ export const PROVIDER_INFO: Record<ProviderType, ProviderInfo> = {
     id: 'gemini',
     name: 'Google Gemini',
     icon: '✨',
-    description: 'Gemini 2.0 Flash & 1.5 Pro. High speed with generous free tier.',
-    defaultModel: 'gemini-2.0-flash',
+    description: 'Gemini 1.5 Flash & 1.5 Pro. High speed with generous free tier.',
+    defaultModel: 'gemini-1.5-flash',
     keyPlaceholder: 'AIzaSyxxxxxxxxxxxxxxxxxxxxxxx',
     keyHelpUrl: 'https://aistudio.google.com/apikey',
     freeAvailable: true,
     docs: 'https://ai.google.dev/docs',
-    commonModels: ['gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-1.5-flash'],
+    commonModels: ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash'],
     requiresApiKey: true,
   },
   cohere: {
@@ -338,7 +338,9 @@ export class GeminiProvider extends AIProvider {
   }
 
   getEndpoint(model: string, customEndpoint?: string, apiKey?: string): string {
-    const m = model || this.defaultModel;
+    let m = (model || this.defaultModel).trim();
+    // Strip leading "models/" to prevent double "models/models/..." in URL
+    m = m.replace(/^models\//, '');
     const baseUrl = customEndpoint || `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`;
     const key = sanitizeApiKey(apiKey);
     return key ? `${baseUrl}?key=${encodeURIComponent(key)}` : baseUrl;
@@ -370,6 +372,83 @@ export class GeminiProvider extends AIProvider {
       throw new ProviderError(data.error.message || 'Google Gemini API Error', 'API_ERROR');
     }
     return data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+  }
+
+  /**
+   * Fetch live list of generateContent-capable models available for this API key
+   */
+  async getAvailableModels(apiKey: string): Promise<string[]> {
+    const key = sanitizeApiKey(apiKey);
+    if (!key) return [];
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`);
+      if (!res.ok) return [];
+      const data = await res.json();
+      if (!data?.models || !Array.isArray(data.models)) return [];
+      return data.models
+        .filter((m: any) => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes('generateContent'))
+        .map((m: any) => String(m.name).replace(/^models\//, ''));
+    } catch {
+      return [];
+    }
+  }
+
+  override async refine(prompt: string, config: ProviderConfig): Promise<string> {
+    const apiKey = sanitizeApiKey(config.apiKey);
+    const rawModel = (config.model || this.defaultModel).trim();
+    const primaryModel = rawModel.replace(/^models\//, '');
+
+    const candidateSet = new Set<string>([primaryModel]);
+
+    // Query live available models for this specific API key if possible
+    if (apiKey) {
+      const liveModels = await this.getAvailableModels(apiKey);
+      liveModels.forEach((m) => candidateSet.add(m));
+    }
+
+    // Static fallback models commonly available on free and paid tiers
+    const fallbackList = [
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
+      'gemini-1.5-flash-latest',
+      'gemini-1.5-pro',
+      'gemini-1.5-flash-8b',
+      'gemini-2.0-flash-exp',
+    ];
+    fallbackList.forEach((m) => candidateSet.add(m));
+
+    const candidates = Array.from(candidateSet);
+    let lastError: any = null;
+
+    for (const model of candidates) {
+      try {
+        return await super.refine(prompt, { ...config, model });
+      } catch (err) {
+        lastError = err;
+        if (err instanceof ProviderError) {
+          // Non-retriable errors: invalid key or network connection failure
+          if (err.code === 'INVALID_KEY' || err.code === 'NETWORK') {
+            throw err;
+          }
+          // Retriable errors: rate limit / quota 0 (429), model not found (404), or API error
+          if (err.code === 'RATE_LIMIT' || err.code === 'MODEL_ERROR' || err.code === 'API_ERROR') {
+            console.warn(
+              `[GeminiProvider] Model '${model}' returned ${err.code} (${err.message}). Trying next candidate...`
+            );
+            continue;
+          }
+        }
+        throw err;
+      }
+    }
+
+    throw (
+      lastError ||
+      new ProviderError(
+        'All Gemini model candidates failed. Please verify your API key and permissions at https://aistudio.google.com/apikey.',
+        'API_ERROR'
+      )
+    );
   }
 }
 

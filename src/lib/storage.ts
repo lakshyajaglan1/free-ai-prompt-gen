@@ -111,9 +111,9 @@ export function getAIModel(): string {
     const savedModel = localStorage.getItem(STORAGE_KEYS.model);
     if (savedModel && savedModel.trim()) return savedModel.trim();
     const provider = getAIProvider();
-    return PROVIDER_INFO[provider]?.defaultModel || 'gemini-2.0-flash';
+    return PROVIDER_INFO[provider]?.defaultModel || 'gemini-1.5-flash';
   } catch {
-    return 'gemini-2.0-flash';
+    return 'gemini-1.5-flash';
   }
 }
 
