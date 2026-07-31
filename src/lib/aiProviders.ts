@@ -51,7 +51,7 @@ export const PROVIDER_INFO: Record<ProviderType, ProviderInfo> = {
   openai: {
     id: 'openai',
     name: 'OpenAI',
-    icon: '⚡',
+    icon: '🤖',
     description: 'GPT-4o, GPT-4, and GPT-3.5 Turbo for top-tier prompt reasoning.',
     defaultModel: 'gpt-4',
     keyPlaceholder: 'sk-proj-xxxxxxxxxxxxxxxxxxxxxxxx',

@@ -22,9 +22,11 @@ function isActive(href: string) {
   <div class="w-full flex items-center justify-between h-full" style="padding: 0 clamp(1rem, 5vw, 4rem);">
     <!-- Left: Brand -->
     <a href="/" class="flex items-center gap-2.5 no-underline group shrink-0" id="nav-brand" aria-label="AI Prompt Generator Home">
-      <div class="w-8 h-8 rounded-md flex items-center justify-center bg-ink border border-hairline transition-transform duration-150 group-hover:scale-105">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-on-primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden transition-transform duration-150 group-hover:scale-105 shadow-sm">
+        <svg viewBox="0 0 600 600" class="w-full h-full" aria-hidden="true">
+          <rect width="600" height="600" rx="130" fill="#000000" />
+          <rect x="177.5" y="177.5" width="245" height="245" rx="42" fill="none" stroke="#ffffff" stroke-width="33" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 257 230 L 344 300 L 257 370" fill="none" stroke="#ffffff" stroke-width="33" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </div>
       <span class="body-md-strong text-ink tracking-tight">Free AI Prompt Gen</span>
