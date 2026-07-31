@@ -1,0 +1,161 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import PromptHistory from '../components/PromptHistory.astro';
+import ApiKeySettings from '../components/ApiKeySettings.astro';
+---
+
+<Layout
+  title="500: Server Error | Free AI Prompt Generator"
+  description="An unexpected error occurred. Return to the Free AI Prompt Generator homepage."
+  canonicalUrl="https://aipromptgenerator.app/500"
+>
+  <meta slot="head" name="robots" content="noindex, follow" />
+
+  <Navbar />
+
+  <main class="flex-1 w-full flex flex-col justify-center items-center">
+    <!-- Hero / 500 Card Section -->
+    <section class="relative overflow-hidden w-full text-center" style="padding: var(--sp-5xl) clamp(1rem, 5vw, 4rem);">
+      <!-- Mesh gradient backdrop -->
+      <div class="absolute inset-0 mesh-gradient opacity-60 pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative mx-auto flex flex-col items-center" style="max-width: 750px;">
+        <!-- Error Badge -->
+        <div class="badge mb-4" style="font-family: var(--font-mono); font-size: 13px; padding: 4px 12px; background: rgba(245, 166, 35, 0.1); color: var(--color-warning-deep); border: 1px solid rgba(245, 166, 35, 0.3);">
+          ERROR CODE 500 &middot; INTERNAL SERVER ERROR
+        </div>
+
+        <!-- Big 500 Number -->
+        <h1 class="display-xl text-ink font-bold tracking-tight mb-2" style="font-size: clamp(4rem, 12vw, 8rem); line-height: 1;">
+          <span style="background: linear-gradient(135deg, #ff4d4d 0%, #f9cb28 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block;">500</span>
+        </h1>
+
+        <!-- Headline & Subtitle -->
+        <h2 class="display-md text-ink mb-4">
+          Something Went Unexpectedly Wrong
+        </h2>
+        <p class="body-lg text-body mb-4 mx-auto leading-relaxed" style="max-width: 580px;">
+          An internal server error occurred while processing your request.
+        </p>
+        <p class="body-sm text-mute mb-8 mx-auto leading-relaxed" style="max-width: 520px;">
+          🔒 Don't worry—all your saved local prompts, template history, and API key preferences remain completely safe inside your browser storage.
+        </p>
+
+        <!-- CTAs -->
+        <div class="flex flex-wrap items-center justify-center gap-3 mb-12">
+          <button id="btn-reload-page" class="btn-primary gap-2" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6"></path>
+              <path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+            </svg>
+            <span>Reload Page</span>
+          </button>
+
+          <a href="/" class="btn-secondary gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Return to Homepage</span>
+          </a>
+
+          <a href="/contact" class="btn-secondary gap-2">
+            <span>Report Issue</span>
+          </a>
+        </div>
+
+        <!-- Troubleshooting Suggestions -->
+        <div class="card p-6 border border-hairline bg-canvas w-full text-left" style="max-width: 640px;">
+          <h3 class="caption-mono text-mute uppercase tracking-wider mb-3">TROUBLESHOOTING STEPS</h3>
+          <ul class="flex flex-col gap-3 list-none p-0 m-0 body-sm text-body">
+            <li class="flex items-start gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-canvas-soft border border-hairline flex items-center justify-center text-xs font-mono font-bold text-ink shrink-0">1</span>
+              <span><strong>Refresh the application:</strong> A temporary connection reset can sometimes cause rendering hiccups.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-canvas-soft border border-hairline flex items-center justify-center text-xs font-mono font-bold text-ink shrink-0">2</span>
+              <span><strong>Check your AI API Provider:</strong> If using AI Refinement, verify that your selected AI provider key (Gemini, OpenAI, or Ollama) is active and accessible.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-canvas-soft border border-hairline flex items-center justify-center text-xs font-mono font-bold text-ink shrink-0">3</span>
+              <span><strong>Reach out to our team:</strong> If the error persists, please submit a bug report via our <a href="/contact" class="text-link hover:underline">Contact Page</a>.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <PromptHistory />
+  <ApiKeySettings />
+</Layout>
+
+<script>
+  import { saveTheme } from '../lib/storage';
+
+  // Reload button handler
+  document.getElementById('btn-reload-page')?.addEventListener('click', () => {
+    window.location.reload();
+  });
+
+  // Global settings modal & drawer handlers for MPA pages
+  const btnSettings = document.getElementById('btn-settings');
+  const btnHistory = document.getElementById('btn-history');
+  const settingsModal = document.getElementById('settings-modal');
+  const settingsBackdrop = document.getElementById('settings-backdrop');
+  const historyDrawer = document.getElementById('history-drawer');
+  const historyBackdrop = document.getElementById('history-backdrop');
+
+  if (btnSettings && settingsModal && settingsBackdrop) {
+    btnSettings.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      settingsModal.classList.remove('hidden');
+      settingsBackdrop.classList.remove('hidden');
+    });
+  }
+
+  if (btnHistory && historyDrawer && historyBackdrop) {
+    btnHistory.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      historyDrawer.classList.remove('hidden');
+      historyBackdrop.classList.remove('hidden');
+    });
+  }
+
+  // Theme toggle script for MPA
+  const btnThemeToggle = document.getElementById('btn-theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function updateThemeUI() {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      sunIcon?.classList.remove('hidden');
+      moonIcon?.classList.add('hidden');
+    } else {
+      sunIcon?.classList.add('hidden');
+      moonIcon?.classList.remove('hidden');
+    }
+  }
+
+  btnThemeToggle?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+      saveTheme('light');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      saveTheme('dark');
+    }
+    updateThemeUI();
+  });
+
+  updateThemeUI();
+</script>

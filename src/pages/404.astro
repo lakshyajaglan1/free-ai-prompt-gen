@@ -1,0 +1,181 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import PromptHistory from '../components/PromptHistory.astro';
+import ApiKeySettings from '../components/ApiKeySettings.astro';
+---
+
+<Layout
+  title="404: Page Not Found | Free AI Prompt Generator"
+  description="The page you are looking for does not exist or has been moved. Return to the Free AI Prompt Generator homepage to build structured prompts."
+  canonicalUrl="https://aipromptgenerator.app/404"
+>
+  <meta slot="head" name="robots" content="noindex, follow" />
+
+  <Navbar />
+
+  <main class="flex-1 w-full flex flex-col justify-center items-center">
+    <!-- Hero / 404 Card Section -->
+    <section class="relative overflow-hidden w-full text-center" style="padding: var(--sp-5xl) clamp(1rem, 5vw, 4rem);">
+      <!-- Mesh gradient backdrop -->
+      <div class="absolute inset-0 mesh-gradient opacity-60 pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative mx-auto flex flex-col items-center" style="max-width: 750px;">
+        <!-- Error Badge -->
+        <div class="badge mb-4" style="font-family: var(--font-mono); font-size: 13px; padding: 4px 12px; background: rgba(238, 0, 0, 0.08); color: var(--color-error); border: 1px solid rgba(238, 0, 0, 0.2);">
+          ERROR CODE 404 &middot; PAGE NOT FOUND
+        </div>
+
+        <!-- Big 404 Number -->
+        <h1 class="display-xl text-ink font-bold tracking-tight mb-2" style="font-size: clamp(4rem, 12vw, 8rem); line-height: 1;">
+          <span class="gradient-text">404</span>
+        </h1>
+
+        <!-- Headline & Subtitle -->
+        <h2 class="display-md text-ink mb-4">
+          Lost in the Prompt Promptverse?
+        </h2>
+        <p class="body-lg text-body mb-8 mx-auto leading-relaxed" style="max-width: 580px;">
+          The page or route you were looking for doesn't exist, has been moved, or the URL might be mistyped.
+        </p>
+
+        <!-- CTAs -->
+        <div class="flex flex-wrap items-center justify-center gap-3 mb-12">
+          <a href="/" class="btn-primary gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Return to Homepage</span>
+          </a>
+
+          <button id="btn-go-back" class="btn-secondary gap-2" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Go Back</span>
+          </button>
+
+          <a href="/contact" class="btn-secondary gap-2">
+            <span>Contact Support</span>
+          </a>
+        </div>
+
+        <!-- Quick Links Card -->
+        <div class="card p-6 border border-hairline bg-canvas w-full text-left" style="max-width: 640px;">
+          <h3 class="caption-mono text-mute uppercase tracking-wider mb-3">POPULAR DESTINATIONS</h3>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <a href="/#wizard" class="p-3 rounded-lg border border-hairline bg-canvas-soft hover:bg-canvas text-body hover:text-ink no-underline flex items-center justify-between transition-colors">
+              <div class="flex items-center gap-2">
+                <span class="text-link">⚡</span>
+                <span class="body-sm-strong">Prompt Wizard</span>
+              </div>
+              <span class="caption text-mute">&rarr;</span>
+            </a>
+
+            <a href="/about" class="p-3 rounded-lg border border-hairline bg-canvas-soft hover:bg-canvas text-body hover:text-ink no-underline flex items-center justify-between transition-colors">
+              <div class="flex items-center gap-2">
+                <span class="text-cyan-deep">💡</span>
+                <span class="body-sm-strong">About Us</span>
+              </div>
+              <span class="caption text-mute">&rarr;</span>
+            </a>
+
+            <a href="/privacy" class="p-3 rounded-lg border border-hairline bg-canvas-soft hover:bg-canvas text-body hover:text-ink no-underline flex items-center justify-between transition-colors">
+              <div class="flex items-center gap-2">
+                <span class="text-violet">🔒</span>
+                <span class="body-sm-strong">Privacy Policy</span>
+              </div>
+              <span class="caption text-mute">&rarr;</span>
+            </a>
+
+            <a href="/contact" class="p-3 rounded-lg border border-hairline bg-canvas-soft hover:bg-canvas text-body hover:text-ink no-underline flex items-center justify-between transition-colors">
+              <div class="flex items-center gap-2">
+                <span class="text-warning-deep">💬</span>
+                <span class="body-sm-strong">Contact Us</span>
+              </div>
+              <span class="caption text-mute">&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <PromptHistory />
+  <ApiKeySettings />
+</Layout>
+
+<script>
+  import { saveTheme } from '../lib/storage';
+
+  // Go back button handler
+  document.getElementById('btn-go-back')?.addEventListener('click', () => {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.href = '/';
+    }
+  });
+
+  // Global settings modal & drawer handlers for MPA pages
+  const btnSettings = document.getElementById('btn-settings');
+  const btnHistory = document.getElementById('btn-history');
+  const settingsModal = document.getElementById('settings-modal');
+  const settingsBackdrop = document.getElementById('settings-backdrop');
+  const historyDrawer = document.getElementById('history-drawer');
+  const historyBackdrop = document.getElementById('history-backdrop');
+
+  if (btnSettings && settingsModal && settingsBackdrop) {
+    btnSettings.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      settingsModal.classList.remove('hidden');
+      settingsBackdrop.classList.remove('hidden');
+    });
+  }
+
+  if (btnHistory && historyDrawer && historyBackdrop) {
+    btnHistory.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      historyDrawer.classList.remove('hidden');
+      historyBackdrop.classList.remove('hidden');
+    });
+  }
+
+  // Theme toggle script for MPA
+  const btnThemeToggle = document.getElementById('btn-theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function updateThemeUI() {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      sunIcon?.classList.remove('hidden');
+      moonIcon?.classList.add('hidden');
+    } else {
+      sunIcon?.classList.add('hidden');
+      moonIcon?.classList.remove('hidden');
+    }
+  }
+
+  btnThemeToggle?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+      saveTheme('light');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      saveTheme('dark');
+    }
+    updateThemeUI();
+  });
+
+  updateThemeUI();
+</script>
