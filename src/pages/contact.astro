@@ -245,13 +245,22 @@ import ApiKeySettings from '../components/ApiKeySettings.astro';
   }
 
   if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       let valid = true;
 
+      // Reset feedback banner visibility on new attempt
+      feedbackBanner.classList.add('hidden');
+
+      const nameVal = inputName.value.trim();
+      const emailVal = inputEmail.value.trim();
+      const subjectSelect = document.getElementById('contact-subject') as HTMLSelectElement;
+      const subjectVal = subjectSelect ? subjectSelect.value : 'General Feedback';
+      const messageVal = inputMessage.value.trim();
+
       // Validate Name
-      if (!inputName.value.trim()) {
+      if (!nameVal) {
         errorName.classList.remove('hidden');
         inputName.classList.add('border-error');
         valid = false;
@@ -261,7 +270,7 @@ import ApiKeySettings from '../components/ApiKeySettings.astro';
       }
 
       // Validate Email
-      if (!inputEmail.value.trim() || !validateEmail(inputEmail.value.trim())) {
+      if (!emailVal || !validateEmail(emailVal)) {
         errorEmail.classList.remove('hidden');
         inputEmail.classList.add('border-error');
         valid = false;
@@ -271,7 +280,7 @@ import ApiKeySettings from '../components/ApiKeySettings.astro';
       }
 
       // Validate Message
-      if (!inputMessage.value.trim() || inputMessage.value.trim().length < 10) {
+      if (!messageVal || messageVal.length < 10) {
         errorMessage.classList.remove('hidden');
         inputMessage.classList.add('border-error');
         valid = false;
@@ -282,25 +291,56 @@ import ApiKeySettings from '../components/ApiKeySettings.astro';
 
       if (!valid) return;
 
-      // Simulate client submission
+      // Disable button and update UI text
       btnSubmit.disabled = true;
       btnLabel.textContent = 'Sending...';
 
-      setTimeout(() => {
+      try {
+        const response = await fetch('https://formsubmit.co/ajax/contact@freeaipromptgen.com', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            name: nameVal,
+            email: emailVal,
+            subject: subjectVal,
+            message: messageVal,
+            _captcha: 'false'
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && (data.success === 'true' || data.success === true)) {
+          // Show Success Feedback
+          feedbackBanner.className = 'mb-6 p-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 transition-all';
+          feedbackIcon.textContent = '✅';
+          feedbackTitle.textContent = 'Message Sent Successfully!';
+          feedbackTitle.className = 'body-md-strong text-emerald-400';
+          feedbackText.textContent = `Thank you, ${nameVal}. We have received your inquiry regarding "${subjectVal}".`;
+          feedbackText.className = 'body-sm text-emerald-300';
+          feedbackBanner.classList.remove('hidden');
+
+          contactForm.reset();
+        } else {
+          throw new Error(data.message || 'Failed to send message.');
+        }
+      } catch (err) {
+        // Show Error Feedback below the form header
+        feedbackBanner.className = 'mb-6 p-4 rounded-lg border border-red-500/40 bg-red-500/10 text-red-400 transition-all';
+        feedbackIcon.textContent = '⚠️';
+        feedbackTitle.textContent = 'Submission Error';
+        feedbackTitle.className = 'body-md-strong text-red-400';
+        feedbackText.textContent = 'Failed to send message. Please try again or email contact@freeaipromptgen.com directly.';
+        feedbackText.className = 'body-sm text-red-300';
+        feedbackBanner.classList.remove('hidden');
+      } finally {
         btnSubmit.disabled = false;
         btnLabel.textContent = 'Send Message';
-
-        // Show Success Feedback
-        feedbackBanner.classList.remove('hidden');
-        feedbackBanner.style.backgroundColor = 'var(--color-link-bg-soft)';
-        feedbackIcon.textContent = '✅';
-        feedbackTitle.textContent = 'Message Sent Successfully!';
-        feedbackText.textContent = `Thank you, ${inputName.value.trim()}. We have received your inquiry regarding "${(document.getElementById('contact-subject') as HTMLSelectElement).value}".`;
-        feedbackText.style.color = 'var(--color-link-deep)';
-
-        contactForm.reset();
         window.scrollTo({ top: feedbackBanner.offsetTop - 100, behavior: 'smooth' });
-      }, 600);
+      }
     });
   }
 
