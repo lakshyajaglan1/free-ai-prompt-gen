@@ -1,6 +1,6 @@
 // ── Framework metadata & field mappings ──
 
-import { Framework, GoalCategory, type FieldKey } from './types';
+import { Framework, type FieldKey } from './types';
 
 export interface FrameworkMeta {
   id: Framework;

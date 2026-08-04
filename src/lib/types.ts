@@ -15,6 +15,9 @@ export enum TargetModel {
   ChatGPT = 'ChatGPT',
   Claude = 'Claude',
   Gemini = 'Gemini',
+  Llama = 'Llama',
+  Mistral = 'Mistral',
+  DeepSeek = 'DeepSeek',
   Generic = 'Generic / Any',
 }
 

@@ -1,0 +1,45 @@
+---
+// StepProgress.astro — Wizard step indicator bar
+---
+
+<div class="w-full bg-canvas border-b border-hairline sticky top-[64px] z-40 py-2.5 transition-colors duration-200" id="wizard-step-progress">
+  <div class="mx-auto flex items-center justify-between gap-2 max-w-4xl px-4">
+    <!-- Step 1 -->
+    <div class="flex items-center gap-2 step-item" data-step="1" data-state="active">
+      <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-medium border border-ink bg-ink text-on-primary step-badge transition-all">
+        1
+      </div>
+      <span class="body-sm-strong text-ink hidden sm:inline">Goal</span>
+    </div>
+
+    <div class="flex-1 h-px bg-hairline max-w-[60px] sm:max-w-[100px]"></div>
+
+    <!-- Step 2 -->
+    <div class="flex items-center gap-2 step-item" data-step="2" data-state="pending">
+      <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-medium border border-hairline bg-canvas-soft text-mute step-badge transition-all">
+        2
+      </div>
+      <span class="body-sm text-mute hidden sm:inline">Framework & Model</span>
+    </div>
+
+    <div class="flex-1 h-px bg-hairline max-w-[60px] sm:max-w-[100px]"></div>
+
+    <!-- Step 3 -->
+    <div class="flex items-center gap-2 step-item" data-step="3" data-state="pending">
+      <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-medium border border-hairline bg-canvas-soft text-mute step-badge transition-all">
+        3
+      </div>
+      <span class="body-sm text-mute hidden sm:inline">Fill Details</span>
+    </div>
+
+    <div class="flex-1 h-px bg-hairline max-w-[60px] sm:max-w-[100px]"></div>
+
+    <!-- Step 4 -->
+    <div class="flex items-center gap-2 step-item" data-step="4" data-state="pending">
+      <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-medium border border-hairline bg-canvas-soft text-mute step-badge transition-all">
+        4
+      </div>
+      <span class="body-sm text-mute hidden sm:inline">Preview & Copy</span>
+    </div>
+  </div>
+</div>

@@ -1,14 +1,15 @@
 ---
-// PreviewPanel — Live preview of the assembled prompt with copy/download actions
+// PreviewPanel — Live preview of the assembled prompt with copy/download/share actions
+import PromptStats from './PromptStats.astro';
 ---
 
 <section id="preview-panel" class="w-full">
-  <div class="flex items-center justify-between mb-3">
+  <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
     <div class="flex items-center gap-3">
       <span class="caption-mono text-mute uppercase tracking-wider">Live Preview</span>
       <span id="preview-model-badge" class="badge">Generic / Any</span>
     </div>
-    <div class="flex gap-2">
+    <div class="flex flex-wrap gap-2">
       <button id="btn-copy-prompt" class="btn-secondary-sm" title="Copy prompt to clipboard" disabled>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -16,14 +17,26 @@
         </svg>
         <span id="copy-label">Copy</span>
       </button>
-      <button id="btn-download-prompt" class="btn-secondary-sm" title="Download as .txt file" disabled>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
+      
+      <button id="btn-download-txt" class="btn-secondary-sm" title="Download as .txt file" disabled>
         .txt
       </button>
+
+      <button id="btn-download-md" class="btn-secondary-sm" title="Download as .md file" disabled>
+        .md
+      </button>
+
+      <button id="btn-share-prompt" class="btn-secondary-sm" title="Copy shareable URL link to this prompt" disabled>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+        <span id="share-label">Share</span>
+      </button>
+
       <button id="btn-save-prompt" class="btn-primary-sm" title="Save prompt to history" disabled>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
@@ -51,4 +64,7 @@
   <div id="preview-content" class="code-surface hidden" style="min-height: 200px; max-height: 500px; overflow-y: auto;">
     <pre id="preview-text" style="margin: 0; white-space: pre-wrap; word-break: break-word;"></pre>
   </div>
+
+  <!-- Prompt Live Stats Bar -->
+  <PromptStats />
 </section>

@@ -1,0 +1,50 @@
+---
+// PromptScoreBar.astro — Animated real-time prompt quality scoring bar
+---
+
+<div id="prompt-score-container" class="card p-4 mb-4 border border-hairline bg-canvas transition-all duration-200 shadow-level-2">
+  <div class="flex items-center justify-between gap-3 mb-2">
+    <div class="flex items-center gap-2.5">
+      <span class="caption-mono text-mute uppercase tracking-wider">Quality Score</span>
+      <span id="score-grade-badge" class="badge font-bold px-2 py-0.5 text-xs bg-ink text-on-primary">F</span>
+      <span id="score-label" class="body-sm-strong text-ink">Needs Work</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span id="score-number" class="display-sm text-ink font-mono" style="font-size: 18px;">0/100</span>
+      <button id="btn-toggle-tips" class="btn-icon" style="width: 28px; height: 28px;" title="Show/Hide Score Tips" aria-label="Toggle score suggestions">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Progress Bar Track -->
+  <div class="w-full h-2.5 bg-canvas-soft-2 rounded-full overflow-hidden border border-hairline relative">
+    <div
+      id="score-progress-fill"
+      class="h-full rounded-full transition-all duration-500 ease-out"
+      style="width: 0%; background: linear-gradient(90deg, #ee0000 0%, #f5a623 50%, #0070f3 100%);"
+    ></div>
+  </div>
+
+  <!-- Actionable Suggestions Panel -->
+  <div id="score-tips-panel" class="mt-3 pt-3 border-t border-hairline hidden">
+    <div class="caption-mono text-mute uppercase tracking-wider mb-2" style="font-size: 10px;">Suggestions to boost score</div>
+    <ul id="score-tips-list" class="flex flex-col gap-1.5 list-none p-0 m-0">
+      <li class="caption text-body flex items-start gap-2">
+        <span class="text-warning">💡</span> Fill out the prompt task and details to see live recommendations.
+      </li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  // Tips panel toggle
+  const btnToggle = document.getElementById('btn-toggle-tips');
+  const tipsPanel = document.getElementById('score-tips-panel');
+
+  btnToggle?.addEventListener('click', () => {
+    tipsPanel?.classList.toggle('hidden');
+  });
+</script>

@@ -44,6 +44,32 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
       constraints: '800-1,200 words. Start in medias res. Avoid exposition dumps.',
     },
   },
+  {
+    id: 'writing-resume-bullet',
+    name: 'Resume Bullet Points',
+    description: 'Transform achievements into high-impact, metrics-driven resume bullets.',
+    category: GoalCategory.Writing,
+    fields: {
+      role: 'A executive resume writer and FAANG recruiter',
+      task: 'Rewrite my work experiences into Google XYZ format ("Accomplished [X] as measured by [Y], by doing [Z]").',
+      outputFormat: 'Bullet list categorized by job title/role',
+      tone: 'Confident, action-oriented, and quantified',
+      constraints: 'Start every bullet with a strong action verb. Include explicit percentage or numerical impact metrics.',
+    },
+  },
+  {
+    id: 'writing-cover-letter',
+    name: 'Tailored Cover Letter',
+    description: 'Write a persuasive cover letter tailored to a specific job description.',
+    category: GoalCategory.Writing,
+    fields: {
+      role: 'A career consultant and hiring strategist',
+      task: 'Write a tailored cover letter connecting my background in [skills] to the target position [job title] at [company].',
+      outputFormat: 'Standard business letter (3 paragraphs: Hook, Relevant Value, Call to Action)',
+      tone: 'Enthusiastic, polished, and authentic',
+      constraints: 'Under 300 words. Do not simply repeat my resume. Highlight alignment with company mission.',
+    },
+  },
 
   // ── Coding ──
   {
@@ -83,6 +109,30 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
       tone: 'Educational and patient — assume I understand the basics but not this specific pattern',
     },
   },
+  {
+    id: 'coding-api-design',
+    name: 'REST / GraphQL API Design',
+    description: 'Architect a clean, scalable API endpoint specification.',
+    category: GoalCategory.Coding,
+    fields: {
+      role: 'A principal API architect specializing in OpenAPI specs and RESTful design',
+      task: 'Design a RESTful API specification for [entity/feature]. Include endpoints, request/response JSON schemas, status codes, and error formats.',
+      outputFormat: 'OpenAPI 3.0 YAML or Markdown tables detailing endpoints, request payloads, and status codes',
+      constraints: 'Follow RESTful conventions (plural nouns, correct HTTP verbs). Include rate limiting and auth headers.',
+    },
+  },
+  {
+    id: 'coding-refactor-performance',
+    name: 'Code Refactoring & Optimization',
+    description: 'Refactor code to improve readability, performance, and maintainability.',
+    category: GoalCategory.Coding,
+    fields: {
+      role: 'A staff engineer specializing in performance optimization and clean code principles',
+      task: 'Refactor the following code snippet [paste code] to optimize Big-O time/space complexity and adhere to SOLID principles.',
+      outputFormat: 'Before/After diff summary, performance benchmark estimation, and refactored code block',
+      constraints: 'Maintain backwards compatibility. Do not break existing API contracts.',
+    },
+  },
 
   // ── Image Generation ──
   {
@@ -111,15 +161,16 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
     },
   },
   {
-    id: 'image-social-media',
-    name: 'Social Media Visual',
-    description: 'Create eye-catching social media imagery.',
+    id: 'image-ui-mockup',
+    name: 'App UI Dashboard Mockup',
+    description: 'Generate Midjourney prompts for sleek modern software UI concepts.',
     category: GoalCategory.ImageGeneration,
     fields: {
-      role: 'A social media visual designer for tech brands',
-      task: 'Create an image generation prompt for a [platform] post about [topic]. The visual should stop the scroll and communicate the message instantly.',
-      outputFormat: 'One primary prompt + 2 variations with different compositions',
-      tone: 'Bold, modern, eye-catching',
+      role: 'A senior UI/UX designer and visual artist',
+      task: 'Create a prompt for a modern dark-mode Web SaaS Dashboard UI mockup displaying data analytics, glassmorphism card components, and subtle neon highlights.',
+      outputFormat: 'Single fluid descriptive string with Midjourney parameters (--ar 16:9 --v 6.0)',
+      tone: 'Sleek, futuristic, clean, high-fidelity UI mockup',
+      constraints: 'No blurry elements. High resolution 8k UI render feel.',
     },
   },
 
@@ -138,16 +189,16 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
     },
   },
   {
-    id: 'video-animated-character',
-    name: 'Animated Character',
-    description: 'Dynamic video prompts for stylized 3D character motion and facial expressions.',
+    id: 'video-sora-teaser',
+    name: 'Sora / Runway Product Commercial',
+    description: 'High-production cinematic video prompt for AI video engines.',
     category: GoalCategory.VideoGeneration,
     fields: {
-      role: 'An animation director specializing in 3D character animation and expressive motion',
-      task: 'Create a video prompt for an animated scene featuring [character] performing [action/expression]. Detail facial expression, movement dynamics, background elements, and art style.',
-      outputFormat: 'Structured prompt detailing Character Action, Expression, Camera Angle, and Rendering Style',
-      tone: 'Whimsical, expressive, vibrant, high-energy',
-      constraints: 'Stylized 3D animation style (Pixar/Disney inspired). Consistent character features. 24fps motion cadence.',
+      role: 'A commercial film director and visual effects supervisor',
+      task: 'Write an AI video prompt for a 5-second cinematic product teaser of [product]. Detail focal depth, macro lens movement, lighting bloom, and liquid/particles motion.',
+      outputFormat: 'Shot Description -> Camera Specs -> Movement Dynamics -> Atmospheric Lighting',
+      tone: 'Hyper-realistic, photorealistic 8K, commercial cinematic',
+      constraints: '16:9 aspect ratio, 60fps fluid motion, hyper-detailed macro photography.',
     },
   },
 
@@ -167,27 +218,15 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
   },
   {
     id: 'data-sql-query',
-    name: 'Write a SQL Query',
-    description: 'Get a well-structured SQL query for your data question.',
+    name: 'Write & Optimize SQL Query',
+    description: 'Get a well-structured, performant SQL query for complex analytics.',
     category: GoalCategory.DataAnalysis,
     fields: {
-      role: 'A database engineer who writes optimized, readable SQL',
+      role: 'A principal database engineer who writes optimized BigQuery/PostgreSQL SQL',
       context: 'My database has these tables: [list tables and key columns].',
-      task: 'Write a SQL query that [describe what you need]. Include appropriate JOINs, filtering, and aggregation.',
-      outputFormat: 'SQL code block with inline comments explaining each section. If complex, break into CTEs.',
-      constraints: 'Use ANSI SQL unless a specific dialect is needed. Optimize for readability over cleverness. Handle NULL values explicitly.',
-    },
-  },
-  {
-    id: 'data-visualization',
-    name: 'Data Visualization Plan',
-    description: 'Plan the best way to visualize your data story.',
-    category: GoalCategory.DataAnalysis,
-    fields: {
-      role: 'A data visualization specialist who follows Edward Tufte principles',
-      task: 'Recommend the best chart types and visual strategy for presenting [your data story/metric]. Explain why each visualization choice is effective.',
-      outputFormat: 'Table: Data point → Chart type → Reasoning → Implementation tip',
-      constraints: 'Prefer simplicity over complexity. No 3D charts. Suggest a color palette that works for colorblind users.',
+      task: 'Write a SQL query that [describe what you need]. Include appropriate JOINs, window functions, and aggregation.',
+      outputFormat: 'SQL code block with inline comments explaining CTEs and index optimizations.',
+      constraints: 'Use CTEs for readability. Avoid Cartesian joins. Handle NULL values explicitly.',
     },
   },
 
@@ -203,30 +242,6 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
       outputFormat: 'Structured summary: Research Question → Method → Key Findings → Limitations → Relevance to [your field]',
       tone: 'Academic and precise — suitable for a literature review section',
       constraints: 'Max 300 words. Distinguish between the authors\' claims and your assessment. Note any methodological concerns.',
-    },
-  },
-  {
-    id: 'research-compare-sources',
-    name: 'Compare Multiple Sources',
-    description: 'Synthesize and compare findings across multiple sources.',
-    category: GoalCategory.Research,
-    fields: {
-      role: 'A research analyst who excels at comparative analysis',
-      task: 'Compare these sources on [topic]: [list sources]. Identify areas of agreement, disagreement, and gaps in the literature.',
-      outputFormat: 'Comparison matrix table + synthesis paragraph summarizing the state of knowledge',
-      constraints: 'Cite specific claims, not just general positions. Flag any methodological differences that explain disagreements.',
-    },
-  },
-  {
-    id: 'research-explain-concept',
-    name: 'Explain a Complex Concept',
-    description: 'Break down a difficult concept into understandable layers.',
-    category: GoalCategory.Research,
-    fields: {
-      role: 'A science communicator who can explain complex topics at multiple levels',
-      task: 'Explain [concept] at three levels: (1) for a curious 12-year-old, (2) for a college student, (3) for a domain expert. Use analogies at each level.',
-      outputFormat: 'Three labeled sections (Beginner / Intermediate / Expert) with an analogy box for each',
-      tone: 'Clear, engaging, accurate — like a great professor',
     },
   },
 
@@ -245,28 +260,16 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
     },
   },
   {
-    id: 'marketing-social-post',
-    name: 'Generate Social Media Posts',
-    description: 'Create platform-specific social media content.',
+    id: 'marketing-linkedin-thread',
+    name: 'Viral LinkedIn Post',
+    description: 'Craft an engaging LinkedIn post with strong hooks and formatted spacing.',
     category: GoalCategory.MarketingCopy,
     fields: {
-      role: 'A social media manager for a [your industry] brand',
-      task: 'Write 5 social media post variations for [platform] about [topic/announcement]. Each should have a unique hook.',
-      outputFormat: 'Numbered list. Each post: Hook → Body → CTA → Suggested hashtags',
-      tone: 'Authentic, engaging, scroll-stopping — not corporate',
-      constraints: 'Platform character limits. At least one post should be a question. Include emoji sparingly.',
-    },
-  },
-  {
-    id: 'marketing-email-sequence',
-    name: 'Email Marketing Sequence',
-    description: 'Plan a multi-email nurture or launch sequence.',
-    category: GoalCategory.MarketingCopy,
-    fields: {
-      role: 'An email marketing strategist with a focus on high open and click-through rates',
-      task: 'Create a [3/5/7]-email sequence for [goal: launch, nurture, onboarding]. Each email should build on the previous one and drive toward [desired action].',
-      outputFormat: 'Per email: Subject line → Preview text → Body outline → CTA → Send timing',
-      constraints: 'Subject lines under 50 characters. Each email should have exactly ONE CTA. Include A/B test suggestions for subject lines.',
+      role: 'A top LinkedIn ghostwriter and personal branding coach',
+      task: 'Write a viral LinkedIn post sharing an insightful story/lesson about [topic].',
+      outputFormat: 'Hook line (under 10 words) → Re-hook line → Short 1-sentence paragraphs → Takeaway list → Engagement question',
+      tone: 'Authentic, punchy, inspiring',
+      constraints: 'Use short lines with line breaks. No corporate jargon or hashtags spam.',
     },
   },
 
@@ -290,23 +293,11 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
       constraints: 'Mix behavioral, technical, and situational questions. Include at least 2 "curveball" questions.',
     },
   },
-  {
-    id: 'custom-learning-plan',
-    name: 'Create a Learning Plan',
-    description: 'Build a structured learning roadmap for any skill.',
-    category: GoalCategory.Custom,
-    fields: {
-      role: 'An expert educator who designs effective self-study curricula',
-      task: 'Create a [timeframe] learning plan for mastering [skill/topic] from [current level] to [target level]. Include milestones, resources, and practice exercises.',
-      outputFormat: 'Week-by-week schedule with: Topic → Resources → Practice exercise → Milestone check',
-      constraints: 'Assume 1-2 hours of study per day. Prefer free resources. Include both theory and hands-on practice.',
-    },
-  },
 ];
 
 /** Get templates for a specific category */
 export function getTemplatesForCategory(category: GoalCategory): PromptTemplate[] {
-  return PROMPT_TEMPLATES.filter((t) => t.category === category);
+  return PROMPT_TEMPLATES.filter((t) => t.category === category || t.category === GoalCategory.Custom);
 }
 
 /** Get a template by ID */

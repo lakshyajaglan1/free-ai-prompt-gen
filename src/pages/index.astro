@@ -13,6 +13,10 @@ import PromptHistory from '../components/PromptHistory.astro';
 import TemplateLibrary from '../components/TemplateLibrary.astro';
 import ApiKeySettings from '../components/ApiKeySettings.astro';
 import AiRefinePanel from '../components/AiRefinePanel.astro';
+import StepProgress from '../components/StepProgress.astro';
+import TrustBanner from '../components/TrustBanner.astro';
+import PromptScoreBar from '../components/PromptScoreBar.astro';
+import EnhanceButton from '../components/EnhanceButton.astro';
 ---
 
 <Layout>
@@ -48,6 +52,12 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
       </div>
     </section>
 
+    <!-- Social proof stats banner -->
+    <TrustBanner />
+
+    <!-- Step Progress bar -->
+    <StepProgress />
+
     <!-- ════════════════════════════════════
          WIZARD SECTION
          ════════════════════════════════════ -->
@@ -71,12 +81,14 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
         <!-- Left column: Form -->
         <div class="flex flex-col gap-6" id="wizard-left-col">
           <PromptForm />
+          <EnhanceButton />
         </div>
 
-        <!-- Right column: Preview + Why + AI Refine -->
+        <!-- Right column: Preview + Score + Why + AI Refine -->
         <div class="flex flex-col gap-4" id="wizard-right-col">
           <div class="md:sticky md:top-[80px]" style="align-self: flex-start;">
             <div class="flex flex-col gap-4">
+              <PromptScoreBar />
               <PreviewPanel />
               <WhyThisWorksPanel />
               <AiRefinePanel />
@@ -308,6 +320,8 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
   import { getTemplatesForCategory, PROMPT_TEMPLATES } from '../lib/promptTemplates';
   import type { PromptTemplate } from '../lib/types';
   import { BEFORE_AFTER_EXAMPLES } from '../lib/beforeAfterExamples';
+  import { scorePrompt } from '../lib/promptScoring';
+  import { enhancePromptLocally } from '../lib/promptEnhancer';
   import {
     getSavedPrompts,
     savePrompt,
@@ -356,6 +370,7 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
       card.dataset.active = 'true';
       updateForm();
       updateBeforeAfter();
+      updateStepProgress(2);
     });
   });
 
@@ -373,6 +388,7 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
       frameworkDesc.textContent = FRAMEWORK_META[fw].description;
       updateForm();
       reassemble();
+      updateStepProgress(3);
     });
   });
 
@@ -388,6 +404,9 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
     'ChatGPT': "Formatted with Markdown headers (## Role, ## Task) — ChatGPT's preferred structure.",
     'Claude': 'Structured with XML tags (<role>, <task>) — Claude responds exceptionally well to this format.',
     'Gemini': 'Bold-labeled sections (**Role:** ...) — Gemini handles this structured markdown cleanly.',
+    'Llama': 'Formatted with Meta Llama <|system|> and <|user|> prompt tokens.',
+    'Mistral': 'Formatted with Mistral [INST] instruction tags for open-weights models.',
+    'DeepSeek': 'Markdown headers with explicit step-by-step reasoning instructions.',
   };
 
   modelTabs.forEach((tab) => {
@@ -455,19 +474,98 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
       const key = ta.dataset.fieldKey as FieldKey;
       state.fields[key] = ta.value;
       reassemble();
+      updateStepProgress(4);
     });
   });
 
   // ══════════════════════════════════════
-  // PROMPT ASSEMBLY & PREVIEW
+  // ONE-CLICK AUTO ENHANCE
+  // ══════════════════════════════════════
+  const btnEnhance = document.getElementById('btn-enhance-prompt');
+  const enhanceFeedbackBadge = document.getElementById('enhance-feedback-badge');
+  const enhanceFeedbackText = document.getElementById('enhance-feedback-text');
+
+  btnEnhance?.addEventListener('click', () => {
+    const result = enhancePromptLocally(state.fields, state.category, state.framework);
+    state.fields = { ...result.fields };
+    textareas.forEach((ta) => {
+      const key = ta.dataset.fieldKey as FieldKey;
+      ta.value = state.fields[key] ?? '';
+    });
+    reassemble();
+
+    if (enhanceFeedbackBadge && enhanceFeedbackText) {
+      enhanceFeedbackText.textContent = `✨ Enhanced: ${result.changesMade.slice(0, 2).join(', ')}`;
+      enhanceFeedbackBadge.classList.remove('hidden');
+      setTimeout(() => {
+        enhanceFeedbackBadge.classList.add('hidden');
+      }, 4000);
+    }
+  });
+
+  // ══════════════════════════════════════
+  // STEP PROGRESS INDICATOR
+  // ══════════════════════════════════════
+  function updateStepProgress(activeStep: number) {
+    const stepItems = document.querySelectorAll<HTMLElement>('.step-item');
+    stepItems.forEach((item) => {
+      const stepNum = parseInt(item.dataset.step || '1', 10);
+      const badge = item.querySelector('.step-badge') as HTMLElement;
+      const label = item.querySelector('span') as HTMLElement;
+
+      if (stepNum < activeStep) {
+        item.dataset.state = 'completed';
+        if (badge) {
+          badge.className = 'w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-medium border border-link bg-link text-on-primary step-badge transition-all';
+          badge.textContent = '✓';
+        }
+      } else if (stepNum === activeStep) {
+        item.dataset.state = 'active';
+        if (badge) {
+          badge.className = 'w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-medium border border-ink bg-ink text-on-primary step-badge transition-all';
+          badge.textContent = stepNum.toString();
+        }
+        if (label) {
+          label.className = 'body-sm-strong text-ink hidden sm:inline';
+        }
+      } else {
+        item.dataset.state = 'pending';
+        if (badge) {
+          badge.className = 'w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-medium border border-hairline bg-canvas-soft text-mute step-badge transition-all';
+          badge.textContent = stepNum.toString();
+        }
+        if (label) {
+          label.className = 'body-sm text-mute hidden sm:inline';
+        }
+      }
+    });
+  }
+
+  // ══════════════════════════════════════
+  // PROMPT ASSEMBLY, PREVIEW, SCORE & STATS
   // ══════════════════════════════════════
   const previewEmpty = document.getElementById('preview-empty')!;
   const previewContent = document.getElementById('preview-content')!;
   const previewText = document.getElementById('preview-text')!;
   const btnCopy = document.getElementById('btn-copy-prompt')! as HTMLButtonElement;
-  const btnDownload = document.getElementById('btn-download-prompt')! as HTMLButtonElement;
+  const btnDownloadTxt = document.getElementById('btn-download-txt')! as HTMLButtonElement;
+  const btnDownloadMd = document.getElementById('btn-download-md')! as HTMLButtonElement;
+  const btnShare = document.getElementById('btn-share-prompt')! as HTMLButtonElement;
   const btnSave = document.getElementById('btn-save-prompt')! as HTMLButtonElement;
   const copyLabel = document.getElementById('copy-label')!;
+  const shareLabel = document.getElementById('share-label')!;
+
+  // Score UI Elements
+  const scoreProgressFill = document.getElementById('score-progress-fill') as HTMLElement;
+  const scoreGradeBadge = document.getElementById('score-grade-badge') as HTMLElement;
+  const scoreLabel = document.getElementById('score-label') as HTMLElement;
+  const scoreNumber = document.getElementById('score-number') as HTMLElement;
+  const scoreTipsList = document.getElementById('score-tips-list') as HTMLElement;
+
+  // Stats UI Elements
+  const statWords = document.getElementById('stat-words') as HTMLElement;
+  const statChars = document.getElementById('stat-chars') as HTMLElement;
+  const statTokensBadge = document.getElementById('stat-tokens-badge') as HTMLElement;
 
   function reassemble() {
     const prompt = assemblePrompt(state.fields, state.framework, state.targetModel);
@@ -477,19 +575,63 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
       previewContent.classList.remove('hidden');
       previewText.textContent = prompt;
       btnCopy.disabled = false;
-      btnDownload.disabled = false;
+      if (btnDownloadTxt) btnDownloadTxt.disabled = false;
+      if (btnDownloadMd) btnDownloadMd.disabled = false;
+      if (btnShare) btnShare.disabled = false;
       btnSave.disabled = false;
     } else {
       previewEmpty.classList.remove('hidden');
       previewContent.classList.add('hidden');
       previewText.textContent = '';
       btnCopy.disabled = true;
-      btnDownload.disabled = true;
+      if (btnDownloadTxt) btnDownloadTxt.disabled = true;
+      if (btnDownloadMd) btnDownloadMd.disabled = true;
+      if (btnShare) btnShare.disabled = true;
       btnSave.disabled = true;
     }
 
+    updateScoreAndStats(prompt);
     updateWhyPanel();
     updateRefineButton();
+  }
+
+  function updateScoreAndStats(prompt: string) {
+    // 1. Scoring
+    const scoreRes = scorePrompt(state.fields, state.framework);
+
+    if (scoreProgressFill) {
+      scoreProgressFill.style.width = `${scoreRes.score}%`;
+      if (scoreRes.score >= 75) {
+        scoreProgressFill.style.background = 'linear-gradient(90deg, #50e3c2 0%, #0070f3 100%)';
+      } else if (scoreRes.score >= 40) {
+        scoreProgressFill.style.background = 'linear-gradient(90deg, #f5a623 0%, #0070f3 100%)';
+      } else {
+        scoreProgressFill.style.background = 'linear-gradient(90deg, #ee0000 0%, #f5a623 100%)';
+      }
+    }
+
+    if (scoreGradeBadge) scoreGradeBadge.textContent = scoreRes.grade;
+    if (scoreLabel) scoreLabel.textContent = scoreRes.label;
+    if (scoreNumber) scoreNumber.textContent = `${scoreRes.score}/100`;
+
+    if (scoreTipsList) {
+      if (scoreRes.tips.length > 0) {
+        scoreTipsList.innerHTML = scoreRes.tips
+          .map((tip) => `<li class="caption text-body flex items-start gap-2"><span class="text-link">💡</span>${tip}</li>`)
+          .join('');
+      } else {
+        scoreTipsList.innerHTML = `<li class="caption text-success flex items-start gap-2"><span>✅</span> Prompt looks highly structured and complete!</li>`;
+      }
+    }
+
+    // 2. Stats
+    const charCount = prompt.length;
+    const wordCount = prompt.trim() ? prompt.trim().split(/\s+/).length : 0;
+    const estTokens = Math.ceil(charCount / 4.2);
+
+    if (statWords) statWords.textContent = wordCount.toString();
+    if (statChars) statChars.textContent = charCount.toString();
+    if (statTokensBadge) statTokensBadge.textContent = `~${estTokens} Tokens`;
   }
 
   // Copy
@@ -512,17 +654,59 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
     }
   });
 
-  // Download
-  btnDownload.addEventListener('click', () => {
-    const text = previewText.textContent ?? '';
-    const blob = new Blob([text], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `prompt-forge-${state.category.toLowerCase().replace(/\s+/g, '-')}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-  });
+  // Download .txt
+  if (btnDownloadTxt) {
+    btnDownloadTxt.addEventListener('click', () => {
+      const text = previewText.textContent ?? '';
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `prompt-forge-${state.category.toLowerCase().replace(/\s+/g, '-')}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  // Download .md
+  if (btnDownloadMd) {
+    btnDownloadMd.addEventListener('click', () => {
+      const text = previewText.textContent ?? '';
+      const mdContent = `# AI Prompt: ${state.fields.task.slice(0, 40) || state.category}\n\n*Target Model:* ${state.targetModel}\n*Framework:* ${state.framework}\n*Category:* ${state.category}\n\n---\n\n${text}`;
+      const blob = new Blob([mdContent], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `prompt-${state.category.toLowerCase().replace(/\s+/g, '-')}.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  // Share Link
+  if (btnShare) {
+    btnShare.addEventListener('click', async () => {
+      const params = new URLSearchParams();
+      params.set('cat', state.category);
+      params.set('fw', state.framework);
+      params.set('model', state.targetModel);
+      if (state.fields.task) params.set('task', state.fields.task);
+      if (state.fields.role) params.set('role', state.fields.role);
+      if (state.fields.context) params.set('context', state.fields.context);
+      if (state.fields.outputFormat) params.set('fmt', state.fields.outputFormat);
+      if (state.fields.constraints) params.set('rules', state.fields.constraints);
+
+      const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}#wizard`;
+
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        if (shareLabel) shareLabel.textContent = 'Copied Link!';
+        setTimeout(() => { if (shareLabel) shareLabel.textContent = 'Share'; }, 2000);
+      } catch {
+        prompt('Copy this shareable link:', shareUrl);
+      }
+    });
+  }
 
   // Save
   btnSave.addEventListener('click', () => {
@@ -729,14 +913,16 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
   });
 
   // ══════════════════════════════════════
-  // TEMPLATE LIBRARY MODAL
+  // TEMPLATE LIBRARY MODAL WITH SEARCH
   // ══════════════════════════════════════
   const templateModal = document.getElementById('template-modal')!;
   const templateBackdrop = document.getElementById('template-backdrop')!;
   const templateList = document.getElementById('template-list')!;
+  const templateSearchInput = document.getElementById('template-search-input') as HTMLInputElement;
 
   function openTemplates() {
     document.body.style.overflow = 'hidden';
+    if (templateSearchInput) templateSearchInput.value = '';
     renderTemplateList();
     templateModal.classList.remove('hidden');
     templateBackdrop.classList.remove('hidden');
@@ -748,22 +934,40 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
     templateBackdrop.classList.add('hidden');
   }
 
-  function renderTemplateList() {
-    const templates = getTemplatesForCategory(state.category);
+  function renderTemplateList(query: string = '') {
+    let templates = PROMPT_TEMPLATES;
+    const cleanQuery = query.toLowerCase().trim();
+
+    if (cleanQuery) {
+      templates = templates.filter(
+        (t) =>
+          t.name.toLowerCase().includes(cleanQuery) ||
+          t.description.toLowerCase().includes(cleanQuery) ||
+          t.category.toLowerCase().includes(cleanQuery)
+      );
+    } else {
+      templates = getTemplatesForCategory(state.category);
+    }
+
+    if (templates.length === 0) {
+      templateList.innerHTML = `<div class="text-center py-8 text-mute"><p class="body-sm">No templates found matching "${escapeHtml(query)}"</p></div>`;
+      return;
+    }
 
     templateList.innerHTML = `
-      <p class="caption text-mute mb-3">Showing templates for <strong>${state.category}</strong>. Pick a category first to see relevant templates.</p>
+      <p class="caption text-mute mb-2">Showing <strong>${templates.length}</strong> template(s)</p>
       ${templates
         .map(
           (t) => `
-          <div class="card mb-2 template-item cursor-pointer" data-template-id="${t.id}" style="padding: var(--sp-sm) var(--sp-md); transition: border-color 0.15s ease;">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="body-sm-strong text-ink">${escapeHtml(t.name)}</p>
-                <p class="caption text-body mt-0.5">${escapeHtml(t.description)}</p>
+          <div class="card border border-hairline hover:border-hairline-strong transition-all duration-150 template-item cursor-pointer p-4 bg-canvas flex items-center justify-between gap-4 rounded-lg shadow-sm" data-template-id="${t.id}">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <p class="body-sm-strong text-ink truncate">${escapeHtml(t.name)}</p>
+                <span class="badge font-mono text-[10px] px-2 py-0.5">${escapeHtml(t.category)}</span>
               </div>
-              <span class="btn-secondary-sm" style="font-size: 12px; height: 28px; padding: 0 8px; flex-shrink: 0;">Use</span>
+              <p class="caption text-body line-clamp-2">${escapeHtml(t.description)}</p>
             </div>
+            <button type="button" class="btn-secondary-sm shrink-0 font-medium">Use</button>
           </div>`
         )
         .join('')}
@@ -778,6 +982,10 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
       });
     });
   }
+
+  templateSearchInput?.addEventListener('input', (e) => {
+    renderTemplateList((e.target as HTMLInputElement).value);
+  });
 
   function loadTemplate(t: PromptTemplate) {
     // Reset fields then apply template
@@ -1209,9 +1417,54 @@ import AiRefinePanel from '../components/AiRefinePanel.astro';
   });
 
   // ══════════════════════════════════════
+  // URL QUERY PARAMS INITIALIZATION
+  // ══════════════════════════════════════
+  function loadFromQueryParams() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('task') && !params.has('cat')) return;
+
+    if (params.has('cat')) {
+      const cat = params.get('cat') as GoalCategory;
+      if (Object.values(GoalCategory).includes(cat)) {
+        state.category = cat;
+        categoryCards.forEach((c) => (c.dataset.active = c.dataset.category === cat ? 'true' : 'false'));
+      }
+    }
+
+    if (params.has('fw')) {
+      const fw = params.get('fw') as Framework;
+      if (Object.values(Framework).includes(fw)) {
+        state.framework = fw;
+        frameworkTabs.forEach((t) => (t.dataset.active = t.dataset.framework === fw ? 'true' : 'false'));
+        if (frameworkDesc) frameworkDesc.textContent = FRAMEWORK_META[fw].description;
+      }
+    }
+
+    if (params.has('model')) {
+      const model = params.get('model') as TargetModel;
+      state.targetModel = model;
+      modelTabs.forEach((t) => (t.dataset.active = t.dataset.model === model ? 'true' : 'false'));
+      if (modelBadge) modelBadge.textContent = model;
+    }
+
+    if (params.has('task')) state.fields.task = params.get('task') || '';
+    if (params.has('role')) state.fields.role = params.get('role') || '';
+    if (params.has('context')) state.fields.context = params.get('context') || '';
+    if (params.has('fmt')) state.fields.outputFormat = params.get('fmt') || '';
+    if (params.has('rules')) state.fields.constraints = params.get('rules') || '';
+
+    textareas.forEach((ta) => {
+      const key = ta.dataset.fieldKey as FieldKey;
+      if (state.fields[key]) ta.value = state.fields[key];
+    });
+  }
+
+  // ══════════════════════════════════════
   // INITIAL RENDER
   // ══════════════════════════════════════
+  loadFromQueryParams();
   updateForm();
+  reassemble();
   updateBeforeAfter();
   updateRefineButton();
   updateThemeUI();

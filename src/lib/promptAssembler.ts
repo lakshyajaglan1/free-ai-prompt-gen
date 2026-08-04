@@ -29,6 +29,12 @@ export function assemblePrompt(
       return assembleChatGPTFormat(filledSections);
     case TargetModel.Gemini:
       return assembleGeminiFormat(filledSections);
+    case TargetModel.Llama:
+      return assembleLlamaFormat(filledSections);
+    case TargetModel.Mistral:
+      return assembleMistralFormat(filledSections);
+    case TargetModel.DeepSeek:
+      return assembleDeepSeekFormat(filledSections);
     case TargetModel.Generic:
     default:
       return assembleGenericFormat(filledSections);
@@ -80,4 +86,37 @@ function assembleGenericFormat(sections: Section[]): string {
   return sections
     .map(({ key, value }) => `[${getSectionName(key)}]\n${value}`)
     .join('\n\n');
+}
+
+/** Llama format - uses system & user prompt structure */
+function assembleLlamaFormat(sections: Section[]): string {
+  const roleSec = sections.find((s) => s.key === 'role');
+  const otherSecs = sections.filter((s) => s.key !== 'role');
+
+  let result = '';
+  if (roleSec) {
+    result += `<|system|>\nYou are ${roleSec.value}</s>\n<|user|>\n`;
+  } else {
+    result += `<|user|>\n`;
+  }
+
+  result += otherSecs.map(({ key, value }) => `### ${getSectionName(key)}\n${value}`).join('\n\n');
+  result += `</s>\n<|assistant|>`;
+  return result;
+}
+
+/** Mistral format - uses [INST] instruction tags */
+function assembleMistralFormat(sections: Section[]): string {
+  const formatted = sections
+    .map(({ key, value }) => `[${getSectionName(key)}]: ${value}`)
+    .join('\n\n');
+  return `[INST] ${formatted} [/INST]`;
+}
+
+/** DeepSeek format - Markdown headers with explicit chain-of-thought instructions */
+function assembleDeepSeekFormat(sections: Section[]): string {
+  const headers = sections
+    .map(({ key, value }) => `### ${getSectionName(key)}\n${value}`)
+    .join('\n\n');
+  return `${headers}\n\n### Reasoning\nThink step-by-step before producing the final response.`;
 }
