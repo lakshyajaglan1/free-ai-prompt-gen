@@ -4,17 +4,17 @@
 
 <section id="before-after-section" class="w-full">
   <div class="card-lg">
-    <div class="flex items-center justify-between mb-4">
-      <div class="flex items-center gap-3">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+      <div class="flex items-center gap-2.5">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
           <polyline points="16 18 22 12 16 6"></polyline>
           <polyline points="8 6 2 12 8 18"></polyline>
         </svg>
-        <span class="display-sm text-ink">See the difference.</span>
+        <h2 class="display-sm text-ink">See the difference.</h2>
       </div>
-      <div class="flex gap-1" id="before-after-tabs">
-        <button class="tab-ghost ba-tab" data-ba="weak" data-active="true" style="font-size: 12px; padding: 4px 12px;">❌ Weak</button>
-        <button class="tab-ghost ba-tab" data-ba="strong" style="font-size: 12px; padding: 4px 12px;">✅ Strong</button>
+      <div class="flex gap-1.5 self-stretch sm:self-auto justify-end" id="before-after-tabs">
+        <button class="tab-ghost ba-tab flex-1 sm:flex-initial text-center" data-ba="weak" data-active="true" style="font-size: 12px; padding: 4px 12px;">❌ Weak</button>
+        <button class="tab-ghost ba-tab flex-1 sm:flex-initial text-center" data-ba="strong" style="font-size: 12px; padding: 4px 12px;">✅ Strong</button>
       </div>
     </div>
 

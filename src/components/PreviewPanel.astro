@@ -5,12 +5,12 @@ import PromptStats from './PromptStats.astro';
 
 <section id="preview-panel" class="w-full">
   <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2 sm:gap-3">
       <span class="caption-mono text-mute uppercase tracking-wider">Live Preview</span>
-      <span id="preview-model-badge" class="badge">Generic / Any</span>
+      <span id="preview-model-badge" class="badge truncate max-w-[120px] sm:max-w-none">Generic / Any</span>
     </div>
-    <div class="flex flex-wrap gap-2">
-      <button id="btn-copy-prompt" class="btn-secondary-sm" title="Copy prompt to clipboard" disabled>
+    <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+      <button id="btn-copy-prompt" class="btn-secondary-sm flex-1 sm:flex-initial justify-center" title="Copy prompt to clipboard" disabled>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
           <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -18,15 +18,15 @@ import PromptStats from './PromptStats.astro';
         <span id="copy-label">Copy</span>
       </button>
       
-      <button id="btn-download-txt" class="btn-secondary-sm" title="Download as .txt file" disabled>
+      <button id="btn-download-txt" class="btn-secondary-sm min-w-[42px] justify-center" title="Download as .txt file" disabled>
         .txt
       </button>
 
-      <button id="btn-download-md" class="btn-secondary-sm" title="Download as .md file" disabled>
+      <button id="btn-download-md" class="btn-secondary-sm min-w-[42px] justify-center" title="Download as .md file" disabled>
         .md
       </button>
 
-      <button id="btn-share-prompt" class="btn-secondary-sm" title="Copy shareable URL link to this prompt" disabled>
+      <button id="btn-share-prompt" class="btn-secondary-sm justify-center" title="Copy shareable URL link to this prompt" disabled>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="18" cy="5" r="3"></circle>
           <circle cx="6" cy="12" r="3"></circle>
@@ -34,16 +34,16 @@ import PromptStats from './PromptStats.astro';
           <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
           <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
         </svg>
-        <span id="share-label">Share</span>
+        <span id="share-label" class="hidden sm:inline">Share</span>
       </button>
 
-      <button id="btn-save-prompt" class="btn-primary-sm" title="Save prompt to history" disabled>
+      <button id="btn-save-prompt" class="btn-primary-sm flex-1 sm:flex-initial justify-center" title="Save prompt to history" disabled>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
           <polyline points="17 21 17 13 7 13 7 21"></polyline>
           <polyline points="7 3 7 8 15 8"></polyline>
         </svg>
-        Save
+        <span>Save</span>
       </button>
     </div>
   </div>

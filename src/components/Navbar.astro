@@ -16,23 +16,21 @@ function isActive(href: string) {
   }
   return pathname.startsWith(href);
 }
----
-
-<header id="navbar" class="sticky top-0 z-50 bg-canvas border-b border-hairline transition-colors duration-200" style="height: 64px;">
-  <div class="w-full flex items-center justify-between h-full" style="padding: 0 clamp(1rem, 5vw, 4rem);">
+---<header id="navbar" class="sticky top-0 z-50 bg-canvas border-b border-hairline transition-colors duration-200" style="height: 64px;">
+  <div class="w-full flex items-center justify-between h-full px-2.5 sm:px-6 md:px-8 max-w-7xl mx-auto">
     <!-- Left: Brand -->
-    <a href="/" class="flex items-center gap-2.5 no-underline group shrink-0" id="nav-brand" aria-label="AI Prompt Generator Home">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden transition-transform duration-150 group-hover:scale-105 shadow-sm">
+    <a href="/" class="flex items-center gap-1.5 min-[360px]:gap-2 no-underline group shrink-0" id="nav-brand" aria-label="AI Prompt Generator Home">
+      <div class="w-7 h-7 min-[360px]:w-8 min-[360px]:h-8 rounded-lg flex items-center justify-center overflow-hidden transition-transform duration-150 group-hover:scale-105 shadow-sm shrink-0">
         <svg viewBox="0 0 600 600" class="w-full h-full" aria-hidden="true">
           <rect width="600" height="600" rx="130" fill="#000000" />
           <rect x="177.5" y="177.5" width="245" height="245" rx="42" fill="none" stroke="#ffffff" stroke-width="33" stroke-linecap="round" stroke-linejoin="round" />
           <path d="M 257 230 L 344 300 L 257 370" fill="none" stroke="#ffffff" stroke-width="33" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </div>
-      <span class="body-md-strong text-ink tracking-tight">Free AI Prompt Gen</span>
+      <span class="body-md-strong text-ink tracking-tight text-xs min-[360px]:text-sm sm:text-base truncate max-w-[125px] min-[360px]:max-w-none">Free AI Prompt Gen</span>
     </a>
 
-    <!-- Center: Desktop Navigation Links (Visible on home & all pages) -->
+    <!-- Center: Desktop Navigation Links -->
     <nav class="hidden md:flex items-center gap-1 bg-canvas-soft p-1 rounded-full border border-hairline" id="desktop-nav-links" aria-label="Main Navigation">
       {navLinks.map((link) => {
         const active = isActive(link.href);
@@ -53,16 +51,16 @@ function isActive(href: string) {
     </nav>
 
     <!-- Right Cluster: Actions -->
-    <div class="flex items-center gap-2 sm:gap-3">
+    <div class="flex items-center gap-1 sm:gap-2">
       <!-- Dark mode toggle button -->
       <button
         id="btn-theme-toggle"
-        class="btn-icon shrink-0"
+        class="btn-icon shrink-0 w-8 h-8 sm:w-9 sm:h-9"
         title="Toggle Light / Dark theme"
         aria-label="Toggle theme"
       >
         <!-- Sun Icon (shown in dark mode) -->
-        <svg id="theme-icon-sun" class="hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg id="theme-icon-sun" class="hidden" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="5"></circle>
           <line x1="12" y1="1" x2="12" y2="3"></line>
           <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -74,7 +72,7 @@ function isActive(href: string) {
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
         </svg>
         <!-- Moon Icon (shown in light mode) -->
-        <svg id="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg id="theme-icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
@@ -82,31 +80,31 @@ function isActive(href: string) {
       <!-- History / Saved Prompts button -->
       <button
         id="btn-history"
-        class="btn-secondary-sm w-9 sm:w-auto px-0 sm:px-3.5 gap-2 shrink-0 justify-center"
+        class="btn-secondary-sm w-8 h-8 sm:w-auto px-0 sm:px-3.5 gap-2 shrink-0 justify-center"
         title="Saved Prompts"
         aria-label="Open saved prompts"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
           <circle cx="12" cy="12" r="10"></circle>
           <polyline points="12 6 12 12 16 14"></polyline>
         </svg>
-        <span class="hidden sm:inline body-sm-strong whitespace-nowrap">Saved Prompts</span>
+        <span class="hidden lg:inline body-sm-strong whitespace-nowrap">Saved Prompts</span>
       </button>
 
       <!-- Settings button (API key) -->
       <button
         id="btn-settings"
-        class="btn-secondary-sm w-9 sm:w-auto px-0 sm:px-3.5 gap-2 shrink-0 justify-center"
+        class="btn-secondary-sm w-8 h-8 sm:w-auto px-0 sm:px-3.5 gap-2 shrink-0 justify-center"
         title="Settings & API Key"
         aria-label="Open settings"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
           <circle cx="7.5" cy="15.5" r="5.5"></circle>
           <path d="m21 2-9.6 9.6"></path>
           <path d="m15.5 7.5 3 3"></path>
           <path d="m18.5 4.5 3 3"></path>
         </svg>
-        <span class="hidden sm:inline body-sm-strong whitespace-nowrap">Settings</span>
+        <span class="hidden lg:inline body-sm-strong whitespace-nowrap">Settings</span>
       </button>
 
       <!-- GitHub repository link -->
@@ -114,11 +112,11 @@ function isActive(href: string) {
         href="https://github.com/lakshyajaglan1/free-ai-prompt-gen"
         target="_blank"
         rel="noopener noreferrer"
-        class="btn-icon shrink-0"
+        class="btn-icon shrink-0 w-8 h-8 sm:w-9 sm:h-9 hidden sm:inline-flex"
         title="GitHub Repository"
         aria-label="GitHub Repository"
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path>
         </svg>
       </a>
@@ -126,17 +124,17 @@ function isActive(href: string) {
       <!-- Mobile menu hamburger button -->
       <button
         id="btn-mobile-menu"
-        class="md:hidden btn-icon shrink-0"
+        class="md:hidden btn-icon shrink-0 w-8 h-8 sm:w-9 sm:h-9"
         title="Toggle mobile menu"
         aria-label="Toggle mobile menu"
         aria-expanded="false"
       >
-        <svg id="icon-menu-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg id="icon-menu-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
         </svg>
-        <svg id="icon-menu-close" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg id="icon-menu-close" class="hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
@@ -145,33 +143,36 @@ function isActive(href: string) {
   </div>
 
   <!-- Mobile Dropdown Navigation Menu -->
-  <div id="mobile-menu" class="hidden md:hidden absolute top-[64px] left-0 right-0 bg-canvas border-b border-hairline shadow-level-4 p-4 z-50">
-    <nav class="flex flex-col gap-1.5" aria-label="Mobile Navigation">
+  <div id="mobile-menu" class="hidden md:hidden fixed top-[64px] left-0 right-0 bottom-0 bg-canvas/95 backdrop-blur-md border-b border-hairline shadow-level-4 p-5 z-50 overflow-y-auto">
+    <nav class="flex flex-col gap-2 max-w-md mx-auto" aria-label="Mobile Navigation">
       {navLinks.map((link) => {
         const active = isActive(link.href);
         return (
           <a
             href={link.href}
-            class={`body-md px-4 py-2.5 rounded-lg transition-colors flex items-center justify-between ${
+            class={`body-md px-4 py-3 rounded-xl transition-colors flex items-center justify-between ${
               active
-                ? 'bg-ink text-on-primary font-medium'
-                : 'text-body hover:text-ink hover:bg-canvas-soft'
+                ? 'bg-ink text-on-primary font-medium shadow-sm'
+                : 'text-body hover:text-ink hover:bg-canvas-soft border border-hairline/50'
             }`}
           >
             <span>{link.name}</span>
             {active && (
-              <span class="w-1.5 h-1.5 rounded-full bg-cyan inline-block"></span>
+              <span class="w-2 h-2 rounded-full bg-cyan inline-block"></span>
             )}
           </a>
         );
       })}
+      
+      <div class="h-px bg-hairline my-2"></div>
+      
       <a
         href="https://github.com/lakshyajaglan1/free-ai-prompt-gen"
         target="_blank"
         rel="noopener noreferrer"
-        class="body-md px-4 py-2.5 rounded-lg transition-colors flex items-center justify-between text-body hover:text-ink hover:bg-canvas-soft"
+        class="body-md px-4 py-3 rounded-xl border border-hairline transition-colors flex items-center justify-between text-body hover:text-ink hover:bg-canvas-soft"
       >
-        <span class="flex items-center gap-2">
+        <span class="flex items-center gap-2.5">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path>
           </svg>
@@ -184,7 +185,7 @@ function isActive(href: string) {
 </header>
 
 <script>
-  // Mobile Menu Toggle Script
+  // Mobile Menu Toggle Script with Body Scroll Lock
   const btnMobileMenu = document.getElementById('btn-mobile-menu');
   const mobileMenu = document.getElementById('mobile-menu');
   const iconMenuOpen = document.getElementById('icon-menu-open');
@@ -197,6 +198,18 @@ function isActive(href: string) {
       mobileMenu.classList.toggle('hidden');
       iconMenuOpen?.classList.toggle('hidden');
       iconMenuClose?.classList.toggle('hidden');
+      document.body.style.overflow = isExpanded ? '' : 'hidden';
+    });
+
+    // Close menu when clicking navigation links
+    mobileMenu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        btnMobileMenu.setAttribute('aria-expanded', 'false');
+        mobileMenu.classList.add('hidden');
+        iconMenuOpen?.classList.remove('hidden');
+        iconMenuClose?.classList.add('hidden');
+        document.body.style.overflow = '';
+      });
     });
   }
 </script>

@@ -26,7 +26,10 @@ import EnhanceButton from '../components/EnhanceButton.astro';
     <!-- ════════════════════════════════════
          HERO SECTION
          ════════════════════════════════════ -->
-    <section class="relative overflow-hidden" style="padding: var(--sp-4xl) clamp(1rem, 5vw, 4rem);">
+    <!-- ════════════════════════════════════
+         HERO SECTION
+         ════════════════════════════════════ -->
+    <section class="relative overflow-hidden px-4 sm:px-6 md:px-8 py-10 sm:py-16 md:py-20">
       <!-- Mesh gradient backdrop -->
       <div class="absolute inset-0 mesh-gradient opacity-70 pointer-events-none" aria-hidden="true"></div>
 
@@ -39,15 +42,15 @@ import EnhanceButton from '../components/EnhanceButton.astro';
         <p class="body-lg text-body mb-6 mx-auto" style="max-width: 540px;">
           A rule-based prompt engineering wizard that teaches you why each field matters — not a black box that wraps an AI call.
         </p>
-        <div class="flex items-center justify-center gap-3">
-          <a href="#wizard" class="btn-primary">
+        <div class="flex flex-col min-[440px]:flex-row items-center justify-center gap-3 w-full max-w-xs min-[440px]:max-w-none mx-auto">
+          <a href="#wizard" class="btn-primary w-full min-[440px]:w-auto">
             Start building
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
               <polyline points="12 5 19 12 12 19"></polyline>
             </svg>
           </a>
-          <a href="#before-after-section" class="btn-secondary">See an example</a>
+          <a href="#before-after-section" class="btn-secondary w-full min-[440px]:w-auto">See an example</a>
         </div>
       </div>
     </section>
@@ -61,7 +64,7 @@ import EnhanceButton from '../components/EnhanceButton.astro';
     <!-- ════════════════════════════════════
          WIZARD SECTION
          ════════════════════════════════════ -->
-    <section id="wizard" class="w-full" style="padding: var(--sp-3xl) clamp(1rem, 5vw, 4rem);">
+    <section id="wizard" class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-12">
 
       <!-- Step 1: Category -->
       <div class="mb-8">
@@ -69,11 +72,19 @@ import EnhanceButton from '../components/EnhanceButton.astro';
       </div>
 
       <!-- Step 2: Framework + Model (side by side on desktop) -->
-      <div class="grid gap-6 mb-8" style="grid-template-columns: 1fr;">
-        <div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
-          <FrameworkPicker />
-          <ModelPicker />
-        </div>
+      <div class="grid gap-6 mb-8 grid-cols-1 md:grid-cols-2">
+        <FrameworkPicker />
+        <ModelPicker />
+      </div>
+
+      <!-- Mobile View Switcher Tab Bar (Visible on mobile <960px) -->
+      <div class="flex md:hidden items-center justify-center gap-1 bg-canvas-soft p-1 rounded-xl border border-hairline mb-4 w-full" id="mobile-view-switcher">
+        <button class="flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all text-center bg-ink text-on-primary shadow-sm" id="btn-tab-form" type="button">
+          📝 Edit Form
+        </button>
+        <button class="flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all text-center text-body hover:text-ink" id="btn-tab-preview" type="button">
+          👁️ Live Preview &amp; Actions
+        </button>
       </div>
 
       <!-- Step 3: Form + Preview (two-column on desktop) -->
@@ -101,14 +112,14 @@ import EnhanceButton from '../components/EnhanceButton.astro';
     <!-- ════════════════════════════════════
          BEFORE / AFTER SECTION
          ════════════════════════════════════ -->
-    <section class="w-full" style="padding: 0 clamp(1rem, 5vw, 4rem) var(--sp-4xl);">
+    <section class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pb-10 sm:pb-16">
       <BeforeAfterToggle />
     </section>
 
     <!-- ════════════════════════════════════
          SEO DOCUMENTATION & GUIDE SECTION
          ════════════════════════════════════ -->
-    <section class="w-full border-t border-hairline bg-canvas-soft" style="padding: var(--sp-5xl) clamp(1rem, 5vw, 4rem);">
+    <section class="w-full border-t border-hairline bg-canvas-soft px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-24">
       <div class="mx-auto" style="max-width: 1080px;">
         <div class="text-center mb-12">
           <div class="caption-mono text-mute uppercase tracking-wider mb-2">SEO Guide &amp; Documentation</div>
@@ -120,9 +131,9 @@ import EnhanceButton from '../components/EnhanceButton.astro';
           </p>
         </div>
 
-        <div class="grid gap-8 mb-12" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+        <div class="grid gap-6 md:grid-cols-2 mb-12">
           <!-- Overview Card -->
-          <div class="card p-6 border border-hairline bg-canvas">
+          <div class="card p-5 sm:p-6 border border-hairline bg-canvas">
             <h3 class="display-sm text-ink mb-3 flex items-center gap-2">
               <span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
               What is an AI Prompt Generator?
@@ -136,7 +147,7 @@ import EnhanceButton from '../components/EnhanceButton.astro';
           </div>
 
           <!-- Why Best Tool Card -->
-          <div class="card p-6 border border-hairline bg-canvas">
+          <div class="card p-5 sm:p-6 border border-hairline bg-canvas">
             <h3 class="display-sm text-ink mb-3 flex items-center gap-2">
               <span class="w-2 h-2 rounded-full bg-link inline-block"></span>
               Why This Is the Best AI Prompt Generator Tool
@@ -153,9 +164,9 @@ import EnhanceButton from '../components/EnhanceButton.astro';
         <!-- Modalities Breakdown Grid -->
         <div class="mb-12">
           <h3 class="display-md text-ink mb-6 text-center">Supported Modalities: Text, Images, Video &amp; Coding Prompts</h3>
-          <div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+          <div class="grid gap-4 sm:gap-6 grid-cols-1 min-[540px]:grid-cols-2 lg:grid-cols-4">
             <!-- Text & Gemini -->
-            <div class="card p-5 border border-hairline bg-canvas">
+            <div class="card p-4 sm:p-5 border border-hairline bg-canvas">
               <div class="caption-mono text-link mb-2">01. TEXT &amp; GEMINI</div>
               <h4 class="body-md-strong text-ink mb-2">AI Prompt Generator Text &amp; Gemini AI Prompt</h4>
               <p class="body-sm text-body leading-relaxed">
@@ -164,7 +175,7 @@ import EnhanceButton from '../components/EnhanceButton.astro';
             </div>
 
             <!-- Image Generation -->
-            <div class="card p-5 border border-hairline bg-canvas">
+            <div class="card p-4 sm:p-5 border border-hairline bg-canvas">
               <div class="caption-mono text-violet mb-2" style="color: var(--color-violet-deep);">02. IMAGE &amp; ART</div>
               <h4 class="body-md-strong text-ink mb-2">AI Image Prompt Generator Free</h4>
               <p class="body-sm text-body leading-relaxed">
@@ -173,7 +184,7 @@ import EnhanceButton from '../components/EnhanceButton.astro';
             </div>
 
             <!-- Video Generation -->
-            <div class="card p-5 border border-hairline bg-canvas">
+            <div class="card p-4 sm:p-5 border border-hairline bg-canvas">
               <div class="caption-mono text-warning-deep mb-2" style="color: var(--color-warning-deep);">03. VIDEO &amp; MOTION</div>
               <h4 class="body-md-strong text-ink mb-2">Video AI Prompt Generator</h4>
               <p class="body-sm text-body leading-relaxed">
@@ -182,7 +193,7 @@ import EnhanceButton from '../components/EnhanceButton.astro';
             </div>
 
             <!-- Coding Prompts -->
-            <div class="card p-5 border border-hairline bg-canvas">
+            <div class="card p-4 sm:p-5 border border-hairline bg-canvas">
               <div class="caption-mono text-cyan-deep mb-2" style="color: var(--color-cyan-deep);">04. CODE &amp; REFACTORING</div>
               <h4 class="body-md-strong text-ink mb-2">Coding Prompt Generator</h4>
               <p class="body-sm text-body leading-relaxed">
@@ -193,7 +204,7 @@ import EnhanceButton from '../components/EnhanceButton.astro';
         </div>
 
         <!-- FAQ Section -->
-        <div class="card p-8 border border-hairline bg-canvas" id="faq-section">
+        <div class="card p-5 sm:p-8 border border-hairline bg-canvas" id="faq-section">
           <div class="text-center mb-8">
             <div class="caption-mono text-link mb-2 uppercase tracking-wider">FREQUENTLY ASKED QUESTIONS</div>
             <h3 class="display-md text-ink mb-2">Everything You Need to Know About AI Prompting</h3>
@@ -356,6 +367,39 @@ import EnhanceButton from '../components/EnhanceButton.astro';
   // ── Helper: generate unique ID ──
   function genId(): string {
     return `pf_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  }
+
+  // ══════════════════════════════════════
+  // MOBILE VIEW SWITCHER (Form vs Preview)
+  // ══════════════════════════════════════
+  const btnTabForm = document.getElementById('btn-tab-form');
+  const btnTabPreview = document.getElementById('btn-tab-preview');
+  const wizardLeftCol = document.getElementById('wizard-left-col');
+  const wizardRightCol = document.getElementById('wizard-right-col');
+
+  if (btnTabForm && btnTabPreview && wizardLeftCol && wizardRightCol) {
+    btnTabForm.addEventListener('click', () => {
+      btnTabForm.className = 'flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all text-center bg-ink text-on-primary shadow-sm';
+      btnTabPreview.className = 'flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all text-center text-body hover:text-ink';
+      wizardLeftCol.classList.remove('hidden');
+      wizardRightCol.classList.add('hidden');
+    });
+
+    btnTabPreview.addEventListener('click', () => {
+      btnTabPreview.className = 'flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all text-center bg-ink text-on-primary shadow-sm';
+      btnTabForm.className = 'flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all text-center text-body hover:text-ink';
+      wizardLeftCol.classList.add('hidden');
+      wizardRightCol.classList.remove('hidden');
+    });
+
+    const handleWindowResize = () => {
+      if (window.innerWidth >= 960) {
+        wizardLeftCol.classList.remove('hidden');
+        wizardRightCol.classList.remove('hidden');
+      }
+    };
+    window.addEventListener('resize', handleWindowResize);
+    handleWindowResize();
   }
 
   // ══════════════════════════════════════

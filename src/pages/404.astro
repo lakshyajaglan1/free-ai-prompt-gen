@@ -17,7 +17,7 @@ import ApiKeySettings from '../components/ApiKeySettings.astro';
 
   <main class="flex-1 w-full flex flex-col justify-center items-center">
     <!-- Hero / 404 Card Section -->
-    <section class="relative overflow-hidden w-full text-center" style="padding: var(--sp-5xl) clamp(1rem, 5vw, 4rem);">
+    <section class="relative overflow-hidden w-full text-center px-4 sm:px-6 md:px-8 py-10 sm:py-16">
       <!-- Mesh gradient backdrop -->
       <div class="absolute inset-0 mesh-gradient opacity-60 pointer-events-none" aria-hidden="true"></div>
 
@@ -41,8 +41,8 @@ import ApiKeySettings from '../components/ApiKeySettings.astro';
         </p>
 
         <!-- CTAs -->
-        <div class="flex flex-wrap items-center justify-center gap-3 mb-12">
-          <a href="/" class="btn-primary gap-2">
+        <div class="flex flex-col min-[420px]:flex-row items-center justify-center gap-2.5 mb-12 w-full max-w-xs min-[420px]:max-w-none">
+          <a href="/" class="btn-primary gap-2 w-full min-[420px]:w-auto justify-center">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
               <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -50,7 +50,7 @@ import ApiKeySettings from '../components/ApiKeySettings.astro';
             <span>Return to Homepage</span>
           </a>
 
-          <button id="btn-go-back" class="btn-secondary gap-2" type="button">
+          <button id="btn-go-back" class="btn-secondary gap-2 w-full min-[420px]:w-auto justify-center" type="button">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="19" y1="12" x2="5" y2="12"></line>
               <polyline points="12 19 5 12 12 5"></polyline>
@@ -58,7 +58,7 @@ import ApiKeySettings from '../components/ApiKeySettings.astro';
             <span>Go Back</span>
           </button>
 
-          <a href="/contact" class="btn-secondary gap-2">
+          <a href="/contact" class="btn-secondary gap-2 w-full min-[420px]:w-auto justify-center">
             <span>Contact Support</span>
           </a>
         </div>

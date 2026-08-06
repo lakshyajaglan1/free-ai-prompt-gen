@@ -808,18 +808,65 @@
 }
 
 /* ═══════════════════════════════════════════════════
-   Responsive Typography Scale
+   Responsive Typography Scale & Mobile Helpers
    ═══════════════════════════════════════════════════ */
+
+/* Hide scrollbar utility for horizontal scroll pills on mobile */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
 @media (max-width: 599px) {
   .display-xl {
-    font-size: 32px;
-    line-height: 36px;
-    letter-spacing: -1.6px;
+    font-size: 28px;
+    line-height: 34px;
+    letter-spacing: -1.2px;
   }
   .display-lg {
+    font-size: 22px;
+    line-height: 28px;
+    letter-spacing: -0.8px;
+  }
+  .display-md {
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.5px;
+  }
+  .display-sm {
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: -0.3px;
+  }
+  .body-lg {
+    font-size: 15px;
+    line-height: 22px;
+  }
+
+  /* Compact button styling on small screens */
+  .btn-primary, .btn-secondary {
+    height: 42px;
+    font-size: 14px;
+    padding: 0 var(--sp-md);
+  }
+
+  .card-lg {
+    padding: var(--sp-md);
+    border-radius: var(--radius-md);
+  }
+  
+  .card {
+    padding: var(--sp-md);
+  }
+}
+
+@media (max-width: 380px) {
+  .display-xl {
     font-size: 24px;
-    line-height: 32px;
-    letter-spacing: -0.96px;
+    line-height: 30px;
+    letter-spacing: -1px;
   }
 }
