@@ -1,0 +1,421 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import PromptHistory from '../components/PromptHistory.astro';
+import ApiKeySettings from '../components/ApiKeySettings.astro';
+---
+
+<Layout
+  title="Prompt Examples | Free AI Prompt Generator"
+  description="See real before-and-after prompt examples. Learn how to transform weak prompts into powerful instructions for ChatGPT, Claude, Gemini, and other AI models."
+  canonicalUrl="https://freeaipromptgen.com/examples"
+>
+  <Navbar />
+
+  <main class="flex-1 w-full">
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden border-b border-hairline bg-canvas px-4 sm:px-6 md:px-8 py-10 sm:py-16">
+      <div class="absolute inset-0 mesh-gradient opacity-60 pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative mx-auto text-center" style="max-width: 800px;">
+        <div class="caption-mono text-link uppercase tracking-wider mb-3 font-semibold">BEFORE & AFTER</div>
+        <h1 class="display-xl text-ink mb-6" style="line-height: 1.15;">
+          Learn from <span class="gradient-text">Real Examples</span>
+        </h1>
+        <p class="body-lg text-body mx-auto leading-relaxed" style="max-width: 680px;">
+          See the dramatic difference between weak and strong prompts. Each example shows exactly what transforms a vague request into clear, actionable instructions for AI models.
+        </p>
+      </div>
+    </section>
+
+    <!-- Category Filter -->
+    <section class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-8 border-b border-hairline bg-canvas-soft">
+      <div class="flex flex-wrap items-center justify-center gap-2">
+        <button class="category-filter-btn active" data-category="all">All Categories</button>
+        <button class="category-filter-btn" data-category="Writing">✍️ Writing</button>
+        <button class="category-filter-btn" data-category="Coding">💻 Coding</button>
+        <button class="category-filter-btn" data-category="Image Generation">🎨 Image</button>
+        <button class="category-filter-btn" data-category="Video Generation">🎬 Video</button>
+        <button class="category-filter-btn" data-category="Data Analysis">📊 Data</button>
+        <button class="category-filter-btn" data-category="Research">🔬 Research</button>
+        <button class="category-filter-btn" data-category="Marketing Copy">📣 Marketing</button>
+        <button class="category-filter-btn" data-category="Custom">⚙️ Custom</button>
+      </div>
+    </section>
+
+    <!-- Examples Grid -->
+    <section class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-10 sm:py-16">
+      <div id="examples-container" class="space-y-12">
+        <!-- Populated by JavaScript -->
+      </div>
+    </section>
+
+    <!-- Key Takeaways Section -->
+    <section class="w-full border-t border-hairline bg-canvas-soft px-4 sm:px-6 md:px-8 py-12 sm:py-16">
+      <div class="mx-auto" style="max-width: 1100px;">
+        <div class="text-center mb-10">
+          <div class="caption-mono text-link uppercase tracking-wider mb-2">KEY TAKEAWAYS</div>
+          <h2 class="display-lg text-ink mb-4">What Makes a Strong Prompt?</h2>
+          <p class="body-md text-body mx-auto" style="max-width: 680px;">
+            These patterns appear consistently across all high-performing prompts.
+          </p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <!-- Principle 1 -->
+          <div class="card p-6 border border-hairline bg-canvas">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan to-link flex items-center justify-center mb-4">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <h3 class="body-md-strong text-ink mb-2">Define a Clear Role</h3>
+            <p class="body-sm text-body leading-relaxed">
+              Give the AI a specific persona with relevant expertise. "Senior tech blogger" beats "writer" because it sets expectations for depth and audience.
+            </p>
+          </div>
+
+          <!-- Principle 2 -->
+          <div class="card p-6 border border-hairline bg-canvas">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-violet to-primary flex items-center justify-center mb-4">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="9" y1="3" x2="9" y2="21"></line>
+              </svg>
+            </div>
+            <h3 class="body-md-strong text-ink mb-2">Provide Rich Context</h3>
+            <p class="body-sm text-body leading-relaxed">
+              Background information narrows the solution space. Include versions, constraints, current state, and what success looks like.
+            </p>
+          </div>
+
+          <!-- Principle 3 -->
+          <div class="card p-6 border border-hairline bg-canvas">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-warning to-warning-deep flex items-center justify-center mb-4">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 11 12 14 22 4"></polyline>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+              </svg>
+            </div>
+            <h3 class="body-md-strong text-ink mb-2">Specify Output Format</h3>
+            <p class="body-sm text-body leading-relaxed">
+              Don't leave structure to chance. Request "Markdown with H2 sections" or "JSON with these keys" or "Executive summary → Table → Insights."
+            </p>
+          </div>
+
+          <!-- Principle 4 -->
+          <div class="card p-6 border border-hairline bg-canvas">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-deep to-cyan flex items-center justify-center mb-4" style="background: linear-gradient(135deg, var(--color-cyan-deep), var(--color-cyan));">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+            </div>
+            <h3 class="body-md-strong text-ink mb-2">Set Clear Constraints</h3>
+            <p class="body-sm text-body leading-relaxed">
+              Boundaries prevent scope creep. Specify word counts, what NOT to include, technical requirements, and anti-patterns to avoid.
+            </p>
+          </div>
+
+          <!-- Principle 5 -->
+          <div class="card p-6 border border-hairline bg-canvas">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-link to-primary flex items-center justify-center mb-4">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
+            </div>
+            <h3 class="body-md-strong text-ink mb-2">Use Specific Examples</h3>
+            <p class="body-sm text-body leading-relaxed">
+              When relevant, show what you mean. "Like Stripe's docs" beats "clean and clear." Concrete references beat abstract adjectives.
+            </p>
+          </div>
+
+          <!-- Principle 6 -->
+          <div class="card p-6 border border-hairline bg-canvas">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-error to-warning flex items-center justify-center mb-4">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+              </svg>
+            </div>
+            <h3 class="body-md-strong text-ink mb-2">Eliminate Ambiguity</h3>
+            <p class="body-sm text-body leading-relaxed">
+              Words like "good," "fast," or "professional" mean different things to everyone. Replace them with measurable criteria or concrete examples.
+            </p>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="mt-12 text-center">
+          <a href="/" class="btn-primary inline-flex items-center gap-2">
+            Try the Prompt Generator
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <PromptHistory />
+  <ApiKeySettings />
+</Layout>
+
+<style>
+  .category-filter-btn {
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid var(--color-hairline);
+    background: var(--color-canvas);
+    color: var(--color-body);
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  .category-filter-btn:hover {
+    border-color: var(--color-hairline-strong);
+    background: var(--color-canvas-soft);
+    color: var(--color-ink);
+  }
+
+  .category-filter-btn.active {
+    background: var(--color-ink);
+    color: var(--color-on-primary);
+    border-color: var(--color-ink);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .example-card {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .example-card.hidden {
+    display: none;
+  }
+
+  .prompt-box {
+    background: var(--color-canvas-soft);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-x: auto;
+  }
+
+  .weak-prompt-box {
+    border: 2px solid var(--color-error);
+  }
+
+  .strong-prompt-box {
+    border: 2px solid var(--color-cyan-deep);
+  }
+
+  .insight-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .insight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .insight-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+</style>
+
+<script>
+  import { saveTheme } from '../lib/storage';
+  import { BEFORE_AFTER_EXAMPLES } from '../lib/beforeAfterExamples';
+  import { GoalCategory } from '../lib/types';
+
+  // Theme management
+  const btnSettings = document.getElementById('btn-settings');
+  const btnHistory = document.getElementById('btn-history');
+  const settingsModal = document.getElementById('settings-modal');
+  const settingsBackdrop = document.getElementById('settings-backdrop');
+  const historyDrawer = document.getElementById('history-drawer');
+  const historyBackdrop = document.getElementById('history-backdrop');
+
+  if (btnSettings && settingsModal && settingsBackdrop) {
+    btnSettings.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      settingsModal.classList.remove('hidden');
+      settingsBackdrop.classList.remove('hidden');
+    });
+  }
+
+  if (btnHistory && historyDrawer && historyBackdrop) {
+    btnHistory.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      historyDrawer.classList.remove('hidden');
+      historyBackdrop.classList.remove('hidden');
+    });
+  }
+
+  const btnThemeToggle = document.getElementById('btn-theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function updateThemeUI() {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      sunIcon?.classList.remove('hidden');
+      moonIcon?.classList.add('hidden');
+    } else {
+      sunIcon?.classList.add('hidden');
+      moonIcon?.classList.remove('hidden');
+    }
+  }
+
+  btnThemeToggle?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+      saveTheme('light');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      saveTheme('dark');
+    }
+    updateThemeUI();
+  });
+
+  updateThemeUI();
+
+  // Examples rendering
+  const examplesContainer = document.getElementById('examples-container')!;
+  const categoryButtons = document.querySelectorAll('.category-filter-btn');
+  let currentFilter = 'all';
+
+  function renderExamples(filterCategory: string = 'all') {
+    const examples = Object.values(BEFORE_AFTER_EXAMPLES);
+    const filtered = filterCategory === 'all'
+      ? examples
+      : examples.filter(ex => ex.category === filterCategory);
+
+    examplesContainer.innerHTML = filtered.map((example, index) => `
+      <div class="example-card" data-category="${example.category}">
+        <div class="card p-6 sm:p-8 border border-hairline bg-canvas">
+          <!-- Header -->
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="display-sm text-ink">${getCategoryEmoji(example.category)} ${example.category}</h3>
+            <span class="px-3 py-1 rounded-full text-xs font-medium bg-canvas-soft border border-hairline text-mute">Example ${index + 1}</span>
+          </div>
+
+          <!-- Grid: Weak vs Strong -->
+          <div class="grid gap-6 lg:grid-cols-2">
+            <!-- Weak Prompt -->
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-2xl">❌</span>
+                <h4 class="body-md-strong text-ink">Weak Prompt</h4>
+              </div>
+              <div class="prompt-box weak-prompt-box mb-4">${escapeHtml(example.weak.prompt)}</div>
+              <div class="caption text-mute mb-2 uppercase tracking-wider">Problems:</div>
+              <ul class="insight-list">
+                ${example.weak.problems.map(p => `
+                  <li class="insight-item">
+                    <span class="insight-icon" style="color: var(--color-error);">✗</span>
+                    <span class="text-body">${escapeHtml(p)}</span>
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+
+            <!-- Strong Prompt -->
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-2xl">✅</span>
+                <h4 class="body-md-strong text-ink">Strong Prompt</h4>
+              </div>
+              <div class="prompt-box strong-prompt-box mb-4">${escapeHtml(example.strong.prompt)}</div>
+              <div class="caption text-mute mb-2 uppercase tracking-wider">Strengths:</div>
+              <ul class="insight-list">
+                ${example.strong.strengths.map(s => `
+                  <li class="insight-item">
+                    <span class="insight-icon" style="color: var(--color-cyan-deep);">✓</span>
+                    <span class="text-body">${escapeHtml(s)}</span>
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function getCategoryEmoji(category: string): string {
+    const emojiMap: Record<string, string> = {
+      'Writing': '✍️',
+      'Coding': '💻',
+      'Image Generation': '🎨',
+      'Video Generation': '🎬',
+      'Data Analysis': '📊',
+      'Research': '🔬',
+      'Marketing Copy': '📣',
+      'Custom': '⚙️',
+    };
+    return emojiMap[category] || '📝';
+  }
+
+  function escapeHtml(str: string): string {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // Category filter handlers
+  categoryButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const category = btn.dataset.category!;
+      currentFilter = category;
+
+      // Update button states
+      categoryButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Render filtered examples
+      renderExamples(category === 'all' ? 'all' : category);
+
+      // Smooth scroll to examples
+      examplesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Initial render
+  renderExamples();
+</script>
