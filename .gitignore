@@ -22,3 +22,10 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+# IDE / Agent files
+.agents/
+.claude/
+.kilocode/
+AGENTS.md
+GEMINI.md
+DESIGN.md

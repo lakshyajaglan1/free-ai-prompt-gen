@@ -15,7 +15,7 @@ export interface ScoreResult {
   };
 }
 
-const VAGUE_WORDS = ['good', 'nice', 'awesome', 'something', 'stuff', 'things', 'best', 'great', 'etc'];
+const VAGUE_WORDS = ['good', 'nice', 'awesome', 'something', 'stuff', 'things', 'etc'];
 
 export function scorePrompt(fields: PromptFields, framework: Framework): ScoreResult {
   const visibleFields = getFieldsForFramework(framework);

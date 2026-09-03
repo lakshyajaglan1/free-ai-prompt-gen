@@ -387,7 +387,8 @@ export class GeminiProvider extends AIProvider {
       if (!data?.models || !Array.isArray(data.models)) return [];
       return data.models
         .filter((m: any) => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes('generateContent'))
-        .map((m: any) => String(m.name).replace(/^models\//, ''));
+        .map((m: any) => String(m.name).replace(/^models\//, ''))
+        .filter((m: string) => !m.includes('pro') && !m.includes('2.5') && !m.includes('experimental') && !m.includes('exp'));
     } catch {
       return [];
     }
@@ -407,17 +408,10 @@ export class GeminiProvider extends AIProvider {
     }
 
     // Static fallback models commonly available on free and paid tiers
-    const fallbackList = [
-      'gemini-2.0-flash',
-      'gemini-1.5-flash',
-      'gemini-1.5-flash-latest',
-      'gemini-1.5-pro',
-      'gemini-1.5-flash-8b',
-      'gemini-2.0-flash-exp',
-    ];
+    const fallbackList = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
     fallbackList.forEach((m) => candidateSet.add(m));
 
-    const candidates = Array.from(candidateSet);
+    const candidates = Array.from(candidateSet).slice(0, 5);
     let lastError: any = null;
 
     for (const model of candidates) {
@@ -426,12 +420,12 @@ export class GeminiProvider extends AIProvider {
       } catch (err) {
         lastError = err;
         if (err instanceof ProviderError) {
-          // Non-retriable errors: invalid key or network connection failure
-          if (err.code === 'INVALID_KEY' || err.code === 'NETWORK') {
+          // Retrying cannot resolve credentials, network, or quota errors.
+          if (err.code === 'INVALID_KEY' || err.code === 'NETWORK' || err.code === 'RATE_LIMIT') {
             throw err;
           }
-          // Retriable errors: rate limit / quota 0 (429), model not found (404), or API error
-          if (err.code === 'RATE_LIMIT' || err.code === 'MODEL_ERROR' || err.code === 'API_ERROR') {
+          // Only model and API errors can be retried with another model.
+          if (err.code === 'MODEL_ERROR' || err.code === 'API_ERROR') {
             console.warn(
               `[GeminiProvider] Model '${model}' returned ${err.code} (${err.message}). Trying next candidate...`
             );

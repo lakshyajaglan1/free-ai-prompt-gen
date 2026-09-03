@@ -1,0 +1,134 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import PromptScoreBar from '../components/PromptScoreBar.astro';
+---
+
+<Layout
+  title="AI Prompt Scorer | Free Prompt Quality Checker"
+  description="Paste any AI prompt and get an instant quality score with actionable feedback. Checks role, task, context, constraints, and format. Free, no login."
+>
+  <Navbar />
+  <main class="flex-1">
+    <section class="relative overflow-hidden px-4 sm:px-6 md:px-8 py-12 sm:py-20">
+      <div class="absolute inset-0 mesh-gradient opacity-70 pointer-events-none" aria-hidden="true"></div>
+      <div class="relative mx-auto max-w-3xl text-center">
+        <div class="badge-gradient mb-4 mx-auto" style="width: fit-content;">FREE PROMPT CHECKER</div>
+        <h1 class="display-xl text-ink mb-4">Score Your Prompt</h1>
+        <p class="body-lg text-body mx-auto" style="max-width: 620px;">Paste any prompt below and get an instant quality score with specific, actionable feedback.</p>
+      </div>
+    </section>
+
+    <section class="w-full max-w-3xl mx-auto px-4 sm:px-6 md:px-8 pb-16 sm:pb-24">
+      <div class="card p-5 sm:p-8 border border-hairline bg-canvas">
+        <label for="scorer-input" class="body-md-strong text-ink block mb-2">Your prompt</label>
+        <textarea id="scorer-input" name="prompt" autocomplete="off" class="form-textarea w-full" style="min-height: 200px;" placeholder="Paste a prompt to check…"></textarea>
+        <div class="flex flex-col sm:flex-row gap-3 mt-4">
+          <button id="btn-score-input" class="btn-primary" type="button">Score My Prompt</button>
+          <a id="btn-improve-prompt" href="/#wizard" class="btn-secondary hidden">Improve This Prompt</a>
+        </div>
+      </div>
+
+      <div id="scorer-results" class="hidden mt-6" aria-live="polite">
+        <PromptScoreBar />
+      </div>
+
+      <div class="mt-12">
+        <h2 class="display-md text-ink text-center mb-6">What a stronger prompt looks like</h2>
+        <div class="grid gap-4 md:grid-cols-3">
+          <article class="card p-4 border border-hairline bg-canvas">
+            <div class="caption-mono text-error mb-2">WEAK · 18/100</div>
+            <p class="body-sm text-body mb-3">“Write about climate change.”</p>
+            <div class="caption-mono text-success mb-2">STRONG · 82/100</div>
+            <p class="body-sm text-body">“As a science editor, explain three local climate impacts for high-school readers in 500 words, using Markdown headings and cited sources.”</p>
+          </article>
+          <article class="card p-4 border border-hairline bg-canvas">
+            <div class="caption-mono text-error mb-2">WEAK · 12/100</div>
+            <p class="body-sm text-body mb-3">“Make a landing page.”</p>
+            <div class="caption-mono text-success mb-2">STRONG · 86/100</div>
+            <p class="body-sm text-body">“Build a responsive Astro landing page for a meditation app. Use Tailwind, include a hero, three benefits, and accessible CTA buttons. Return the component code.”</p>
+          </article>
+          <article class="card p-4 border border-hairline bg-canvas">
+            <div class="caption-mono text-error mb-2">WEAK · 15/100</div>
+            <p class="body-sm text-body mb-3">“Create an image of a city.”</p>
+            <div class="caption-mono text-success mb-2">STRONG · 78/100</div>
+            <p class="body-sm text-body">“Cinematic aerial view of a rain-soaked Tokyo street at blue hour, neon reflections, 35mm film grain, slow forward motion; avoid readable text.”</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>
+
+<script type="application/ld+json" is:inline>
+  {"@context":"https://schema.org","@type":"WebApplication","name":"AI Prompt Scorer","url":"https://freeaipromptgen.com/score","applicationCategory":"UtilitiesApplication","operatingSystem":"All","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A free browser-based tool that scores AI prompts and offers actionable feedback."}
+</script>
+
+<script>
+  import { Framework, EMPTY_FIELDS, type PromptFields } from '../lib/types';
+  import { scorePrompt } from '../lib/promptScoring';
+
+  const input = document.getElementById('scorer-input') as HTMLTextAreaElement;
+  const button = document.getElementById('btn-score-input') as HTMLButtonElement;
+  const results = document.getElementById('scorer-results') as HTMLElement;
+  const improve = document.getElementById('btn-improve-prompt') as HTMLAnchorElement;
+
+  function extract(raw: string, labels: string[]): string {
+    for (const label of labels) {
+      const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const match = raw.match(new RegExp(`(?:^|\\n)\\s*(?:##\\s*)?${escaped}\\s*:?\\s*([\\s\\S]*?)(?=\\n\\s*(?:##\\s*)?(?:Role|Task|Context|Format|Output Format|Constraints|Examples?)\\s*:?|$)`, 'i'));
+      if (match?.[1]?.trim()) return match[1].trim();
+    }
+    return '';
+  }
+
+  function parsePrompt(raw: string): PromptFields {
+    const fields = { ...EMPTY_FIELDS };
+    fields.role = extract(raw, ['Role', '<role>', '\\*\\*Role\\*\\*']);
+    fields.task = extract(raw, ['Task', '<task>', '\\*\\*Task\\*\\*']);
+    fields.context = extract(raw, ['Context', '<context>', '\\*\\*Context\\*\\*']);
+    fields.outputFormat = extract(raw, ['Output Format', 'Format', '<format>']);
+    fields.constraints = extract(raw, ['Constraints', '<constraints>']);
+    fields.examples = extract(raw, ['Examples', 'Example', 'For example']);
+    if (!Object.values(fields).some(Boolean)) fields.task = raw.trim();
+    return fields;
+  }
+
+  function updateBreakdown(breakdown: ReturnType<typeof scorePrompt>['breakdown']) {
+    const maximum = { completeness: 35, specificity: 30, structure: 20, constraints: 15 } as const;
+    (Object.keys(maximum) as Array<keyof typeof maximum>).forEach((key) => {
+      const score = breakdown[key];
+      const percent = (score / maximum[key]) * 100;
+      const fill = document.getElementById(`breakdown-${key}-fill`) as HTMLElement | null;
+      const label = document.getElementById(`breakdown-${key}-score`);
+      if (fill) {
+        fill.style.width = `${percent}%`;
+        fill.style.backgroundColor = percent > 70 ? '#16a34a' : percent >= 40 ? '#f5a623' : '#ee0000';
+      }
+      if (label) label.textContent = `${score}/${maximum[key]}`;
+    });
+  }
+
+  button.addEventListener('click', () => {
+    const raw = input.value.trim();
+    if (!raw) {
+      input.focus();
+      return;
+    }
+    const result = scorePrompt(parsePrompt(raw), Framework.RTF);
+    results.classList.remove('hidden');
+    (document.getElementById('score-number') as HTMLElement).textContent = `${result.score}/100`;
+    (document.getElementById('score-grade-badge') as HTMLElement).textContent = result.grade;
+    (document.getElementById('score-label') as HTMLElement).textContent = result.label;
+    const progress = document.getElementById('score-progress-fill') as HTMLElement;
+    progress.style.width = `${result.score}%`;
+    const tips = document.getElementById('score-tips-list') as HTMLElement;
+    tips.innerHTML = result.tips.map((tip) => `<li class="caption text-body flex items-start gap-2"><span class="text-link">💡</span>${tip}</li>`).join('');
+    document.getElementById('score-breakdown')?.classList.remove('hidden');
+    updateBreakdown(result.breakdown);
+    improve.href = `/#wizard?task=${encodeURIComponent(raw)}`;
+    improve.classList.remove('hidden');
+  });
+</script>

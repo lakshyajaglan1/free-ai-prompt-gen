@@ -3,10 +3,11 @@
 const pathname = Astro.url ? Astro.url.pathname : '/';
 
 const navLinks = [
-  { name: 'Home', href: '/' },
+  { name: 'Generator', href: '/#wizard' },
+  { name: 'Scorer', href: '/score' },
+  { name: 'Templates', href: '/?templates=1#wizard' },
+  { name: 'Examples', href: '/#before-after-section' },
   { name: 'About', href: '/about' },
-  { name: 'Privacy Policy', href: '/privacy' },
-  { name: 'Terms', href: '/terms' },
   { name: 'Contact', href: '/contact' },
 ];
 
@@ -16,7 +17,7 @@ function isActive(href: string) {
   }
   return pathname.startsWith(href);
 }
----<header id="navbar" class="sticky top-0 z-50 bg-canvas border-b border-hairline transition-colors duration-200" style="height: 64px;">
+---<header id="navbar" class="sticky top-0 z-[60] bg-canvas border-b border-hairline transition-colors duration-200" style="height: 64px;">
   <div class="w-full flex items-center justify-between h-full px-2.5 sm:px-6 md:px-8 max-w-7xl mx-auto">
     <!-- Left: Brand -->
     <a href="/" class="flex items-center gap-1.5 min-[360px]:gap-2 no-underline group shrink-0" id="nav-brand" aria-label="AI Prompt Generator Home">
