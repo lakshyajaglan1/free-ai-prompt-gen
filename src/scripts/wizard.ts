@@ -1207,4 +1207,16 @@ document.addEventListener('DOMContentLoaded', () => {
   updateRefineButton();
   updateThemeUI();
   if (new URLSearchParams(window.location.search).has('templates')) openTemplates();
+
+  // Check for pending template from templates page
+  const pendingTemplate = sessionStorage.getItem('pendingTemplate');
+  if (pendingTemplate) {
+    try {
+      const template = JSON.parse(pendingTemplate);
+      sessionStorage.removeItem('pendingTemplate');
+      loadTemplate(template);
+    } catch (e) {
+      console.error('Failed to load pending template:', e);
+    }
+  }
 });

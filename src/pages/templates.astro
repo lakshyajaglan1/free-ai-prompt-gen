@@ -1,0 +1,202 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import PromptHistory from '../components/PromptHistory.astro';
+import ApiKeySettings from '../components/ApiKeySettings.astro';
+---
+
+<Layout
+  title="Prompt Templates | Free AI Prompt Generator"
+  description="Browse 40+ starter prompt templates for writing, coding, image generation, video, and more. Kickstart your AI prompts with proven frameworks for ChatGPT, Claude, Gemini, and Midjourney."
+  canonicalUrl="https://freeaipromptgen.com/templates"
+>
+  <Navbar />
+
+  <main class="flex-1 w-full">
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden border-b border-hairline bg-canvas px-4 sm:px-6 md:px-8 py-10 sm:py-16">
+      <div class="absolute inset-0 mesh-gradient opacity-60 pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative mx-auto text-center" style="max-width: 800px;">
+        <div class="caption-mono text-link uppercase tracking-wider mb-3 font-semibold">STARTER TEMPLATES</div>
+        <h1 class="display-xl text-ink mb-6" style="line-height: 1.15;">
+          Pre-Built <span class="gradient-text">Prompt Templates</span> for Every Use Case
+        </h1>
+        <p class="body-lg text-body mx-auto leading-relaxed" style="max-width: 680px;">
+          Browse our library of 40+ engineering frameworks to kickstart your AI prompts. From blog posts and emails to code generation and image creation — find the perfect starting point.
+        </p>
+      </div>
+    </section>
+
+    <!-- Templates Section -->
+    <section class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-10 sm:py-16">
+      <div class="mx-auto" style="max-width: 1100px;">
+
+        <!-- Search Bar -->
+        <div class="mb-8">
+          <div class="relative max-w-2xl mx-auto">
+            <input
+              id="template-search-input"
+              type="text"
+              class="form-input pl-10 w-full"
+              placeholder="Search 40+ templates (e.g. 'code', 'blog', 'image', 'email')..."
+              style="height: 48px;"
+            />
+            <svg class="absolute left-3 top-4 text-mute" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Template list container -->
+        <div id="template-list" class="space-y-3">
+          <!-- Populated dynamically by JS -->
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <PromptHistory />
+  <ApiKeySettings />
+</Layout>
+
+<script>
+  import { saveTheme } from '../lib/storage';
+  import { PROMPT_TEMPLATES } from '../lib/promptTemplates';
+  import type { PromptTemplate } from '../lib/types';
+
+  // Global settings modal & drawer handlers for MPA pages
+  const btnSettings = document.getElementById('btn-settings');
+  const btnHistory = document.getElementById('btn-history');
+  const settingsModal = document.getElementById('settings-modal');
+  const settingsBackdrop = document.getElementById('settings-backdrop');
+  const historyDrawer = document.getElementById('history-drawer');
+  const historyBackdrop = document.getElementById('history-backdrop');
+
+  if (btnSettings && settingsModal && settingsBackdrop) {
+    btnSettings.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      settingsModal.classList.remove('hidden');
+      settingsBackdrop.classList.remove('hidden');
+    });
+  }
+
+  if (btnHistory && historyDrawer && historyBackdrop) {
+    btnHistory.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      historyDrawer.classList.remove('hidden');
+      historyBackdrop.classList.remove('hidden');
+    });
+  }
+
+  // Theme toggle script for MPA
+  const btnThemeToggle = document.getElementById('btn-theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function updateThemeUI() {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      sunIcon?.classList.remove('hidden');
+      moonIcon?.classList.add('hidden');
+    } else {
+      sunIcon?.classList.add('hidden');
+      moonIcon?.classList.remove('hidden');
+    }
+  }
+
+  btnThemeToggle?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+      saveTheme('light');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      saveTheme('dark');
+    }
+    updateThemeUI();
+  });
+
+  updateThemeUI();
+
+  // ══════════════════════════════════════
+  // TEMPLATE LIBRARY RENDERING
+  // ══════════════════════════════════════
+  const templateList = document.getElementById('template-list')!;
+  const templateSearchInput = document.getElementById('template-search-input') as HTMLInputElement;
+
+  function escapeHtml(str: string): string {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderTemplates() {
+    const query = templateSearchInput.value.toLowerCase().trim();
+    let templates = PROMPT_TEMPLATES;
+
+    if (query) {
+      templates = templates.filter(
+        (t) =>
+          t.name.toLowerCase().includes(query) ||
+          t.description.toLowerCase().includes(query) ||
+          t.category.toLowerCase().includes(query)
+      );
+    }
+
+    if (templates.length === 0) {
+      templateList.innerHTML = `<div class="text-center py-12 text-mute"><p class="body-md">No templates found matching "${escapeHtml(query)}"</p></div>`;
+      return;
+    }
+
+    templateList.innerHTML = `
+      <p class="caption text-mute mb-4">Showing <strong>${templates.length}</strong> template(s)</p>
+      ${templates
+        .map(
+          (t) => `
+          <div class="card border border-hairline hover:border-hairline-strong transition-all duration-150 template-item cursor-pointer p-5 bg-canvas flex items-start justify-between gap-4 rounded-lg shadow-sm hover:shadow-md" data-template-id="${t.id}">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                <h3 class="body-md-strong text-ink">${escapeHtml(t.name)}</h3>
+                <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-canvas-soft border border-hairline text-mute">${escapeHtml(t.category)}</span>
+              </div>
+              <p class="body-sm text-body leading-relaxed">${escapeHtml(t.description)}</p>
+            </div>
+            <button class="btn-primary shrink-0" data-template-id="${t.id}">Use</button>
+          </div>
+        `
+        )
+        .join('')}
+    `;
+
+    // Attach click handlers
+    templateList.querySelectorAll('.template-item').forEach((item) => {
+      item.addEventListener('click', (e) => {
+        const id = (item as HTMLElement).dataset.templateId!;
+        const template = PROMPT_TEMPLATES.find((t) => t.id === id);
+        if (template) loadTemplate(template);
+      });
+    });
+  }
+
+  function loadTemplate(template: PromptTemplate) {
+    // Store template in sessionStorage to be loaded by the generator page
+    sessionStorage.setItem('pendingTemplate', JSON.stringify(template));
+    // Navigate to generator page
+    window.location.href = '/#wizard';
+  }
+
+  templateSearchInput?.addEventListener('input', () => {
+    renderTemplates();
+  });
+
+  // Initial render
+  renderTemplates();
+</script>
