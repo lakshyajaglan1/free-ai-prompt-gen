@@ -36,10 +36,10 @@ import ApiKeySettings from '../components/ApiKeySettings.astro';
         <button class="category-filter-btn" data-category="Writing">✍️ Writing</button>
         <button class="category-filter-btn" data-category="Coding">💻 Coding</button>
         <button class="category-filter-btn" data-category="Image Generation">🎨 Image</button>
-        <button class="category-filter-btn" data-category="Video Generation">🎬 Video</button>
-        <button class="category-filter-btn" data-category="Data Analysis">📊 Data</button>
+        <button class="category-filter-btn" data-category="Video Gen">🎬 Video</button>
+        <button class="category-filter-btn" data-category="Data / Analysis">📊 Data</button>
         <button class="category-filter-btn" data-category="Research">🔬 Research</button>
-        <button class="category-filter-btn" data-category="Marketing Copy">📣 Marketing</button>
+        <button class="category-filter-btn" data-category="Marketing / Copy">📣 Marketing</button>
         <button class="category-filter-btn" data-category="Custom">⚙️ Custom</button>
       </div>
     </section>
@@ -383,10 +383,10 @@ import ApiKeySettings from '../components/ApiKeySettings.astro';
       'Writing': '✍️',
       'Coding': '💻',
       'Image Generation': '🎨',
-      'Video Generation': '🎬',
-      'Data Analysis': '📊',
+      'Video Gen': '🎬',
+      'Data / Analysis': '📊',
       'Research': '🔬',
-      'Marketing Copy': '📣',
+      'Marketing / Copy': '📣',
       'Custom': '⚙️',
     };
     return emojiMap[category] || '📝';
