@@ -4,6 +4,9 @@ const SITE_URL = 'https://freeaipromptgen.com';
 
 const pages = [
   { url: '/', changefreq: 'daily', priority: 1.0 },
+  { url: '/examples', changefreq: 'monthly', priority: 0.8 },
+  { url: '/score', changefreq: 'monthly', priority: 0.8 },
+  { url: '/templates', changefreq: 'monthly', priority: 0.8 },
   { url: '/about', changefreq: 'monthly', priority: 0.8 },
   { url: '/contact', changefreq: 'monthly', priority: 0.7 },
   { url: '/privacy', changefreq: 'yearly', priority: 0.3 },
