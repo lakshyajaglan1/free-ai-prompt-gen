@@ -1,0 +1,141 @@
+---
+// QuickStartBar.astro
+// "1-Line Quick Start" bar — sits at the very top of the wizard section.
+// Lets users describe their idea in one line, detects category, populates all fields.
+// 100% client-side, no API key required.
+---
+
+<section
+  id="quick-start-bar"
+  class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pt-6 pb-2"
+  aria-label="Quick Start — one-line prompt builder"
+>
+  <div
+    class="card p-0 border border-hairline bg-canvas rounded-xl shadow-level-3 overflow-hidden"
+  >
+    <!-- Header row -->
+    <div
+      class="flex items-center justify-between px-5 pt-4 pb-3 border-b border-hairline bg-canvas-soft"
+    >
+      <div class="flex items-center gap-2.5">
+        <span
+          class="inline-flex items-center justify-center w-7 h-7 rounded-full text-sm bg-ink text-on-primary font-medium shrink-0"
+          aria-hidden="true"
+        >⚡</span>
+        <div>
+          <div class="body-sm-strong text-ink">Quick Start</div>
+          <div class="caption text-mute">Turn any idea into a structured prompt in one click — no API key needed</div>
+        </div>
+      </div>
+      <span
+        class="badge"
+        style="background: var(--color-link-bg-soft); color: var(--color-link-deep); font-size: 10px; padding: 2px 8px; border-radius: 99px;"
+      >100% Client-Side</span>
+    </div>
+
+    <!-- Input area -->
+    <div class="px-5 py-4 bg-canvas">
+      <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+        <div class="flex-1 w-full relative">
+          <input
+            id="quick-start-input"
+            type="text"
+            class="form-input w-full"
+            style="padding: 10px 14px; font-size: 14px; height: 44px;"
+            placeholder="Describe your idea in one line, e.g., 'Write a Python script to scrape product prices'"
+            aria-label="One-line idea input"
+            autocomplete="off"
+            spellcheck="false"
+            maxlength="300"
+          />
+          <!-- Detected category badge (hidden until input) -->
+          <div
+            id="quick-start-category-badge"
+            class="hidden absolute right-3 top-1/2 -translate-y-1/2 badge border border-hairline bg-canvas-soft-2 text-ink font-medium"
+            style="font-size: 10px; padding: 2px 8px; pointer-events: none;"
+            aria-live="polite"
+          ></div>
+        </div>
+        <button
+          id="btn-quick-start-generate"
+          class="btn-primary shrink-0 flex items-center gap-2"
+          style="white-space: nowrap; height: 44px; padding: 0 20px;"
+          type="button"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Generate Structured Prompt
+        </button>
+      </div>
+
+      <!-- Example pills -->
+      <div class="mt-3 flex flex-wrap gap-2 items-center">
+        <span class="caption text-mute shrink-0" style="font-size: 11px;">Try:</span>
+        <button
+          class="quick-start-pill"
+          data-idea="Write a Python script to scrape product prices from an e-commerce site"
+          type="button"
+        >🐍 Scrape product prices</button>
+        <button
+          class="quick-start-pill"
+          data-idea="Create a LinkedIn post about lessons learned from launching a startup"
+          type="button"
+        >📢 LinkedIn post</button>
+        <button
+          class="quick-start-pill"
+          data-idea="Analyze sales data and identify top-performing products with visualizations"
+          type="button"
+        >📊 Analyze sales data</button>
+      </div>
+    </div>
+
+    <!-- Success flash (hidden by default) -->
+    <div
+      id="quick-start-success"
+      class="hidden px-5 pb-4 flex items-center gap-2"
+      role="status"
+      aria-live="polite"
+    >
+      <span class="text-cyan-deep" aria-hidden="true">✓</span>
+      <span class="body-sm text-ink" id="quick-start-success-text">Prompt generated! Scroll down to review and copy.</span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .quick-start-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    padding: 6px 12px;
+    border-radius: 99px;
+    border: 1px solid var(--color-hairline);
+    background: var(--color-canvas-soft-2);
+    color: var(--color-body);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .quick-start-pill:hover {
+    border-color: var(--color-hairline-strong);
+    background: var(--color-canvas-soft);
+    color: var(--color-ink);
+  }
+  .quick-start-pill:active {
+    transform: scale(0.97);
+  }
+
+  @keyframes qs-slide-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  #quick-start-success.show {
+    display: flex;
+    animation: qs-slide-in 0.2s ease;
+  }
+</style>

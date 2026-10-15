@@ -9,14 +9,14 @@ import { FRAMEWORK_META } from './frameworks';
  * Skips empty/blank fields gracefully.
  */
 export function assemblePrompt(
-  fields: PromptFields,
+  fields: PromptFields | Partial<PromptFields>,
   framework: Framework,
   targetModel: TargetModel,
 ): string {
-  const orderedFields = FRAMEWORK_META[framework].fieldOrder;
+  const orderedFields = FRAMEWORK_META[framework]?.fieldOrder ?? [];
   const filledSections = orderedFields
-    .filter((key) => fields[key].trim().length > 0)
-    .map((key) => ({ key, value: fields[key].trim() }));
+    .filter((key) => Boolean(fields[key] && typeof fields[key] === 'string' && fields[key]!.trim().length > 0))
+    .map((key) => ({ key, value: fields[key]!.trim() }));
 
   if (filledSections.length === 0) {
     return '';

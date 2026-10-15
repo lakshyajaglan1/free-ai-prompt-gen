@@ -17,15 +17,129 @@ import StepProgress from '../components/StepProgress.astro';
 import TrustBanner from '../components/TrustBanner.astro';
 import PromptScoreBar from '../components/PromptScoreBar.astro';
 import EnhanceButton from '../components/EnhanceButton.astro';
+import QuickStartBar from '../components/QuickStartBar.astro';
+
+const webAppSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  'name': 'Free AI Prompt Generator & Prompt Builder',
+  'alternateName': [
+    'AI Prompt Generator',
+    'Claude XML Prompt Builder',
+    'CO-STAR Prompt Generator',
+    'Free AI Prompt Writer',
+    'ChatGPT Prompt Generator'
+  ],
+  'url': 'https://freeaipromptgen.com/',
+  'applicationCategory': 'UtilitiesApplication',
+  'operatingSystem': 'All',
+  'offers': {
+    '@type': 'Offer',
+    'price': '0',
+    'priceCurrency': 'USD'
+  },
+  'description': 'Free AI prompt generator and engineering wizard. Craft optimal text, image & code prompts for ChatGPT, Gemini, Claude & Midjourney using proven RTF, CO-STAR, and XML frameworks.'
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  'mainEntity': [
+    {
+      '@type': 'Question',
+      'name': 'What is an AI prompt generator?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'An AI prompt generator is a tool or wizard that helps users structure, format, and optimize text instructions for artificial intelligence models like ChatGPT, Google Gemini, Claude, and Midjourney. It uses proven frameworks like RTF, CO-STAR, and TAG to turn raw ideas into high-performing prompts.'
+      }
+    },
+    {
+      '@type': 'Question',
+      'name': 'What should I look for in a prompt builder?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'Look for a tool that makes its structure clear, supports the models you use, and lets you review the final instruction before copying it. Local processing and optional refinement with your own API key are useful privacy and control features.'
+      }
+    },
+    {
+      '@type': 'Question',
+      'name': 'How do I write a good prompt for AI?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'To write a good prompt for AI: 1) Define a clear Role (e.g. Senior Copywriter), 2) Provide Context, 3) Specify the Task, 4) Set Constraints (length, tone, style), and 5) Declare the exact Output Format (Markdown headers, XML, JSON, bullet points).'
+      }
+    },
+    {
+      '@type': 'Question',
+      'name': 'How to write a prompt for an AI video generator?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'To write a prompt for an AI video generator (like Sora, Runway Gen-2, or Pika): 1) Describe the core subject and setting, 2) Specify camera dynamics (pan, tilt, zoom, drone shot), 3) Define lighting and mood (golden hour, volumetric glow), and 4) Detail movement pacing and frame rate expectations.'
+      }
+    },
+    {
+      '@type': 'Question',
+      'name': 'How to prompt an AI image generator or AI art generator?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'To prompt an AI image or art generator (Midjourney, DALL-E 3, Stable Diffusion): combine subject details ("futuristic cyberpunk city"), art style ("photorealistic, octane render"), lighting & lens settings ("85mm lens, volumetric lighting"), and parameters like aspect ratio (--ar 16:9) and negative prompts.'
+      }
+    },
+    {
+      '@type': 'Question',
+      'name': 'How to use an AI image generator with a text prompt?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'To use an AI image generator with a text prompt, enter a descriptive text string starting with your subject, followed by visual style cues (medium, camera angle, lighting), and negative keywords. Our AI prompt generator structures these fields into weighted syntax ready to copy into Midjourney or Stable Diffusion.'
+      }
+    },
+    {
+      '@type': 'Question',
+      'name': 'Can I use a prompt generator for any AI model?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'Yes! A quality prompt generator formats outputs for any model target. For example, ChatGPT prefers Markdown headers (## Role, ## Task), Claude excels with XML tags (<role>, <task>), and Gemini responds best to bold parameter blocks (**Role:**).'
+      }
+    },
+    {
+      '@type': 'Question',
+      'name': 'What is meta-prompting?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'Meta-prompting is the technique of using an AI model to write, critique, optimize, or refine prompts for another AI model (or itself). Instead of manually crafting a prompt from scratch, meta-prompting uses AI intelligence to build structured system prompts tailored for optimal execution.'
+      }
+    },
+    {
+      '@type': 'Question',
+      'name': 'Are there free AI prompt tools?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'Yes, there are completely free AI prompt tools available. Our AI Prompt Generator is 100% free and open-source with zero sign-ups, subscriptions, or paywalls. All prompt assembly and framework wizards execute locally in your browser.'
+      }
+    },
+    {
+      '@type': 'Question',
+      'name': 'How to prompt AI art generator free online?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'You can generate structured image and art prompts online for free using our built-in Image & Visual category wizard. Select the "Image / Visual" category, fill in your subject, style, lighting, and camera angle preferences, and copy the assembled prompt straight into free image generators like Bing Image Creator or Leonardo AI.'
+      }
+    }
+  ]
+};
 ---
 
-<Layout>
+<Layout
+  title="Free AI Prompt Generator & CO-STAR / Claude XML Prompt Builder (No Login)"
+  description="Free AI prompt generator & CO-STAR / Claude XML prompt builder. Craft structured, high-performing prompts for ChatGPT, Claude, Gemini & Midjourney with live scoring and zero login."
+  canonicalUrl="https://freeaipromptgen.com/"
+>
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(webAppSchema)} />
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(faqSchema)} />
+
   <Navbar />
 
   <main class="flex-1">
-    <!-- ════════════════════════════════════
-         HERO SECTION
-         ════════════════════════════════════ -->
     <!-- ════════════════════════════════════
          HERO SECTION
          ════════════════════════════════════ -->
@@ -33,14 +147,14 @@ import EnhanceButton from '../components/EnhanceButton.astro';
       <!-- Mesh gradient backdrop -->
       <div class="absolute inset-0 mesh-gradient opacity-70 pointer-events-none" aria-hidden="true"></div>
 
-      <div class="relative mx-auto text-center" style="max-width: 720px;">
-        <div class="badge-gradient mb-4 mx-auto" style="width: fit-content;">Free &amp; Open Source</div>
+      <div class="relative mx-auto text-center" style="max-width: 760px;">
+        <div class="badge-gradient mb-4 mx-auto" style="width: fit-content;">Free &amp; Open Source &middot; No Login</div>
         <h1 class="display-xl text-ink mb-4" style="line-height: 1.15;">
-          Build better prompts.<br/>
-          <span class="gradient-text">Every time.</span>
+          Free AI Prompt Generator &amp; CO-STAR / Claude XML Prompt Builder.<br/>
+          <span class="gradient-text">(No Login Required)</span>
         </h1>
-        <p class="body-lg text-body mb-6 mx-auto" style="max-width: 540px;">
-          A rule-based prompt engineering wizard that teaches you why each field matters — not a black box that wraps an AI call.
+        <p class="body-lg text-body mb-6 mx-auto" style="max-width: 580px;">
+          Build high-performance, hallucination-free prompts for ChatGPT, Claude, Gemini &amp; Midjourney. Master CO-STAR, RTF, and XML prompt frameworks with live scoring.
         </p>
         <div class="flex flex-col min-[440px]:flex-row items-center justify-center gap-3 w-full max-w-xs min-[440px]:max-w-none mx-auto">
           <a href="#wizard" class="btn-primary w-full min-[440px]:w-auto">
@@ -60,6 +174,11 @@ import EnhanceButton from '../components/EnhanceButton.astro';
 
     <!-- Step Progress bar -->
     <StepProgress />
+
+    <!-- ════════════════════════════════════
+         QUICK START BAR
+         ════════════════════════════════════ -->
+    <QuickStartBar />
 
     <!-- ════════════════════════════════════
          WIZARD SECTION
@@ -176,7 +295,7 @@ import EnhanceButton from '../components/EnhanceButton.astro';
 
             <!-- Image Generation -->
             <div class="card p-4 sm:p-5 border border-hairline bg-canvas">
-              <div class="caption-mono text-violet mb-2" style="color: var(--color-violet-deep);">02. IMAGE &amp; ART</div>
+              <div class="caption-mono text-violet-deep mb-2 font-semibold">02. IMAGE &amp; ART</div>
               <h4 class="body-md-strong text-ink mb-2">Image and art direction</h4>
               <p class="body-sm text-body leading-relaxed">
                 Midjourney, Stable Diffusion, and DALL·E benefit from detailed subjects, composition, lighting, palette, camera language, and exclusions. Use the visual category to bring those directions together in one repeatable brief.
@@ -185,7 +304,7 @@ import EnhanceButton from '../components/EnhanceButton.astro';
 
             <!-- Video Generation -->
             <div class="card p-4 sm:p-5 border border-hairline bg-canvas">
-              <div class="caption-mono text-warning-deep mb-2" style="color: var(--color-warning-deep);">03. VIDEO &amp; MOTION</div>
+              <div class="caption-mono text-warning-deep mb-2 font-semibold">03. VIDEO &amp; MOTION</div>
               <h4 class="body-md-strong text-ink mb-2">Video and motion direction</h4>
               <p class="body-sm text-body leading-relaxed">
                 Video tools such as Sora, Runway, and Pika need a subject, setting, camera movement, lighting, and a sense of time. Describe how the scene begins, changes, and ends to make short clips and teasers more predictable.
@@ -194,7 +313,7 @@ import EnhanceButton from '../components/EnhanceButton.astro';
 
             <!-- Coding Prompts -->
             <div class="card p-4 sm:p-5 border border-hairline bg-canvas">
-              <div class="caption-mono text-cyan-deep mb-2" style="color: var(--color-cyan-deep);">04. CODE &amp; REFACTORING</div>
+              <div class="caption-mono text-cyan-deep mb-2 font-semibold">04. CODE &amp; REFACTORING</div>
               <h4 class="body-md-strong text-ink mb-2">Coding and refactoring briefs</h4>
               <p class="body-sm text-body leading-relaxed">
                 For code, include the language, runtime or framework version, interfaces, success criteria, and edge cases. A structured brief is useful for functions, database schemas, tests, and refactors across coding assistants.

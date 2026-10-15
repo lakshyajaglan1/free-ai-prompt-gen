@@ -2,21 +2,23 @@
 // Navbar — sticky top bar with brand, page navigation links, theme toggle & settings gear
 const pathname = Astro.url ? Astro.url.pathname : '/';
 
-const navLinks = [
-  { name: 'Generator', href: '/#wizard' },
-  { name: 'Scorer', href: '/score' },
-  { name: 'Templates', href: '/templates' },
-  { name: 'Examples', href: '/examples' },
-  { name: 'About', href: '/about' },
-  { name: 'Contact', href: '/contact' },
+const frameworkLinks = [
+  { name: 'RTF (Role-Task-Format)', href: '/frameworks/rtf-role-task-format', desc: 'Role, Task & Format' },
+  { name: 'CO-STAR Framework', href: '/frameworks/co-star-prompt-framework', desc: 'Context, Objective & Tone' },
+  { name: 'TAG Framework', href: '/frameworks/tag-prompt-framework', desc: 'Task, Action & Goal' },
+  { name: 'APE Framework', href: '/frameworks/ape-prompt-framework', desc: 'Action, Purpose & Expectation' },
 ];
 
-function isActive(href: string) {
-  if (href === '/') {
-    return pathname === '/' || pathname === '';
-  }
-  return pathname.startsWith(href);
-}
+const modelLinks = [
+  { name: 'Claude (XML Structured Tags)', href: '/models/claude-xml-prompt-generator', desc: '<role>, <task> & <rules>' },
+  { name: 'ChatGPT (Markdown Headers)', href: '/models/chatgpt-markdown-prompt-generator', desc: '## Headers & Constraints' },
+  { name: 'Google Gemini (Bold Labels)', href: '/models/gemini-prompt-generator', desc: '**Bold Labels** & Grounding' },
+  { name: 'Midjourney & Video AI', href: '/models/midjourney-and-video-prompt-generator', desc: 'Visual camera & parameter flags' },
+  { name: 'Local Ollama & LM Studio', href: '/models/ollama-local-llm-prompt-generator', desc: 'Private Llama 3 & ChatML' },
+];
+
+const isFrameworkActive = pathname.startsWith('/frameworks');
+const isModelActive = pathname.startsWith('/models');
 ---<header id="navbar" class="sticky top-0 z-[60] bg-canvas border-b border-hairline transition-colors duration-200" style="height: 64px;">
   <div class="w-full flex items-center justify-between h-full px-2.5 sm:px-6 md:px-8 max-w-7xl mx-auto">
     <!-- Left: Brand -->
@@ -32,23 +34,114 @@ function isActive(href: string) {
     </a>
 
     <!-- Center: Desktop Navigation Links -->
-    <nav class="hidden md:flex items-center gap-1 bg-canvas-soft p-1 rounded-full border border-hairline" id="desktop-nav-links" aria-label="Main Navigation">
-      {navLinks.map((link) => {
-        const active = isActive(link.href);
-        return (
-          <a
-            href={link.href}
-            class={`body-sm px-3.5 py-1 rounded-full transition-all duration-150 ${
-              active
-                ? 'bg-ink text-on-primary font-medium shadow-sm'
-                : 'text-body hover:text-ink hover:bg-canvas'
-            }`}
-            aria-current={active ? 'page' : undefined}
-          >
-            {link.name}
-          </a>
-        );
-      })}
+    <nav class="hidden md:flex items-center gap-0.5 lg:gap-1 bg-canvas-soft p-1 rounded-full border border-hairline" id="desktop-nav-links" aria-label="Main Navigation">
+      <a
+        href="/#wizard"
+        class={`body-sm px-3 py-1 rounded-full transition-all duration-150 ${
+          pathname === '/' || pathname === ''
+            ? 'bg-ink text-on-primary font-medium shadow-sm'
+            : 'text-body hover:text-ink hover:bg-canvas'
+        }`}
+      >
+        Generator
+      </a>
+
+      <!-- Frameworks Dropdown -->
+      <div class="relative group">
+        <button
+          type="button"
+          class={`body-sm px-3 py-1 rounded-full transition-all duration-150 inline-flex items-center gap-1 cursor-pointer ${
+            isFrameworkActive
+              ? 'bg-ink text-on-primary font-medium shadow-sm'
+              : 'text-body hover:text-ink hover:bg-canvas'
+          }`}
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <span>Frameworks</span>
+          <svg class="w-3 h-3 transition-transform duration-150 group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="absolute left-0 top-full pt-1.5 hidden group-hover:block group-focus-within:block z-50">
+          <div class="bg-canvas border border-hairline rounded-xl shadow-level-4 p-2 min-w-[240px] flex flex-col gap-0.5">
+            {frameworkLinks.map((item) => (
+              <a
+                href={item.href}
+                class="px-3 py-2 rounded-lg hover:bg-canvas-soft flex flex-col no-underline transition-colors group/item"
+              >
+                <span class="body-sm-strong text-ink group-hover/item:text-link transition-colors">{item.name}</span>
+                <span class="text-mute text-[11px]">{item.desc}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Models Dropdown -->
+      <div class="relative group">
+        <button
+          type="button"
+          class={`body-sm px-3 py-1 rounded-full transition-all duration-150 inline-flex items-center gap-1 cursor-pointer ${
+            isModelActive
+              ? 'bg-ink text-on-primary font-medium shadow-sm'
+              : 'text-body hover:text-ink hover:bg-canvas'
+          }`}
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <span>Models</span>
+          <svg class="w-3 h-3 transition-transform duration-150 group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="absolute left-0 top-full pt-1.5 hidden group-hover:block group-focus-within:block z-50">
+          <div class="bg-canvas border border-hairline rounded-xl shadow-level-4 p-2 min-w-[260px] flex flex-col gap-0.5">
+            {modelLinks.map((item) => (
+              <a
+                href={item.href}
+                class="px-3 py-2 rounded-lg hover:bg-canvas-soft flex flex-col no-underline transition-colors group/item"
+              >
+                <span class="body-sm-strong text-ink group-hover/item:text-link transition-colors">{item.name}</span>
+                <span class="text-mute text-[11px]">{item.desc}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <a
+        href="/templates"
+        class={`body-sm px-3 py-1 rounded-full transition-all duration-150 ${
+          pathname.startsWith('/templates')
+            ? 'bg-ink text-on-primary font-medium shadow-sm'
+            : 'text-body hover:text-ink hover:bg-canvas'
+        }`}
+      >
+        Templates
+      </a>
+
+      <a
+        href="/examples"
+        class={`body-sm px-3 py-1 rounded-full transition-all duration-150 ${
+          pathname.startsWith('/examples')
+            ? 'bg-ink text-on-primary font-medium shadow-sm'
+            : 'text-body hover:text-ink hover:bg-canvas'
+        }`}
+      >
+        Examples
+      </a>
+
+      <a
+        href="/score"
+        class={`body-sm px-3 py-1 rounded-full transition-all duration-150 ${
+          pathname.startsWith('/score')
+            ? 'bg-ink text-on-primary font-medium shadow-sm'
+            : 'text-body hover:text-ink hover:bg-canvas'
+        }`}
+      >
+        Scorer
+      </a>
     </nav>
 
     <!-- Right Cluster: Actions -->
@@ -144,28 +237,105 @@ function isActive(href: string) {
   </div>
 
   <!-- Mobile Dropdown Navigation Menu -->
-  <div id="mobile-menu" class="hidden md:hidden fixed top-[64px] left-0 right-0 bottom-0 bg-canvas/95 backdrop-blur-md border-b border-hairline shadow-level-4 p-5 z-50 overflow-y-auto">
-    <nav class="flex flex-col gap-2 max-w-md mx-auto" aria-label="Mobile Navigation">
-      {navLinks.map((link) => {
-        const active = isActive(link.href);
-        return (
+  <div id="mobile-menu" class="hidden md:hidden fixed top-[64px] left-0 right-0 bottom-0 bg-canvas/95 backdrop-blur-md border-b border-hairline shadow-level-4 p-5 z-50 overflow-y-auto pb-20">
+    <nav class="flex flex-col gap-4 max-w-md mx-auto" aria-label="Mobile Navigation">
+      <!-- Main Links -->
+      <div class="flex flex-col gap-1.5">
+        <a
+          href="/#wizard"
+          class={`body-md px-4 py-2.5 rounded-xl transition-colors flex items-center justify-between ${
+            pathname === '/' || pathname === ''
+              ? 'bg-ink text-on-primary font-medium shadow-sm'
+              : 'text-body hover:text-ink hover:bg-canvas-soft border border-hairline/50'
+          }`}
+        >
+          <span>Generator</span>
+        </a>
+        <a
+          href="/templates"
+          class={`body-md px-4 py-2.5 rounded-xl transition-colors flex items-center justify-between ${
+            pathname.startsWith('/templates')
+              ? 'bg-ink text-on-primary font-medium shadow-sm'
+              : 'text-body hover:text-ink hover:bg-canvas-soft border border-hairline/50'
+          }`}
+        >
+          <span>Templates</span>
+        </a>
+        <a
+          href="/examples"
+          class={`body-md px-4 py-2.5 rounded-xl transition-colors flex items-center justify-between ${
+            pathname.startsWith('/examples')
+              ? 'bg-ink text-on-primary font-medium shadow-sm'
+              : 'text-body hover:text-ink hover:bg-canvas-soft border border-hairline/50'
+          }`}
+        >
+          <span>Examples</span>
+        </a>
+        <a
+          href="/score"
+          class={`body-md px-4 py-2.5 rounded-xl transition-colors flex items-center justify-between ${
+            pathname.startsWith('/score')
+              ? 'bg-ink text-on-primary font-medium shadow-sm'
+              : 'text-body hover:text-ink hover:bg-canvas-soft border border-hairline/50'
+          }`}
+        >
+          <span>Prompt Scorer</span>
+        </a>
+      </div>
+
+      <!-- Framework Guides -->
+      <div class="flex flex-col gap-1.5 pt-2 border-t border-hairline">
+        <span class="caption-mono text-mute uppercase tracking-wider text-[11px] px-1 font-semibold">Framework Guides</span>
+        {frameworkLinks.map((item) => (
           <a
-            href={link.href}
-            class={`body-md px-4 py-3 rounded-xl transition-colors flex items-center justify-between ${
-              active
+            href={item.href}
+            class={`body-sm px-4 py-2 rounded-xl transition-colors flex items-center justify-between ${
+              pathname === item.href
                 ? 'bg-ink text-on-primary font-medium shadow-sm'
-                : 'text-body hover:text-ink hover:bg-canvas-soft border border-hairline/50'
+                : 'text-body hover:text-ink hover:bg-canvas-soft border border-hairline/40'
             }`}
           >
-            <span>{link.name}</span>
-            {active && (
-              <span class="w-2 h-2 rounded-full bg-cyan inline-block"></span>
-            )}
+            <span>{item.name}</span>
+            <span class="text-xs text-mute font-mono">Guide →</span>
           </a>
-        );
-      })}
-      
-      <div class="h-px bg-hairline my-2"></div>
+        ))}
+      </div>
+
+      <!-- AI Models -->
+      <div class="flex flex-col gap-1.5 pt-2 border-t border-hairline">
+        <span class="caption-mono text-mute uppercase tracking-wider text-[11px] px-1 font-semibold">AI Model Targets</span>
+        {modelLinks.map((item) => (
+          <a
+            href={item.href}
+            class={`body-sm px-4 py-2 rounded-xl transition-colors flex items-center justify-between ${
+              pathname === item.href
+                ? 'bg-ink text-on-primary font-medium shadow-sm'
+                : 'text-body hover:text-ink hover:bg-canvas-soft border border-hairline/40'
+            }`}
+          >
+            <span>{item.name}</span>
+            <span class="text-xs text-mute font-mono">Format →</span>
+          </a>
+        ))}
+      </div>
+
+      <div class="h-px bg-hairline my-1"></div>
+
+      <!-- About & Contact -->
+      <div class="grid grid-cols-2 gap-2">
+        <a
+          href="/about"
+          class="body-sm px-3 py-2 text-center rounded-lg border border-hairline text-body hover:text-ink hover:bg-canvas-soft"
+        >
+          About
+        </a>
+        <a
+          href="/contact"
+          class="body-sm px-3 py-2 text-center rounded-lg border border-hairline text-body hover:text-ink hover:bg-canvas-soft"
+        >
+          Contact
+        </a>
+      </div>
       
       <a
         href="https://github.com/lakshyajaglan1/free-ai-prompt-gen"

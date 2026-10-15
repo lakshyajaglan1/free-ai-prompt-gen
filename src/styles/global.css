@@ -7,6 +7,7 @@
 
 @theme {
   /* ── Colors: Brand & Accent ── */
+  --color-primary: #171717;
   --color-ink: #171717;
   --color-on-primary: #ffffff;
   --color-cyan: #50e3c2;
@@ -57,19 +58,38 @@
 /* ── Dark Mode Tokens Override (True Floating Elevation Theme) ── */
 :root[data-theme="dark"],
 .dark {
+  --color-primary: #ffffff;
   --color-ink: #ffffff;
   --color-on-primary: #000000;
   --color-canvas: #16161a;       /* Card & panel background (solid dark gray) */
   --color-canvas-soft: #08080a;  /* Pure black main page backdrop */
   --color-canvas-soft-2: #22222a;/* Input fields & sub-boxes (distinct dark gray) */
   --color-hairline: #30303c;     /* Clear subtle border */
-  --color-hairline-strong: #4e4e5e;
-  --color-body: #a1a1aa;
-  --color-mute: #71717a;
+  --color-hairline-strong: #52525b;
+  --color-body: #d4d4d8;         /* High-contrast zinc-300 for readable secondary/body text */
+  --color-mute: #a1a1aa;         /* High-contrast zinc-400 for readable labels/captions */
   --color-accent: #00f2fe;
   --color-accent-hover: #38bdf8;
   --color-selection-bg: #00f2fe;
   --color-selection-fg: #000000;
+
+  /* Semantic Overrides for Dark Mode */
+  --color-link: #38bdf8;
+  --color-link-deep: #60a5fa;
+  --color-link-bg-soft: rgba(56, 189, 248, 0.15);
+  --color-success: #34d399;
+  --color-error: #f87171;
+  --color-error-soft: rgba(248, 113, 113, 0.15);
+  --color-error-deep: #fca5a5;
+  --color-warning: #fbbf24;
+  --color-warning-soft: rgba(251, 191, 36, 0.15);
+  --color-warning-deep: #fcd34d;
+  --color-violet: #a78bfa;
+  --color-violet-soft: rgba(167, 139, 250, 0.18);
+  --color-violet-deep: #c4b5fd;
+  --color-cyan: #2dd4bf;
+  --color-cyan-soft: rgba(45, 212, 191, 0.15);
+  --color-cyan-deep: #5eead4;
 
   --shadow-level-1: 0 1px 3px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --shadow-level-2: 0 2px 6px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.08);
@@ -196,6 +216,11 @@
   box-shadow: 0 0 10px rgba(0, 242, 254, 0.25);
 }
 
+.tab-ghost[data-active="true"] .text-mute {
+  color: inherit !important;
+  opacity: 0.85;
+}
+
 :root[data-theme="dark"] .category-card,
 .dark .category-card {
   background-color: var(--color-canvas);
@@ -213,6 +238,20 @@
   border-color: #00f2fe !important;
   background-color: #16222f !important;
   box-shadow: 0 0 0 1px #00f2fe, 0 0 12px rgba(0, 242, 254, 0.25) !important;
+}
+
+:root[data-theme="dark"] .category-card[data-active="true"] .category-desc,
+.dark .category-card[data-active="true"] .category-desc {
+  color: #a5f3fc !important;
+}
+
+button:disabled,
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-primary-sm:disabled,
+.btn-secondary-sm:disabled {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
 }
 
 @theme {

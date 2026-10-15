@@ -4,6 +4,7 @@ interface Props {
   description?: string;
   canonicalUrl?: string;
   ogImage?: string;
+  noindex?: boolean;
 }
 
 import '../styles/global.css';
@@ -11,11 +12,21 @@ import '../styles/global.css';
 const {
   title = 'AI Prompt Generator Free | Best AI Prompt Writer & Tools',
   description = 'The best free AI prompt generator. Craft optimal text, image & code prompts for ChatGPT, Gemini, Claude & Midjourney using proven RTF and CO-STAR frameworks.',
-  canonicalUrl = Astro.url ? Astro.url.href : 'https://freeaipromptgen.com/',
+  canonicalUrl,
   ogImage = '/og-image.png',
+  noindex = false,
 } = Astro.props;
 
 const siteName = 'AI Prompt Generator';
+const siteOrigin = (Astro.site ? Astro.site.origin : 'https://freeaipromptgen.com').replace(/\/$/, '');
+
+const computedCanonical = canonicalUrl
+  ? (canonicalUrl.startsWith('http') ? canonicalUrl : `${siteOrigin}${canonicalUrl.startsWith('/') ? '' : '/'}${canonicalUrl}`)
+  : (Astro.url ? new URL(Astro.url.pathname, siteOrigin).href : `${siteOrigin}/`);
+
+const fullOgImage = ogImage.startsWith('http')
+  ? ogImage
+  : `${siteOrigin}${ogImage.startsWith('/') ? '' : '/'}${ogImage}`;
 ---
 
 <!doctype html>
@@ -62,132 +73,27 @@ const siteName = 'AI Prompt Generator';
     <meta name="title" content={title} />
     <meta name="description" content={description} />
     <meta name="author" content="AI Prompt Generator" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content={noindex ? "noindex, follow" : "index, follow"} />
     <meta name="theme-color" content="#171717" />
-    <link rel="canonical" href={canonicalUrl} />
+    <link rel="canonical" href={computedCanonical} />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:url" content={computedCanonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:image" content={fullOgImage} />
     <meta property="og:site_name" content={siteName} />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter Cards -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalUrl} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={computedCanonical} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={fullOgImage} />
 
-    <!-- JSON-LD Structured Data for Search Engine Optimization -->
-    <script type="application/ld+json" is:inline>
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "AI Prompt Generator",
-        "alternateName": [
-          "Free AI Prompt Generator",
-          "Best AI Prompt Generator",
-          "AI Prompt Writer",
-          "Gemini AI Prompt Generator",
-          "Coding Prompt Generator"
-        ],
-        "url": "https://freeaipromptgen.com/",
-        "applicationCategory": "UtilitiesApplication",
-        "operatingSystem": "All",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        "description": "The best free AI prompt generator. Craft optimal text, image & code prompts for ChatGPT, Gemini, Claude & Midjourney using proven RTF and CO-STAR frameworks."
-      }
-    </script>
-
-    <!-- JSON-LD FAQPage Schema for Search Rich Snippets -->
-    <script type="application/ld+json" is:inline>
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "What is an AI prompt generator?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "An AI prompt generator is a tool or wizard that helps users structure, format, and optimize text instructions for artificial intelligence models like ChatGPT, Google Gemini, Claude, and Midjourney. It uses proven frameworks like RTF, CO-STAR, and TAG to turn raw ideas into high-performing prompts."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What is the best AI prompt generator?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "The best AI prompt generator is a free, privacy-focused, rule-based web tool that supports multiple targets (ChatGPT, Gemini, Claude, Midjourney), frameworks (CO-STAR, RTF, APE), and provides live previews without paywalls. Our tool is 100% free, runs locally in your browser, and offers optional client-side AI refinement."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How do I write a good prompt for AI?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "To write a good prompt for AI: 1) Define a clear Role (e.g. Senior Copywriter), 2) Provide Context, 3) Specify the Task, 4) Set Constraints (length, tone, style), and 5) Declare the exact Output Format (Markdown headers, XML, JSON, bullet points)."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How to write a prompt for an AI video generator?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "To write a prompt for an AI video generator (like Sora, Runway Gen-2, or Pika): 1) Describe the core subject and setting, 2) Specify camera dynamics (pan, tilt, zoom, drone shot), 3) Define lighting and mood (golden hour, volumetric glow), and 4) Detail movement pacing and frame rate expectations."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How to prompt an AI image generator or AI art generator?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "To prompt an AI image or art generator (Midjourney, DALL-E 3, Stable Diffusion): combine subject details ('futuristic cyberpunk city'), art style ('photorealistic, octane render'), lighting & lens settings ('85mm lens, volumetric lighting'), and parameters like aspect ratio (--ar 16:9) and negative prompts."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How to use an AI image generator with a text prompt?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "To use an AI image generator with a text prompt, enter a descriptive text string starting with your subject, followed by visual style cues (medium, camera angle, lighting), and negative keywords. Our AI prompt generator structures these fields into weighted syntax ready to copy into Midjourney or Stable Diffusion."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Can I use a prompt generator for any AI model?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes! A quality prompt generator formats outputs for any model target. For example, ChatGPT prefers Markdown headers (## Role, ## Task), Claude excels with XML tags (<role>, <task>), and Gemini responds best to bold parameter blocks (**Role:**)."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What is meta-prompting?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Meta-prompting is the technique of using an AI model to write, critique, optimize, or refine prompts for another AI model (or itself). Instead of manually crafting a prompt from scratch, meta-prompting uses AI intelligence to build structured system prompts tailored for optimal execution."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Are there free AI prompt tools?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes, there are completely free AI prompt tools available. Our AI Prompt Generator is 100% free and open-source with zero sign-ups, subscriptions, or paywalls. All prompt assembly and framework wizards execute locally in your browser."
-            }
-          }
-        ]
-      }
-    </script>
+    <slot name="head" />
 
     <!-- Fonts: Geist & Inter (geometric sans) + Geist Mono & JetBrains Mono (technical mono) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

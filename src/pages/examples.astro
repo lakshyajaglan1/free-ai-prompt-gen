@@ -146,15 +146,122 @@ import ApiKeySettings from '../components/ApiKeySettings.astro';
             </div>
             <h3 class="body-md-strong text-ink mb-2">Eliminate Ambiguity</h3>
             <p class="body-sm text-body leading-relaxed">
-              Words like "good," "fast," or "professional" mean different things to everyone. Replace them with measurable criteria or concrete examples.
+              Words like "good," "fast," or "professional" mean different things to everyone. Ground requests in deep intent with the <a href="/frameworks/ape-prompt-framework" class="text-link hover:underline font-medium">APE Framework</a>.
             </p>
           </div>
         </div>
 
+        <!-- Dedicated Framework Guides Hub -->
+        <div class="mt-16 pt-12 border-t border-hairline">
+          <div class="text-center mb-8">
+            <div class="caption-mono text-link uppercase tracking-wider mb-2">FRAMEWORK GUIDES &amp; BUILDERS</div>
+            <h3 class="display-sm sm:display-md text-ink font-semibold">Master Proven Prompt Frameworks</h3>
+            <p class="body-sm text-mute max-w-lg mx-auto mt-1">
+              Deep-dive into the cognitive architectures used by top prompt engineers, each with a pre-locked interactive builder.
+            </p>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <a href="/frameworks/rtf-role-task-format" class="card p-5 border border-hairline bg-canvas hover:border-hairline-strong transition-all no-underline group flex flex-col justify-between">
+              <div>
+                <span class="caption-mono text-link text-xs font-semibold">High-Velocity</span>
+                <h4 class="body-md-strong text-ink group-hover:text-link transition-colors mt-1 mb-2">RTF Framework</h4>
+                <p class="caption text-body leading-relaxed">Role, Task, and Format architecture for rapid coding and technical execution.</p>
+              </div>
+              <span class="caption-mono text-xs text-link font-medium mt-4 flex items-center gap-1">Open RTF Guide →</span>
+            </a>
+
+            <a href="/frameworks/co-star-prompt-framework" class="card p-5 border border-hairline bg-canvas hover:border-hairline-strong transition-all no-underline group flex flex-col justify-between">
+              <div>
+                <span class="caption-mono text-link text-xs font-semibold">Enterprise Standard</span>
+                <h4 class="body-md-strong text-ink group-hover:text-link transition-colors mt-1 mb-2">CO-STAR Framework</h4>
+                <p class="caption text-body leading-relaxed">Context, Objective, Style, Tone, Audience, and Response for high-stakes business.</p>
+              </div>
+              <span class="caption-mono text-xs text-link font-medium mt-4 flex items-center gap-1">Open CO-STAR Guide →</span>
+            </a>
+
+            <a href="/frameworks/tag-prompt-framework" class="card p-5 border border-hairline bg-canvas hover:border-hairline-strong transition-all no-underline group flex flex-col justify-between">
+              <div>
+                <span class="caption-mono text-link text-xs font-semibold">Outcome-Driven</span>
+                <h4 class="body-md-strong text-ink group-hover:text-link transition-colors mt-1 mb-2">TAG Framework</h4>
+                <p class="caption text-body leading-relaxed">Task, Action, and Goal structure for step-by-step procedures and measurable KPIs.</p>
+              </div>
+              <span class="caption-mono text-xs text-link font-medium mt-4 flex items-center gap-1">Open TAG Guide →</span>
+            </a>
+
+            <a href="/frameworks/ape-prompt-framework" class="card p-5 border border-hairline bg-canvas hover:border-hairline-strong transition-all no-underline group flex flex-col justify-between">
+              <div>
+                <span class="caption-mono text-link text-xs font-semibold">Intent-Aligned</span>
+                <h4 class="body-md-strong text-ink group-hover:text-link transition-colors mt-1 mb-2">APE Framework</h4>
+                <p class="caption text-body leading-relaxed">Action, Purpose, and Expectation to align AI results with strategic intent.</p>
+              </div>
+              <span class="caption-mono text-xs text-link font-medium mt-4 flex items-center gap-1">Open APE Guide →</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Dedicated Model Targets Hub -->
+        <div class="mt-12 pt-12 border-t border-hairline">
+          <div class="text-center mb-8">
+            <div class="caption-mono text-link uppercase tracking-wider mb-2">MODEL-SPECIFIC PROMPT BUILDERS</div>
+            <h3 class="display-sm sm:display-md text-ink font-semibold">Optimize for Your AI Model</h3>
+            <p class="body-sm text-mute max-w-lg mx-auto mt-1">
+              Every foundation model parses syntax differently. Use model-native tags, delimiters, and parameters.
+            </p>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            <a href="/models/claude-xml-prompt-generator" class="card p-4 border border-hairline bg-canvas hover:border-hairline-strong transition-all no-underline group flex flex-col justify-between">
+              <div>
+                <span class="caption-mono text-link text-[11px] font-semibold">Anthropic Claude</span>
+                <h4 class="body-sm-strong text-ink group-hover:text-link transition-colors mt-1 mb-1.5">Claude XML Tags</h4>
+                <p class="caption text-mute text-xs">&lt;role&gt;, &lt;task&gt;, and &lt;thinking&gt; scratchpads.</p>
+              </div>
+              <span class="caption-mono text-[11px] text-link font-medium mt-3">Claude Guide →</span>
+            </a>
+
+            <a href="/models/chatgpt-markdown-prompt-generator" class="card p-4 border border-hairline bg-canvas hover:border-hairline-strong transition-all no-underline group flex flex-col justify-between">
+              <div>
+                <span class="caption-mono text-link text-[11px] font-semibold">OpenAI GPT-4o</span>
+                <h4 class="body-sm-strong text-ink group-hover:text-link transition-colors mt-1 mb-1.5">ChatGPT Markdown</h4>
+                <p class="caption text-mute text-xs">## Headers, system roles, and negative constraints.</p>
+              </div>
+              <span class="caption-mono text-[11px] text-link font-medium mt-3">ChatGPT Guide →</span>
+            </a>
+
+            <a href="/models/gemini-prompt-generator" class="card p-4 border border-hairline bg-canvas hover:border-hairline-strong transition-all no-underline group flex flex-col justify-between">
+              <div>
+                <span class="caption-mono text-link text-[11px] font-semibold">Google DeepMind</span>
+                <h4 class="body-sm-strong text-ink group-hover:text-link transition-colors mt-1 mb-1.5">Google Gemini</h4>
+                <p class="caption text-mute text-xs">**Bold Labels**, grounding, and 2M token context.</p>
+              </div>
+              <span class="caption-mono text-[11px] text-link font-medium mt-3">Gemini Guide →</span>
+            </a>
+
+            <a href="/models/midjourney-and-video-prompt-generator" class="card p-4 border border-hairline bg-canvas hover:border-hairline-strong transition-all no-underline group flex flex-col justify-between">
+              <div>
+                <span class="caption-mono text-link text-[11px] font-semibold">Diffusion &amp; Video</span>
+                <h4 class="body-sm-strong text-ink group-hover:text-link transition-colors mt-1 mb-1.5">Midjourney &amp; Video AI</h4>
+                <p class="caption text-mute text-xs">Aspect ratios, 35mm lenses, and motion vectors.</p>
+              </div>
+              <span class="caption-mono text-[11px] text-link font-medium mt-3">Visual Guide →</span>
+            </a>
+
+            <a href="/models/ollama-local-llm-prompt-generator" class="card p-4 border border-hairline bg-canvas hover:border-hairline-strong transition-all no-underline group flex flex-col justify-between">
+              <div>
+                <span class="caption-mono text-link text-[11px] font-semibold">100% Offline</span>
+                <h4 class="body-sm-strong text-ink group-hover:text-link transition-colors mt-1 mb-1.5">Local Ollama &amp; LM Studio</h4>
+                <p class="caption text-mute text-xs">ChatML, Llama 3 special tokens, and low VRAM tuning.</p>
+              </div>
+              <span class="caption-mono text-[11px] text-link font-medium mt-3">Local Guide →</span>
+            </a>
+          </div>
+        </div>
+
         <!-- CTA -->
-        <div class="mt-12 text-center">
-          <a href="/" class="btn-primary inline-flex items-center gap-2">
-            Try the Prompt Generator
+        <div class="mt-14 text-center">
+          <a href="/#wizard" class="btn-primary inline-flex items-center gap-2">
+            Try the Full Prompt Generator
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
               <polyline points="12 5 19 12 12 19"></polyline>
@@ -208,7 +315,8 @@ import ApiKeySettings from '../components/ApiKeySettings.astro';
   }
 
   .prompt-box {
-    background: var(--color-canvas-soft);
+    background: var(--color-canvas-soft-2);
+    color: var(--color-ink);
     border-radius: var(--radius-md);
     padding: 16px;
     font-family: var(--font-mono);
@@ -258,7 +366,6 @@ import ApiKeySettings from '../components/ApiKeySettings.astro';
 <script>
   import { saveTheme } from '../lib/storage';
   import { BEFORE_AFTER_EXAMPLES } from '../lib/beforeAfterExamples';
-  import { GoalCategory } from '../lib/types';
 
   // Theme management
   const btnSettings = document.getElementById('btn-settings');
@@ -318,7 +425,6 @@ import ApiKeySettings from '../components/ApiKeySettings.astro';
   // Examples rendering
   const examplesContainer = document.getElementById('examples-container')!;
   const categoryButtons = document.querySelectorAll('.category-filter-btn');
-  let currentFilter = 'all';
 
   function renderExamples(filterCategory: string = 'all') {
     const examples = Object.values(BEFORE_AFTER_EXAMPLES);
@@ -401,8 +507,7 @@ import ApiKeySettings from '../components/ApiKeySettings.astro';
   // Category filter handlers
   categoryButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      const category = btn.dataset.category!;
-      currentFilter = category;
+      const category = (btn as HTMLElement).dataset.category!;
 
       // Update button states
       categoryButtons.forEach(b => b.classList.remove('active'));

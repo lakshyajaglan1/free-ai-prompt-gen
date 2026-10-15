@@ -30,6 +30,8 @@
   } from '../lib/storage';
   import { refinePrompt, ProviderError } from '../lib/geminiRefine';
   import { PROVIDER_INFO, type ProviderType, refinePromptWithAI } from '../lib/aiProviders';
+  import { parseQuickStart } from '../lib/quickStartParser';
+  import { getTemplateById } from '../lib/promptTemplates';
 
 document.addEventListener('DOMContentLoaded', () => {
   // ── State ──
@@ -251,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         item.dataset.state = 'pending';
         if (badge) {
-          badge.className = 'w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-medium border border-hairline bg-canvas-soft text-mute step-badge transition-all';
+          badge.className = 'w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-medium border border-hairline bg-canvas-soft-2 text-mute step-badge transition-all';
           badge.textContent = stepNum.toString();
         }
         if (label) {
@@ -694,15 +696,22 @@ document.addEventListener('DOMContentLoaded', () => {
       ${templates
         .map(
           (t) => `
-          <div class="card border border-hairline hover:border-hairline-strong transition-all duration-150 template-item cursor-pointer p-4 bg-canvas flex items-center justify-between gap-4 rounded-lg shadow-sm" data-template-id="${t.id}">
+          <div class="card border border-hairline hover:border-hairline-strong transition-all duration-150 template-item cursor-pointer p-4 bg-canvas flex items-start justify-between gap-4 rounded-lg shadow-sm hover:shadow" data-template-id="${t.id}">
             <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-1">
-                <p class="body-sm-strong text-ink truncate">${escapeHtml(t.name)}</p>
+              <div class="flex items-center gap-2 mb-1 flex-wrap">
+                <p class="body-sm-strong text-ink font-semibold truncate">${escapeHtml(t.name)}</p>
                 <span class="badge font-mono text-[10px] px-2 py-0.5">${escapeHtml(t.category)}</span>
+                ${(t as any).recommendedFramework ? `<span class="caption-mono text-[10px] text-mute px-1.5 py-0.5 border border-hairline rounded bg-canvas-soft">${escapeHtml((t as any).recommendedFramework)}</span>` : ''}
+                ${(t as any).recommendedModel ? `<span class="caption-mono text-[10px] text-link font-medium">${escapeHtml((t as any).recommendedModel)}</span>` : ''}
               </div>
-              <p class="caption text-body line-clamp-2">${escapeHtml(t.description)}</p>
+              <p class="caption text-body line-clamp-2 mb-2 leading-relaxed">${escapeHtml(t.description)}</p>
+              <div class="flex items-center gap-3 text-xs">
+                <a href="/templates/${(t as any).slug || t.id}" class="text-link hover:underline font-medium inline-flex items-center gap-0.5" onclick="event.stopPropagation()">
+                  View Guide & Breakdown →
+                </a>
+              </div>
             </div>
-            <button type="button" class="btn-secondary-sm shrink-0 font-medium">Use</button>
+            <button type="button" class="btn-primary-sm shrink-0 font-medium text-xs">Use ⚡</button>
           </div>`
         )
         .join('')}
@@ -732,8 +741,45 @@ document.addEventListener('DOMContentLoaded', () => {
       const key = ta.dataset.fieldKey as FieldKey;
       ta.value = state.fields[key] ?? '';
     });
+
+    // Apply category if present
+    if (t.category) {
+      state.category = t.category;
+      categoryCards.forEach((c) => {
+        c.dataset.active = c.dataset.category === t.category ? 'true' : 'false';
+      });
+    }
+
+    // Apply recommended framework if present
+    const recFw = (t as any).recommendedFramework as Framework;
+    if (recFw && Object.values(Framework).includes(recFw)) {
+      state.framework = recFw;
+      frameworkTabs.forEach((tab) => {
+        tab.dataset.active = tab.dataset.framework === recFw ? 'true' : 'false';
+      });
+      if (frameworkDesc && FRAMEWORK_META[recFw]) {
+        frameworkDesc.textContent = FRAMEWORK_META[recFw].description;
+      }
+    }
+
+    // Apply recommended model if recognized
+    const recModel = (t as any).recommendedModel as string;
+    if (recModel) {
+      const matched = Object.values(TargetModel).find((m) => m.toLowerCase() === recModel.toLowerCase());
+      if (matched) {
+        state.targetModel = matched;
+        modelTabs.forEach((tab) => {
+          tab.dataset.active = tab.dataset.model === matched ? 'true' : 'false';
+        });
+        if (modelDesc) modelDesc.textContent = MODEL_DESCRIPTIONS[matched] ?? '';
+        if (modelBadge) modelBadge.textContent = matched;
+      }
+    }
+
     updateForm();
     reassemble();
+    updateBeforeAfter();
+    updateStepProgress(3);
   }
 
   document.getElementById('btn-load-template')!.addEventListener('click', openTemplates);
@@ -1157,9 +1203,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // ══════════════════════════════════════
   // URL QUERY PARAMS INITIALIZATION
   // ══════════════════════════════════════
-  function loadFromQueryParams() {
+  function loadFromQueryParams(): boolean {
     const params = new URLSearchParams(window.location.search);
-    if (!params.has('task') && !params.has('cat')) return;
+
+    // ── NEW: ?template=<slug> ──
+    if (params.has('template')) {
+      const slug = params.get('template')!;
+      const tpl = getTemplateById(slug);
+      if (tpl) {
+        loadTemplate(tpl);
+        // Also apply category if present
+        state.category = tpl.category;
+        categoryCards.forEach((c) => (c.dataset.active = c.dataset.category === tpl.category ? 'true' : 'false'));
+        document.getElementById('wizard')?.scrollIntoView({ behavior: 'smooth' });
+        return true;
+      }
+    }
+
+    // ── Existing share-link fields ──
+    if (!params.has('task') && !params.has('cat') && !params.has('fw') && !params.has('model')) return false;
 
     if (params.has('cat')) {
       const cat = params.get('cat') as GoalCategory;
@@ -1180,9 +1242,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (params.has('model')) {
       const model = params.get('model') as TargetModel;
-      state.targetModel = model;
-      modelTabs.forEach((t) => (t.dataset.active = t.dataset.model === model ? 'true' : 'false'));
-      if (modelBadge) modelBadge.textContent = model;
+      // Validate model
+      if (Object.values(TargetModel).includes(model)) {
+        state.targetModel = model;
+        modelTabs.forEach((t) => (t.dataset.active = t.dataset.model === model ? 'true' : 'false'));
+        if (modelBadge) modelBadge.textContent = model;
+        if (modelDesc) modelDesc.textContent = MODEL_DESCRIPTIONS[model] ?? '';
+      }
     }
 
     if (params.has('task')) state.fields.task = params.get('task') || '';
@@ -1195,20 +1261,150 @@ document.addEventListener('DOMContentLoaded', () => {
       const key = ta.dataset.fieldKey as FieldKey;
       if (state.fields[key]) ta.value = state.fields[key];
     });
+
+    return true;
   }
+
+  // ══════════════════════════════════════
+  // COLD-START DEFAULT EXAMPLE
+  // Pre-populates the form on first visit so users immediately see
+  // a live preview and a meaningful Quality Score (not 0/100 F).
+  // Only applied when no URL params, no sessionStorage template, and
+  // localStorage has never been touched by the user (all fields blank).
+  // ══════════════════════════════════════
+  const COLD_START_DEFAULT = {
+    category: GoalCategory.Coding,
+    framework: Framework.RTF,
+    targetModel: TargetModel.Generic,
+    fields: {
+      role: 'A senior Python developer with expertise in web scraping and data engineering',
+      context: '',
+      task: 'Write a Python script using requests and BeautifulSoup to scrape the name, price, and availability of products from a target e-commerce page. Store results in a CSV file.',
+      outputFormat: 'Complete Python script in a fenced code block with inline comments. Include a brief usage section showing how to run it.',
+      tone: 'Professional and concise — written for a mid-level developer',
+      constraints: 'Handle HTTP errors gracefully. Respect robots.txt. Add a 1-second delay between requests. Do not use Selenium.',
+      examples: '',
+    },
+  } as const;
+
+  function applyColdStart() {
+    const anyFilled = ALL_FIELD_KEYS.some((k) => state.fields[k as FieldKey]?.trim());
+    if (anyFilled) return; // User already has content — don't clobber it
+
+    state.category = COLD_START_DEFAULT.category;
+    state.framework = COLD_START_DEFAULT.framework;
+    state.targetModel = COLD_START_DEFAULT.targetModel;
+    state.fields = { ...COLD_START_DEFAULT.fields };
+
+    // Sync UI pickers
+    categoryCards.forEach((c) => (c.dataset.active = c.dataset.category === state.category ? 'true' : 'false'));
+    frameworkTabs.forEach((t) => (t.dataset.active = t.dataset.framework === state.framework ? 'true' : 'false'));
+    if (frameworkDesc) frameworkDesc.textContent = FRAMEWORK_META[state.framework].description;
+    modelTabs.forEach((t) => (t.dataset.active = t.dataset.model === state.targetModel ? 'true' : 'false'));
+    if (modelBadge) modelBadge.textContent = state.targetModel;
+
+    // Fill textareas
+    textareas.forEach((ta) => {
+      const key = ta.dataset.fieldKey as FieldKey;
+      ta.value = state.fields[key] ?? '';
+    });
+  }
+
+  // ══════════════════════════════════════
+  // QUICK START BAR — wiring
+  // ══════════════════════════════════════
+  const qsInput = document.getElementById('quick-start-input') as HTMLInputElement | null;
+  const qsGenerateBtn = document.getElementById('btn-quick-start-generate') as HTMLButtonElement | null;
+  const qsCategoryBadge = document.getElementById('quick-start-category-badge') as HTMLElement | null;
+  const qsSuccess = document.getElementById('quick-start-success') as HTMLElement | null;
+  const qsSuccessText = document.getElementById('quick-start-success-text') as HTMLElement | null;
+  const qsPills = document.querySelectorAll<HTMLButtonElement>('.quick-start-pill');
+
+  /** Live category detection as the user types */
+  qsInput?.addEventListener('input', () => {
+    const idea = qsInput.value.trim();
+    if (idea.length < 3) {
+      if (qsCategoryBadge) qsCategoryBadge.classList.add('hidden');
+      return;
+    }
+    const result = parseQuickStart(idea);
+    if (qsCategoryBadge) {
+      qsCategoryBadge.textContent = result.category;
+      qsCategoryBadge.classList.remove('hidden');
+    }
+  });
+
+  /** Enter key triggers generation */
+  qsInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      qsGenerateBtn?.click();
+    }
+  });
+
+  /** Apply quick-start result to wizard state */
+  function applyQuickStartResult(idea: string) {
+    if (!idea.trim()) return;
+    const result = parseQuickStart(idea.trim());
+
+    // ── Update state ──
+    state.category = result.category;
+    state.framework = result.framework;
+    state.fields = { ...result.fields };
+
+    // ── Sync UI: category ──
+    categoryCards.forEach((c) => (c.dataset.active = c.dataset.category === result.category ? 'true' : 'false'));
+
+    // ── Sync UI: framework ──
+    frameworkTabs.forEach((t) => (t.dataset.active = t.dataset.framework === result.framework ? 'true' : 'false'));
+    if (frameworkDesc) frameworkDesc.textContent = FRAMEWORK_META[result.framework].description;
+
+    // ── Sync textareas ──
+    textareas.forEach((ta) => {
+      const key = ta.dataset.fieldKey as FieldKey;
+      ta.value = state.fields[key] ?? '';
+    });
+
+    updateForm();
+    reassemble();
+    updateBeforeAfter();
+    updateStepProgress(4);
+
+    // ── Show success flash ──
+    if (qsSuccess && qsSuccessText) {
+      const catLabel = result.category;
+      qsSuccessText.textContent = `✓ Detected as ${catLabel} — all fields populated. Scroll down to review and copy!`;
+      qsSuccess.classList.remove('hidden');
+      qsSuccess.classList.add('show');
+      setTimeout(() => {
+        qsSuccess.classList.add('hidden');
+        qsSuccess.classList.remove('show');
+      }, 5000);
+    }
+
+    // ── Smooth scroll to wizard ──
+    document.getElementById('wizard')?.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  qsGenerateBtn?.addEventListener('click', () => {
+    const idea = qsInput?.value ?? '';
+    applyQuickStartResult(idea);
+  });
+
+  // Wire example pills
+  qsPills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      const idea = pill.dataset.idea ?? '';
+      if (qsInput) qsInput.value = idea;
+      applyQuickStartResult(idea);
+    });
+  });
 
   // ══════════════════════════════════════
   // INITIAL RENDER
   // ══════════════════════════════════════
-  loadFromQueryParams();
-  updateForm();
-  reassemble();
-  updateBeforeAfter();
-  updateRefineButton();
-  updateThemeUI();
-  if (new URLSearchParams(window.location.search).has('templates')) openTemplates();
 
-  // Check for pending template from templates page
+  // Priority 1: sessionStorage pending template (from /templates page)
   const pendingTemplate = sessionStorage.getItem('pendingTemplate');
   if (pendingTemplate) {
     try {
@@ -1219,4 +1415,20 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Failed to load pending template:', e);
     }
   }
+
+  // Priority 2: URL query params (share links, ?template=, ?fw=, ?model=)
+  const hadQueryParams = loadFromQueryParams();
+
+  // Priority 3: Cold-start default (first-time visitor — nothing is filled)
+  if (!pendingTemplate && !hadQueryParams) {
+    applyColdStart();
+  }
+
+  updateForm();
+  reassemble();
+  updateBeforeAfter();
+  updateRefineButton();
+  updateThemeUI();
+  if (new URLSearchParams(window.location.search).has('templates')) openTemplates();
 });
+

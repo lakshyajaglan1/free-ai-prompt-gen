@@ -1,0 +1,582 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import PromptHistory from '../../components/PromptHistory.astro';
+import ApiKeySettings from '../../components/ApiKeySettings.astro';
+import {
+  STARTER_TEMPLATES,
+  getTemplateAssembledPrompt,
+  type StarterTemplate,
+} from '../../data/templates';
+import { FIELD_LABELS, type FieldKey } from '../../lib/types';
+
+export async function getStaticPaths() {
+  return STARTER_TEMPLATES.map((template) => {
+    // Find up to 3 related templates in the same category
+    const related = STARTER_TEMPLATES.filter(
+      (t) => t.category === template.category && t.slug !== template.slug
+    ).slice(0, 3);
+
+    // If fewer than 3, pad with templates from other categories
+    if (related.length < 3) {
+      const others = STARTER_TEMPLATES.filter(
+        (t) => t.slug !== template.slug && !related.some((r) => r.slug === t.slug)
+      );
+      related.push(...others.slice(0, 3 - related.length));
+    }
+
+    return {
+      params: { slug: template.slug },
+      props: { template, related },
+    };
+  });
+}
+
+const { template, related } = Astro.props;
+const assembledPrompt = getTemplateAssembledPrompt(template);
+
+const pageTitle = `${template.title} Prompt Template | Free AI Prompt Generator`;
+const pageDescription = template.seoDescription;
+const canonicalUrl = `https://freeaipromptgen.com/templates/${template.slug}`;
+
+// BreadcrumbList JSON-LD Schema
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  'itemListElement': [
+    {
+      '@type': 'ListItem',
+      'position': 1,
+      'name': 'Home',
+      'item': 'https://freeaipromptgen.com/',
+    },
+    {
+      '@type': 'ListItem',
+      'position': 2,
+      'name': 'Templates',
+      'item': 'https://freeaipromptgen.com/templates',
+    },
+    {
+      '@type': 'ListItem',
+      'position': 3,
+      'name': template.category,
+      'item': `https://freeaipromptgen.com/templates?category=${encodeURIComponent(template.category)}`,
+    },
+    {
+      '@type': 'ListItem',
+      'position': 4,
+      'name': template.title,
+      'item': canonicalUrl,
+    },
+  ],
+};
+
+// SoftwareApplication & HowTo JSON-LD Schema
+const howToSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  'name': `How to Use the ${template.title} Prompt with ${template.recommendedModel}`,
+  'description': template.seoDescription,
+  'step': [
+    {
+      '@type': 'HowToStep',
+      'position': 1,
+      'name': 'Open Template in Builder',
+      'text': `Launch this template directly into the Prompt Forge interactive generator by clicking "Open & Customize in Builder".`,
+      'url': `https://freeaipromptgen.com/?template=${template.slug}`,
+    },
+    {
+      '@type': 'HowToStep',
+      'position': 2,
+      'name': 'Customize Your Context',
+      'text': `Fill in your project-specific parameters for ${template.fields.task ? 'the Task' : 'the core fields'} and constraints.`,
+    },
+    {
+      '@type': 'HowToStep',
+      'position': 3,
+      'name': `Format for ${template.recommendedModel}`,
+      'text': `The prompt generator automatically structures syntax for ${template.recommendedModel} using the ${template.recommendedFramework} cognitive framework.`,
+    },
+    {
+      '@type': 'HowToStep',
+      'position': 4,
+      'name': 'Copy and Run',
+      'text': `Copy the clean assembled prompt into your AI model interface with zero copy-paste formatting errors.`,
+    },
+  ],
+};
+
+const softwareAppSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  'name': 'Prompt Forge AI Prompt Generator',
+  'applicationCategory': 'UtilitiesApplication',
+  'operatingSystem': 'All',
+  'offers': {
+    '@type': 'Offer',
+    'price': '0',
+    'priceCurrency': 'USD',
+  },
+  'description': 'Free browser-based AI prompt engineering workbench with live model formatting and local privacy.',
+};
+
+// Extract present fields for the field-by-field breakdown
+const presentFields = Object.entries(template.fields).filter(
+  ([_, val]) => typeof val === 'string' && val.trim().length > 0
+) as [FieldKey, string][];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+>
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbSchema)} />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(howToSchema)} />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(softwareAppSchema)} />
+
+  <Navbar />
+
+  <main class="flex-1 w-full bg-canvas-soft">
+    <!-- Breadcrumbs Navigation Bar -->
+    <nav aria-label="Breadcrumb" class="border-b border-hairline bg-canvas px-4 sm:px-6 md:px-8 py-3 text-xs sm:text-sm">
+      <div class="max-w-6xl mx-auto flex items-center flex-wrap gap-2 text-mute">
+        <a href="/" class="hover:text-ink transition-colors">Home</a>
+        <span>/</span>
+        <a href="/templates" class="hover:text-ink transition-colors">Templates</a>
+        <span>/</span>
+        <a
+          href={`/templates?category=${encodeURIComponent(template.category)}`}
+          class="hover:text-ink transition-colors"
+        >
+          {template.category}
+        </a>
+        <span>/</span>
+        <span class="text-ink font-medium truncate max-w-xs sm:max-w-md">{template.title}</span>
+      </div>
+    </nav>
+
+    <!-- Header Hero Section -->
+    <section class="border-b border-hairline bg-canvas px-4 sm:px-6 md:px-8 py-10 sm:py-14 relative overflow-hidden">
+      <div class="absolute inset-0 mesh-gradient opacity-30 pointer-events-none" aria-hidden="true"></div>
+
+      <div class="max-w-4xl mx-auto relative">
+        <!-- Badges Cluster -->
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+          <a
+            href={`/templates?category=${encodeURIComponent(template.category)}`}
+            class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-canvas-soft border border-hairline text-ink hover:border-hairline-strong transition-colors"
+          >
+            {template.category}
+          </a>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-canvas-soft border border-hairline text-mute">
+            Framework: {template.recommendedFramework}
+          </span>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-link-bg-soft/40 text-link border border-link/20">
+            Target: {template.recommendedModel}
+          </span>
+          <span class="px-2 py-0.5 rounded-full text-xs font-mono font-semibold text-cyan-deep bg-cyan-soft/40 border border-cyan/20">
+            Battle-Tested
+          </span>
+        </div>
+
+        <!-- Title -->
+        <h1 class="display-lg sm:display-xl text-ink mb-4 tracking-tight leading-tight">
+          {template.title}
+        </h1>
+
+        <!-- SEO Subheading -->
+        <p class="body-lg text-body leading-relaxed mb-8 max-w-3xl">
+          {template.seoDescription}
+        </p>
+
+        <!-- Action CTAs -->
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+          <a
+            href={`/?template=${template.slug}`}
+            class="btn-primary py-2.5 px-6 rounded-full inline-flex items-center gap-2 text-sm sm:text-base font-semibold shadow-sm hover:shadow"
+            id="cta-builder"
+          >
+            <span>Open & Customize in Builder</span>
+            <span>⚡</span>
+          </a>
+
+          <button
+            type="button"
+            id="btn-copy-assembled-top"
+            class="btn-secondary py-2.5 px-5 rounded-full inline-flex items-center gap-2 text-sm font-medium"
+            data-prompt={assembledPrompt}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span id="copy-btn-text-top">Copy Prompt</span>
+          </button>
+
+          <a
+            href="/templates"
+            class="btn-secondary-sm py-2 px-4 rounded-full text-xs text-mute hover:text-ink inline-flex items-center gap-1 ml-auto"
+          >
+            <span>← All Templates</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content Container -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 py-10 sm:py-14 space-y-12">
+
+      <!-- 1. FULL ASSEMBLED PROMPT PREVIEW -->
+      <section class="space-y-4">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h2 class="display-sm text-ink font-semibold">Assembled Prompt Preview</h2>
+            <p class="caption text-mute">
+              Pre-structured for <strong class="text-ink">{template.recommendedModel}</strong> using the <strong class="text-ink">{template.recommendedFramework}</strong> cognitive framework
+            </p>
+          </div>
+          <button
+            type="button"
+            id="btn-copy-assembled-card"
+            class="btn-secondary-sm inline-flex items-center gap-1.5 font-medium"
+            data-prompt={assembledPrompt}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span id="copy-btn-text-card">Copy Clean Prompt</span>
+          </button>
+        </div>
+
+        <!-- Prompt Code Block -->
+        <div class="relative bg-canvas border border-hairline rounded-xl overflow-hidden shadow-level-2">
+          <!-- Top bar of code box -->
+          <div class="flex items-center justify-between px-4 py-2.5 bg-canvas-soft border-b border-hairline text-xs font-mono text-mute">
+            <span class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-link/60 inline-block"></span>
+              <span>{template.recommendedModel} Instruction Format</span>
+            </span>
+            <span>{assembledPrompt.length} chars</span>
+          </div>
+          <!-- Body -->
+          <pre
+            id="assembled-prompt-text"
+            class="p-5 text-xs sm:text-sm font-mono text-ink leading-relaxed overflow-x-auto whitespace-pre-wrap select-all bg-canvas"
+            style="tab-size: 2; max-height: 520px;"
+          >{assembledPrompt}</pre>
+        </div>
+      </section>
+
+      <!-- 2. WEAK VS. STRONG BREAKDOWN -->
+      <section class="space-y-4">
+        <div class="border-b border-hairline pb-2">
+          <div class="caption-mono text-link uppercase tracking-wider mb-1 font-semibold">ENGINEERING AUDIT</div>
+          <h2 class="display-sm text-ink font-semibold">Weak Prompt vs. Engineered Prompt</h2>
+          <p class="body-sm text-body">
+            Compare why unstructured ad-hoc prompts fail and how this template fixes the underlying root cause.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Weak Prompt Box -->
+          <div class="bg-canvas border border-error/30 rounded-xl p-5 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-error-soft text-error-deep">
+                <span>✕</span>
+                <span>Vague Amateur Prompt</span>
+              </div>
+              <span class="caption text-mute">What 90% of users write</span>
+            </div>
+            <div class="p-3 bg-canvas-soft rounded-lg border border-hairline font-mono text-xs text-body italic leading-relaxed">
+              "{template.weakPromptExample}"
+            </div>
+            <ul class="text-xs text-body space-y-2 list-disc pl-4 leading-normal">
+              <li><strong>Zero Persona:</strong> Model defaults to generic consensus knowledge.</li>
+              <li><strong>No Schema:</strong> Responses meander without a predictable output format.</li>
+              <li><strong>Missing Negative Constraints:</strong> Model peppers response with conversational fluff.</li>
+            </ul>
+          </div>
+
+          <!-- Strong Engineered Box -->
+          <div class="bg-canvas border border-link/30 rounded-xl p-5 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-link-bg-soft text-link-deep">
+                <span>✓</span>
+                <span>Engineered Prompt</span>
+              </div>
+              <span class="caption text-mute">{template.recommendedFramework} Framework</span>
+            </div>
+            <div class="p-3 bg-canvas-soft rounded-lg border border-hairline font-mono text-xs text-ink leading-relaxed">
+              Structured role anchoring, explicit boundary conditions, negative constraints, and machine-parsable formatting.
+            </div>
+            <ul class="text-xs text-body space-y-2 list-disc pl-4 leading-normal">
+              <li><strong>Authoritative Persona:</strong> Grounds the LLM in senior-level domain expertise.</li>
+              <li><strong>Deterministic Output:</strong> Enforces clean Markdown, tables, or code schemas.</li>
+              <li><strong>Negative Constraints:</strong> Bans AI cliches and caps output boundaries cleanly.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. FIELD-BY-FIELD BREAKDOWN -->
+      <section class="space-y-4">
+        <div class="border-b border-hairline pb-2">
+          <div class="caption-mono text-link uppercase tracking-wider mb-1 font-semibold">ANATOMY OF THE PROMPT</div>
+          <h2 class="display-sm text-ink font-semibold">Field-by-Field Architecture</h2>
+          <p class="body-sm text-body">
+            How each component parameterizes the generative model during inference:
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          {presentFields.map(([fieldKey, fieldValue]) => (
+            <div class="bg-canvas border border-hairline rounded-xl p-5 shadow-sm space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="caption-mono text-xs font-semibold px-2.5 py-0.5 rounded-full bg-canvas-soft border border-hairline text-ink uppercase">
+                  {FIELD_LABELS[fieldKey]}
+                </span>
+                <span class="caption text-mute font-mono">fields.{fieldKey}</span>
+              </div>
+              <p class="text-sm text-body leading-relaxed pl-1 pt-1">
+                {fieldValue}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- 4. WHY THIS WORKS (BULLETS) -->
+      <section class="space-y-4">
+        <div class="border-b border-hairline pb-2">
+          <div class="caption-mono text-link uppercase tracking-wider mb-1 font-semibold">COGNITIVE PRINCIPLES</div>
+          <h2 class="display-sm text-ink font-semibold">Why This Prompt Produces Superior Results</h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {template.whyItWorks.map((bullet) => (
+            <div class="bg-canvas border border-hairline rounded-xl p-5 shadow-sm flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full bg-cyan-soft/50 text-cyan-deep flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                ✓
+              </div>
+              <p class="body-sm text-body leading-relaxed">
+                {bullet}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- 5. CALLOUT BANNER TO BUILDER -->
+      <section class="relative overflow-hidden bg-canvas border border-hairline rounded-2xl p-8 sm:p-10 shadow-level-3 text-center">
+        <div class="absolute inset-0 mesh-gradient opacity-20 pointer-events-none" aria-hidden="true"></div>
+        <div class="relative max-w-2xl mx-auto space-y-4">
+          <div class="caption-mono text-link uppercase tracking-wider font-semibold">INTERACTIVE WORKBENCH</div>
+          <h2 class="display-md text-ink tracking-tight font-semibold">
+            Customize This Template With Your Data
+          </h2>
+          <p class="body-md text-body leading-relaxed">
+            Load this prompt directly into Prompt Forge's free generator. Swap frameworks, adjust negative constraints, select alternative models, or run client-side AI enhancement with your own API key.
+          </p>
+          <div class="pt-3">
+            <a
+              href={`/?template=${template.slug}`}
+              class="btn-primary py-3 px-8 rounded-full text-base font-semibold inline-flex items-center gap-2 shadow-sm hover:shadow-md"
+            >
+              <span>Open in Prompt Builder</span>
+              <span>⚡</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. RELATED TEMPLATES IN CATEGORY (Internal Links) -->
+      {related.length > 0 && (
+        <section class="space-y-6 pt-4">
+          <div class="border-b border-hairline pb-2 flex items-center justify-between">
+            <div>
+              <h2 class="display-sm text-ink font-semibold">
+                More {template.category} Templates
+              </h2>
+              <p class="caption text-mute">Explore related engineering frameworks in this category</p>
+            </div>
+            <a
+              href={`/templates?category=${encodeURIComponent(template.category)}`}
+              class="text-xs font-medium text-link hover:text-link-deep"
+            >
+              View All {template.category} →
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {related.map((rel) => (
+              <article class="bg-canvas border border-hairline hover:border-hairline-strong rounded-xl p-5 flex flex-col justify-between transition-all duration-150 shadow-sm hover:shadow-md">
+                <div>
+                  <div class="flex items-center gap-2 mb-2 text-xs">
+                    <span class="px-2 py-0.5 rounded-full bg-canvas-soft border border-hairline text-mute font-mono">
+                      {rel.recommendedFramework}
+                    </span>
+                    <span class="text-mute font-mono ml-auto">
+                      {rel.recommendedModel}
+                    </span>
+                  </div>
+                  <h3 class="text-base font-semibold text-ink hover:text-link transition-colors mb-2 leading-snug">
+                    <a href={`/templates/${rel.slug}`}>{rel.title}</a>
+                  </h3>
+                  <p class="body-sm text-body line-clamp-3 mb-4 leading-relaxed text-xs">
+                    {rel.seoDescription}
+                  </p>
+                </div>
+                <div class="pt-3 border-t border-hairline flex items-center justify-between text-xs">
+                  <a href={`/templates/${rel.slug}`} class="text-link hover:underline font-medium">
+                    View Template →
+                  </a>
+                  <a href={`/?template=${rel.slug}`} class="text-mute hover:text-ink font-mono">
+                    Use ⚡
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+    </div>
+  </main>
+
+  <Footer />
+
+  <PromptHistory />
+  <ApiKeySettings />
+
+  <!-- Toast Notification element -->
+  <div
+    id="copy-toast"
+    class="fixed bottom-6 right-6 z-50 bg-ink text-on-primary px-4 py-2.5 rounded-lg shadow-level-4 font-mono text-xs flex items-center gap-2 transition-all duration-200 opacity-0 translate-y-2 pointer-events-none"
+  >
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span>Prompt copied to clipboard!</span>
+  </div>
+</Layout>
+
+<script>
+  import { saveTheme } from '../../lib/storage';
+
+  // Global settings modal & drawer handlers
+  const btnSettings = document.getElementById('btn-settings');
+  const btnHistory = document.getElementById('btn-history');
+  const settingsModal = document.getElementById('settings-modal');
+  const settingsBackdrop = document.getElementById('settings-backdrop');
+  const historyDrawer = document.getElementById('history-drawer');
+  const historyBackdrop = document.getElementById('history-backdrop');
+
+  if (btnSettings && settingsModal && settingsBackdrop) {
+    btnSettings.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      settingsModal.classList.remove('hidden');
+      settingsBackdrop.classList.remove('hidden');
+    });
+  }
+
+  if (btnHistory && historyDrawer && historyBackdrop) {
+    btnHistory.addEventListener('click', () => {
+      document.body.style.overflow = 'hidden';
+      historyDrawer.classList.remove('hidden');
+      historyBackdrop.classList.remove('hidden');
+    });
+  }
+
+  // Theme toggle script
+  const btnThemeToggle = document.getElementById('btn-theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function updateThemeUI() {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      sunIcon?.classList.remove('hidden');
+      moonIcon?.classList.add('hidden');
+    } else {
+      sunIcon?.classList.add('hidden');
+      moonIcon?.classList.remove('hidden');
+    }
+  }
+
+  btnThemeToggle?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+      saveTheme('light');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      saveTheme('dark');
+    }
+    updateThemeUI();
+  });
+
+  updateThemeUI();
+
+  // ══════════════════════════════════════════════════════════════
+  // COPY TO CLIPBOARD HANDLERS & TOAST
+  // ══════════════════════════════════════════════════════════════
+  const copyToast = document.getElementById('copy-toast');
+  let toastTimeout: any = null;
+
+  function showToast(msg: string = 'Prompt copied to clipboard!') {
+    if (!copyToast) return;
+    copyToast.querySelector('span')!.textContent = msg;
+    copyToast.classList.remove('opacity-0', 'translate-y-2', 'pointer-events-none');
+    copyToast.classList.add('opacity-100', 'translate-y-0');
+
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      copyToast.classList.add('opacity-0', 'translate-y-2', 'pointer-events-none');
+      copyToast.classList.remove('opacity-100', 'translate-y-0');
+    }, 2500);
+  }
+
+  async function copyPromptToClipboard(text: string, buttonId?: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('Assembled prompt copied to clipboard!');
+      if (buttonId) {
+        const btn = document.getElementById(buttonId);
+        if (btn) {
+          const original = btn.textContent;
+          btn.textContent = 'Copied! ✓';
+          setTimeout(() => {
+            btn.textContent = original;
+          }, 2000);
+        }
+      }
+    } catch (err) {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('Assembled prompt copied to clipboard!');
+    }
+  }
+
+  const btnCopyTop = document.getElementById('btn-copy-assembled-top');
+  const btnCopyCard = document.getElementById('btn-copy-assembled-card');
+
+  btnCopyTop?.addEventListener('click', () => {
+    const text = btnCopyTop.dataset.prompt || '';
+    copyPromptToClipboard(text, 'copy-btn-text-top');
+  });
+
+  btnCopyCard?.addEventListener('click', () => {
+    const text = btnCopyCard.dataset.prompt || '';
+    copyPromptToClipboard(text, 'copy-btn-text-card');
+  });
+</script>

@@ -1,0 +1,606 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import PromptHistory from '../../components/PromptHistory.astro';
+import ApiKeySettings from '../../components/ApiKeySettings.astro';
+import { FRAMEWORK_PAGES, type FrameworkPageData } from '../../data/frameworksData';
+import { assemblePrompt } from '../../lib/promptAssembler';
+import { TargetModel } from '../../lib/types';
+
+export async function getStaticPaths() {
+  return FRAMEWORK_PAGES.map((framework) => ({
+    params: { slug: framework.slug },
+    props: { framework },
+  }));
+}
+
+interface Props {
+  framework: FrameworkPageData;
+}
+
+const { framework } = Astro.props;
+
+const canonicalUrl = `https://freeaipromptgen.com/frameworks/${framework.slug}`;
+const pageTitle = `${framework.title} | Free AI Prompt Gen`;
+const pageDescription = framework.metaDescription;
+
+// Initial pre-assembled prompt for SSR preview
+const initialFields: Record<string, string> = {};
+framework.builderFields.forEach((f) => {
+  initialFields[f.key] = f.defaultValue;
+});
+const initialAssembledPrompt = assemblePrompt(
+  initialFields,
+  framework.frameworkKey,
+  framework.defaultModel
+);
+
+// BreadcrumbList JSON-LD Schema
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://freeaipromptgen.com/',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Frameworks',
+      item: 'https://freeaipromptgen.com/#wizard',
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: framework.expansion,
+      item: canonicalUrl,
+    },
+  ],
+};
+
+// FAQPage JSON-LD Schema
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: framework.faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.answer,
+    },
+  })),
+};
+
+// SoftwareApplication JSON-LD Schema
+const softwareAppSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: `${framework.expansion} Prompt Generator`,
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'All',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  description: framework.summary,
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+>
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbSchema)} />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(faqSchema)} />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(softwareAppSchema)} />
+
+  <Navbar />
+
+  <main class="flex-1 w-full bg-canvas-soft">
+    <!-- Breadcrumbs Navigation -->
+    <nav aria-label="Breadcrumb" class="border-b border-hairline bg-canvas px-4 sm:px-6 md:px-8 py-3 text-xs sm:text-sm">
+      <div class="max-w-6xl mx-auto flex items-center flex-wrap gap-2 text-mute">
+        <a href="/" class="hover:text-ink transition-colors">Home</a>
+        <span>/</span>
+        <a href="/examples" class="hover:text-ink transition-colors">Frameworks</a>
+        <span>/</span>
+        <span class="text-ink font-medium truncate max-w-xs sm:max-w-md">{framework.expansion}</span>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="border-b border-hairline bg-canvas px-4 sm:px-6 md:px-8 py-10 sm:py-14 relative overflow-hidden">
+      <div class="absolute inset-0 mesh-gradient opacity-30 pointer-events-none" aria-hidden="true"></div>
+
+      <div class="max-w-4xl mx-auto relative">
+        <!-- Badges Cluster -->
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-canvas-soft border border-hairline text-ink">
+            Framework: {framework.frameworkKey}
+          </span>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-link-bg-soft/40 text-link border border-link/20">
+            {framework.badge}
+          </span>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold text-cyan-deep bg-cyan-soft/40 border border-cyan/20">
+            100% Free &amp; Client-Side
+          </span>
+        </div>
+
+        <!-- H1 Headline -->
+        <h1 class="display-lg sm:display-xl text-ink mb-4 tracking-tight leading-tight">
+          {framework.title}
+        </h1>
+
+        <!-- Subheading -->
+        <p class="body-lg text-body leading-relaxed mb-8 max-w-3xl">
+          {framework.summary}
+        </p>
+
+        <!-- Quick Jump Links -->
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+          <a
+            href="#mini-builder"
+            class="btn-primary py-2.5 px-6 rounded-full inline-flex items-center gap-2 text-sm sm:text-base font-semibold shadow-sm hover:shadow"
+          >
+            <span>Launch {framework.frameworkKey} Interactive Builder</span>
+            <span>⚡</span>
+          </a>
+          <a
+            href="#examples-section"
+            class="btn-secondary py-2.5 px-5 rounded-full inline-flex items-center gap-2 text-sm font-medium"
+          >
+            <span>View 3 Before &amp; Afters</span>
+            <span>↓</span>
+          </a>
+          <a
+            href={`/?fw=${framework.frameworkKey}#wizard`}
+            class="btn-secondary-sm py-2 px-4 rounded-full text-xs text-mute hover:text-ink inline-flex items-center gap-1 ml-auto"
+          >
+            <span>Open in Full Wizard →</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content Container -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-10 sm:py-14 space-y-16">
+
+      <!-- 1. INTERACTIVE MINI-BUILDER -->
+      <section id="mini-builder" class="scroll-mt-20">
+        <div class="card p-6 sm:p-8 border border-hairline bg-canvas shadow-level-3 rounded-2xl">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-hairline">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-cyan inline-block animate-pulse"></span>
+                <span class="caption-mono text-link uppercase tracking-wider font-semibold">Interactive Generator</span>
+              </div>
+              <h2 class="display-sm text-ink font-semibold mt-1">{framework.frameworkKey} Live Prompt Builder</h2>
+              <p class="body-sm text-mute mt-0.5">
+                Pre-locked to the <strong class="text-ink">{framework.expansion}</strong> cognitive framework. Edit inputs below for real-time assembly.
+              </p>
+            </div>
+
+            <!-- Target Model Selector for the Mini-Builder -->
+            <div class="flex items-center gap-2 self-start sm:self-auto">
+              <label for="builder-model-select" class="caption-mono text-mute uppercase tracking-wider">Target Model:</label>
+              <select
+                id="builder-model-select"
+                class="form-input text-xs sm:text-sm py-1.5 px-3 rounded-lg border border-hairline bg-canvas-soft text-ink font-mono focus:border-link focus:outline-none cursor-pointer"
+              >
+                <option value={TargetModel.ChatGPT} selected={framework.defaultModel === TargetModel.ChatGPT}>ChatGPT (Markdown)</option>
+                <option value={TargetModel.Claude} selected={framework.defaultModel === TargetModel.Claude}>Claude (XML Tags)</option>
+                <option value={TargetModel.Gemini} selected={framework.defaultModel === TargetModel.Gemini}>Google Gemini (Bold Labels)</option>
+                <option value={TargetModel.Llama}>Local Llama 3 (Special Tokens)</option>
+                <option value={TargetModel.Generic}>Generic / Raw</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Builder Grid: Left Inputs, Right Live Preview -->
+          <div class="grid gap-8 lg:grid-cols-12 mt-6">
+            <!-- Left: Framework Input Fields -->
+            <div class="lg:col-span-7 space-y-4" id="framework-fields-container" data-framework={framework.frameworkKey}>
+              {framework.builderFields.map((field) => (
+                <div class="space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <label for={`field-${field.key}`} class="body-sm-strong text-ink flex items-center gap-1.5">
+                      <span>{field.label}</span>
+                    </label>
+                    <span class="caption text-mute text-xs">{field.helperText}</span>
+                  </div>
+                  <textarea
+                    id={`field-${field.key}`}
+                    data-field-key={field.key}
+                    rows="3"
+                    class="builder-field-input w-full p-3 rounded-xl border border-hairline bg-canvas-soft text-ink text-sm font-sans focus:bg-canvas focus:border-ink transition-all resize-y shadow-inner-sm leading-relaxed"
+                    placeholder={field.placeholder}
+                  >{field.defaultValue}</textarea>
+                </div>
+              ))}
+
+              <div class="pt-2 flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  id="btn-clear-fields"
+                  class="btn-secondary-sm py-1.5 px-3.5 rounded-full text-xs text-mute hover:text-ink transition-colors"
+                >
+                  Clear Fields
+                </button>
+                <button
+                  type="button"
+                  id="btn-reset-defaults"
+                  class="btn-secondary-sm py-1.5 px-3.5 rounded-full text-xs text-mute hover:text-ink transition-colors"
+                >
+                  Reset Defaults
+                </button>
+                <a
+                  href={`/?fw=${framework.frameworkKey}#wizard`}
+                  class="body-sm text-link hover:underline ml-auto flex items-center gap-1 text-xs"
+                >
+                  <span>Open in Full Multi-Step Wizard</span>
+                  <span>→</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Right: Real-time Formatted Output -->
+            <div class="lg:col-span-5 flex flex-col">
+              <div class="flex items-center justify-between mb-2">
+                <span class="caption-mono text-mute uppercase tracking-wider font-semibold flex items-center gap-1.5">
+                  <span>Assembled Prompt</span>
+                  <span id="char-word-count" class="text-mute font-normal text-[11px]">(0 words)</span>
+                </span>
+                <button
+                  type="button"
+                  id="btn-copy-live-prompt"
+                  class="btn-primary py-1 px-3 rounded-full text-xs font-medium inline-flex items-center gap-1.5 shadow-sm"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span id="copy-btn-label">Copy Prompt</span>
+                </button>
+              </div>
+
+              <!-- Output Box -->
+              <div class="relative flex-1 bg-canvas border border-hairline rounded-xl overflow-hidden shadow-level-1 flex flex-col min-h-[340px]">
+                <div class="px-3.5 py-2 bg-canvas-soft border-b border-hairline flex items-center justify-between text-[11px] font-mono text-mute">
+                  <span id="preview-model-badge" class="font-semibold text-ink">Format: {framework.defaultModel}</span>
+                  <span class="text-cyan-deep font-medium">Ready to run</span>
+                </div>
+                <div class="p-4 flex-1 overflow-auto bg-canvas">
+                  <pre
+                    id="live-prompt-output"
+                    class="font-mono text-xs text-ink leading-relaxed whitespace-pre-wrap word-break selection:bg-ink selection:text-on-primary m-0"
+                  >{initialAssembledPrompt}</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. WHEN TO USE VS. WHEN TO AVOID -->
+      <section class="space-y-6">
+        <div>
+          <div class="caption-mono text-link uppercase tracking-wider mb-1 font-semibold">STRATEGIC SELECTION</div>
+          <h2 class="display-sm text-ink font-semibold">When to Use {framework.frameworkKey} vs. When to Avoid</h2>
+          <p class="body-sm text-mute">
+            No single prompt framework is a silver bullet. Understanding trade-offs prevents token waste and cognitive friction.
+          </p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2">
+          <!-- When to Use -->
+          <div class="card p-6 border border-hairline bg-canvas rounded-xl shadow-level-1">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="w-7 h-7 rounded-full bg-cyan-soft/40 text-cyan-deep flex items-center justify-center font-bold text-sm">✓</span>
+              <h3 class="body-md-strong text-ink">Best Suited For</h3>
+            </div>
+            <ul class="space-y-3 list-none p-0 m-0">
+              {framework.whenToUse.map((item) => (
+                <li class="flex items-start gap-2.5 body-sm text-body">
+                  <span class="text-cyan-deep font-bold mt-0.5 shrink-0">•</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- When to Avoid -->
+          <div class="card p-6 border border-hairline bg-canvas rounded-xl shadow-level-1">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="w-7 h-7 rounded-full bg-warning-soft text-warning-deep flex items-center justify-center font-bold text-sm">!</span>
+              <h3 class="body-md-strong text-ink">When to Avoid / Better Alternatives</h3>
+            </div>
+            <ul class="space-y-3 list-none p-0 m-0">
+              {framework.whenToAvoid.map((item) => (
+                <li class="flex items-start gap-2.5 body-sm text-body">
+                  <span class="text-warning-deep font-bold mt-0.5 shrink-0">•</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. COGNITIVE MECHANISMS (WHY THIS WORKS) -->
+      <section class="space-y-6">
+        <div>
+          <div class="caption-mono text-link uppercase tracking-wider mb-1 font-semibold">PROMPT ENGINEERING MECHANICS</div>
+          <h2 class="display-sm text-ink font-semibold">Why the {framework.frameworkKey} Architecture Works</h2>
+          <p class="body-sm text-mute">
+            How transformer neural networks process the {framework.expansion} cognitive signals under the hood.
+          </p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-3">
+          {framework.cognitiveMechanisms.map((mech, idx) => (
+            <div class="card p-6 border border-hairline bg-canvas rounded-xl shadow-level-1 flex flex-col justify-between">
+              <div>
+                <span class="caption-mono text-mute text-xs font-semibold">Pillar 0{idx + 1}</span>
+                <h3 class="body-md-strong text-ink mt-2 mb-3">{mech.title}</h3>
+                <p class="body-sm text-body leading-relaxed">{mech.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- 4. THREE CONCRETE BEFORE & AFTER EXAMPLES -->
+      <section id="examples-section" class="space-y-8 scroll-mt-20">
+        <div>
+          <div class="caption-mono text-link uppercase tracking-wider mb-1 font-semibold">REAL-WORLD VALIDATION</div>
+          <h2 class="display-sm text-ink font-semibold">3 Concrete Before &amp; After Examples</h2>
+          <p class="body-sm text-mute">
+            Compare weak, uncalibrated requests against battle-tested {framework.frameworkKey} prompts with problem diagnoses and rationale.
+          </p>
+        </div>
+
+        <div class="space-y-8">
+          {framework.examples.map((ex, idx) => (
+            <div class="card p-6 sm:p-8 border border-hairline bg-canvas rounded-2xl shadow-level-2">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-hairline mb-6">
+                <div>
+                  <span class="caption-mono text-link uppercase font-semibold tracking-wider text-xs">{ex.category}</span>
+                  <h3 class="display-sm text-ink font-semibold mt-0.5">{idx + 1}. {ex.title}</h3>
+                </div>
+                <span class="caption text-mute italic max-w-sm text-xs sm:text-right">{ex.scenario}</span>
+              </div>
+
+              <div class="grid gap-6 lg:grid-cols-2">
+                <!-- Weak Prompt -->
+                <div class="space-y-3">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-error-soft text-error-deep flex items-center justify-center font-bold text-xs">✕</span>
+                    <h4 class="body-md-strong text-ink">Weak Prompt (Vague)</h4>
+                  </div>
+                  <div class="p-3.5 rounded-xl border border-error/30 bg-canvas-soft font-mono text-xs text-body leading-relaxed whitespace-pre-wrap">
+                    {ex.weakPrompt}
+                  </div>
+                  <div class="space-y-1.5 pt-1">
+                    <span class="caption-mono text-error uppercase text-[11px] font-semibold">Critical Flaws:</span>
+                    <ul class="space-y-1 list-none p-0 m-0">
+                      {ex.weakProblems.map((prob) => (
+                        <li class="body-sm text-mute text-xs flex items-start gap-1.5">
+                          <span class="text-error font-bold">•</span>
+                          <span>{prob}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Strong Framework Prompt -->
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="w-6 h-6 rounded-full bg-cyan-soft text-cyan-deep flex items-center justify-center font-bold text-xs">✓</span>
+                      <h4 class="body-md-strong text-ink">Strong {framework.frameworkKey} Prompt</h4>
+                    </div>
+                    <button
+                      type="button"
+                      class="btn-secondary-sm py-1 px-2.5 rounded-full text-xs font-mono copy-example-btn"
+                      data-prompt={ex.strongPrompt}
+                    >
+                      Copy Prompt
+                    </button>
+                  </div>
+                  <div class="p-3.5 rounded-xl border border-cyan/40 bg-canvas-soft font-mono text-xs text-ink leading-relaxed whitespace-pre-wrap overflow-x-auto max-h-72">
+                    {ex.strongPrompt}
+                  </div>
+                  <div class="space-y-1.5 pt-1">
+                    <span class="caption-mono text-cyan-deep uppercase text-[11px] font-semibold">Why It Works:</span>
+                    <p class="body-sm text-body text-xs leading-relaxed">{ex.whyItWorks}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- 5. FAQ SECTION -->
+      <section class="space-y-6">
+        <div>
+          <div class="caption-mono text-link uppercase tracking-wider mb-1 font-semibold">QUESTIONS &amp; ANSWERS</div>
+          <h2 class="display-sm text-ink font-semibold">Frequently Asked Questions</h2>
+          <p class="body-sm text-mute">Everything you need to know about implementing the {framework.frameworkKey} prompt framework.</p>
+        </div>
+
+        <div class="space-y-4">
+          {framework.faqs.map((faq) => (
+            <div class="card p-6 border border-hairline bg-canvas rounded-xl shadow-level-1">
+              <h3 class="body-md-strong text-ink mb-2">{faq.question}</h3>
+              <p class="body-sm text-body leading-relaxed">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- 6. RELATED FRAMEWORKS & BOTTOM CTA -->
+      <section class="pt-8 border-t border-hairline">
+        <div class="card p-8 border border-hairline bg-canvas rounded-2xl shadow-level-2 text-center max-w-3xl mx-auto space-y-6">
+          <div class="caption-mono text-link uppercase tracking-wider font-semibold">EXPLORE MORE FRAMEWORKS</div>
+          <h2 class="display-sm sm:display-md text-ink font-semibold">
+            Ready to Build Your Custom {framework.frameworkKey} Prompt?
+          </h2>
+          <p class="body-md text-body max-w-xl mx-auto">
+            Open the full Prompt Forge workbench to refine with client-side AI, score your prompt across 5 quality dimensions, and export instantly.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+            <a
+              href={`/?fw=${framework.frameworkKey}#wizard`}
+              class="btn-primary py-3 px-8 rounded-full text-base font-semibold shadow-sm hover:shadow"
+            >
+              Open Full {framework.frameworkKey} Wizard ⚡
+            </a>
+            <a
+              href="/examples"
+              class="btn-secondary py-3 px-6 rounded-full text-base font-medium"
+            >
+              Browse All Examples
+            </a>
+          </div>
+
+          <!-- Cross Links -->
+          <div class="pt-6 border-t border-hairline flex flex-wrap items-center justify-center gap-4 text-xs text-mute">
+            <span>Explore other frameworks:</span>
+            {framework.relatedFrameworks.map((rel) => (
+              <a href={`/frameworks/${rel.slug}`} class="text-link hover:underline font-medium">
+                {rel.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <Footer />
+  <PromptHistory />
+  <ApiKeySettings />
+</Layout>
+
+<script>
+  import { Framework, TargetModel } from '../../lib/types';
+  import { assemblePrompt } from '../../lib/promptAssembler';
+
+  // Live Mini-Builder functionality
+  const container = document.getElementById('framework-fields-container');
+  const frameworkName = container?.dataset.framework as Framework;
+  const modelSelect = document.getElementById('builder-model-select') as HTMLSelectElement | null;
+  const outputPre = document.getElementById('live-prompt-output');
+  const charWordCount = document.getElementById('char-word-count');
+  const previewModelBadge = document.getElementById('preview-model-badge');
+  const copyBtn = document.getElementById('btn-copy-live-prompt');
+  const copyBtnLabel = document.getElementById('copy-btn-label');
+  const btnClear = document.getElementById('btn-clear-fields');
+  const btnReset = document.getElementById('btn-reset-defaults');
+
+  function getFieldsData(): Record<string, string> {
+    const fields: Record<string, string> = {};
+    const textareas = document.querySelectorAll<HTMLTextAreaElement>('.builder-field-input');
+    textareas.forEach((ta) => {
+      const key = ta.dataset.fieldKey;
+      if (key) {
+        fields[key] = ta.value;
+      }
+    });
+    return fields;
+  }
+
+  function updateOutput() {
+    if (!frameworkName || !outputPre) return;
+    const selectedModel = (modelSelect?.value as TargetModel) || TargetModel.ChatGPT;
+    const fields = getFieldsData();
+    const assembled = assemblePrompt(fields, frameworkName, selectedModel);
+
+    outputPre.textContent = assembled || '// Fill in the fields on the left to generate your prompt...';
+
+    if (previewModelBadge) {
+      previewModelBadge.textContent = `Format: ${selectedModel}`;
+    }
+
+    if (charWordCount) {
+      const words = assembled.trim() ? assembled.trim().split(/\s+/).length : 0;
+      const chars = assembled.length;
+      charWordCount.textContent = `(${words} words, ${chars} chars)`;
+    }
+  }
+
+  // Event Listeners for live typing
+  document.querySelectorAll<HTMLTextAreaElement>('.builder-field-input').forEach((input) => {
+    input.addEventListener('input', updateOutput);
+  });
+
+  modelSelect?.addEventListener('change', updateOutput);
+
+  // Clear fields
+  btnClear?.addEventListener('click', () => {
+    document.querySelectorAll<HTMLTextAreaElement>('.builder-field-input').forEach((ta) => {
+      ta.value = '';
+    });
+    updateOutput();
+  });
+
+  // Reset defaults
+  btnReset?.addEventListener('click', () => {
+    window.location.reload();
+  });
+
+  // Copy Assembled Prompt
+  copyBtn?.addEventListener('click', async () => {
+    const text = outputPre?.textContent || '';
+    if (!text || text.startsWith('//')) return;
+
+    try {
+      await navigator.clipboard.writeText(text);
+      if (copyBtnLabel) {
+        const originalText = copyBtnLabel.textContent;
+        copyBtnLabel.textContent = 'Copied! ✓';
+        copyBtn.classList.add('bg-cyan-deep');
+        setTimeout(() => {
+          copyBtnLabel.textContent = originalText;
+          copyBtn.classList.remove('bg-cyan-deep');
+        }, 2000);
+      }
+    } catch (err) {
+      console.error('Failed to copy', err);
+    }
+  });
+
+  // Copy Example Buttons
+  document.querySelectorAll<HTMLButtonElement>('.copy-example-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const text = btn.dataset.prompt || '';
+      if (!text) return;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        const original = btn.textContent;
+        btn.textContent = 'Copied! ✓';
+        btn.classList.add('text-cyan-deep', 'border-cyan');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('text-cyan-deep', 'border-cyan');
+        }, 2000);
+      } catch (err) {
+        console.error('Copy failed', err);
+      }
+    });
+  });
+
+  // Initial calculation
+  updateOutput();
+</script>

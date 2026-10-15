@@ -1,0 +1,683 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import PromptHistory from '../../components/PromptHistory.astro';
+import ApiKeySettings from '../../components/ApiKeySettings.astro';
+import { MODEL_PAGES, type ModelPageData } from '../../data/modelsData';
+
+export async function getStaticPaths() {
+  return MODEL_PAGES.map((model) => ({
+    params: { slug: model.slug },
+    props: { model },
+  }));
+}
+
+interface Props {
+  model: ModelPageData;
+}
+
+const { model } = Astro.props;
+
+const canonicalUrl = `https://freeaipromptgen.com/models/${model.slug}`;
+const pageTitle = `${model.title} | Free AI Prompt Gen`;
+const pageDescription = model.metaDescription;
+
+// BreadcrumbList JSON-LD Schema
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://freeaipromptgen.com/',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'AI Models',
+      item: 'https://freeaipromptgen.com/#wizard',
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: model.title,
+      item: canonicalUrl,
+    },
+  ],
+};
+
+// FAQPage JSON-LD Schema
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: model.faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.answer,
+    },
+  })),
+};
+
+// SoftwareApplication JSON-LD Schema
+const softwareAppSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: model.title,
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'All',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  description: model.summary,
+};
+
+// Initial assembled prompt for SSR
+function assembleInitialModelPrompt(m: ModelPageData): string {
+  const fields: Record<string, string> = {};
+  m.builderFields.forEach((f) => {
+    fields[f.key] = f.defaultValue;
+  });
+
+  if (m.slug === 'claude-xml-prompt-generator') {
+    return `<role>\n${fields.role || ''}\n</role>\n\n<context>\n${fields.context || ''}\n</context>\n\n<task>\n${fields.task || ''}\n</task>\n\n<rules>\n${fields.rules || ''}\n</rules>\n\n<output_format>\n${fields.output_format || ''}\n</output_format>`;
+  } else if (m.slug === 'chatgpt-markdown-prompt-generator') {
+    return `## Role\n${fields.role || ''}\n\n## Context\n${fields.context || ''}\n\n## Instructions\n${fields.task || ''}\n\n## Constraints\n${fields.constraints || ''}\n\n## Output Format\n${fields.outputFormat || ''}`;
+  } else if (m.slug === 'gemini-prompt-generator') {
+    return `**Role:** ${fields.role || ''}\n\n**Context:** ${fields.context || ''}\n\n**Task:** ${fields.task || ''}\n\n**Grounding:** ${fields.grounding || ''}\n\n**Format:** ${fields.outputFormat || ''}`;
+  } else if (m.slug === 'midjourney-and-video-prompt-generator') {
+    const parts = [fields.subject, fields.medium, fields.lighting, fields.camera].filter(Boolean);
+    let prompt = parts.join(', ');
+    if (fields.aspectRatio) prompt += ` --ar ${fields.aspectRatio}`;
+    if (fields.parameters) prompt += ` ${fields.parameters}`;
+    return prompt;
+  } else if (m.slug === 'ollama-local-llm-prompt-generator') {
+    return `<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n${fields.systemPrompt || ''}<|eot_id|>\n<|start_header_id|>user<|end_header_id|>\nTask:\n${fields.userTask || ''}\n\nConstraints:\n${fields.constraints || ''}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>`;
+  }
+  return '';
+}
+
+const initialPrompt = assembleInitialModelPrompt(model);
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+>
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbSchema)} />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(faqSchema)} />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(softwareAppSchema)} />
+
+  <Navbar />
+
+  <main class="flex-1 w-full bg-canvas-soft">
+    <!-- Breadcrumbs Navigation -->
+    <nav aria-label="Breadcrumb" class="border-b border-hairline bg-canvas px-4 sm:px-6 md:px-8 py-3 text-xs sm:text-sm">
+      <div class="max-w-6xl mx-auto flex items-center flex-wrap gap-2 text-mute">
+        <a href="/" class="hover:text-ink transition-colors">Home</a>
+        <span>/</span>
+        <a href="/examples" class="hover:text-ink transition-colors">AI Models</a>
+        <span>/</span>
+        <span class="text-ink font-medium truncate max-w-xs sm:max-w-md">{model.provider}</span>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="border-b border-hairline bg-canvas px-4 sm:px-6 md:px-8 py-10 sm:py-14 relative overflow-hidden">
+      <div class="absolute inset-0 mesh-gradient opacity-30 pointer-events-none" aria-hidden="true"></div>
+
+      <div class="max-w-4xl mx-auto relative">
+        <!-- Badges Cluster -->
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-canvas-soft border border-hairline text-ink">
+            Target: {model.provider}
+          </span>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-link-bg-soft/40 text-link border border-link/20">
+            {model.badge}
+          </span>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold text-cyan-deep bg-cyan-soft/40 border border-cyan/20">
+            Zero Telemetry
+          </span>
+        </div>
+
+        <!-- Title -->
+        <h1 class="display-lg sm:display-xl text-ink mb-4 tracking-tight leading-tight">
+          {model.title}
+        </h1>
+
+        <!-- Subheading -->
+        <p class="body-lg text-body leading-relaxed mb-8 max-w-3xl">
+          {model.summary}
+        </p>
+
+        <!-- CTAs -->
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+          <a
+            href="#mini-builder"
+            class="btn-primary py-2.5 px-6 rounded-full inline-flex items-center gap-2 text-sm sm:text-base font-semibold shadow-sm hover:shadow"
+          >
+            <span>Launch {model.modelKey} Builder</span>
+            <span>⚡</span>
+          </a>
+          <a
+            href="#rules-section"
+            class="btn-secondary py-2.5 px-5 rounded-full inline-flex items-center gap-2 text-sm font-medium"
+          >
+            <span>Prompting Syntax Rules</span>
+            <span>↓</span>
+          </a>
+          <a
+            href={`/?model=${model.modelKey}#wizard`}
+            class="btn-secondary-sm py-2 px-4 rounded-full text-xs text-mute hover:text-ink inline-flex items-center gap-1 ml-auto"
+          >
+            <span>Open in Full Workbench →</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content Container -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-10 sm:py-14 space-y-16">
+
+      <!-- 1. INTERACTIVE MINI-BUILDER PRE-LOCKED TO THIS MODEL -->
+      <section id="mini-builder" class="scroll-mt-20">
+        <div class="card p-6 sm:p-8 border border-hairline bg-canvas shadow-level-3 rounded-2xl">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-hairline">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-cyan inline-block animate-pulse"></span>
+                <span class="caption-mono text-link uppercase tracking-wider font-semibold">Native Model Engine</span>
+              </div>
+              <h2 class="display-sm text-ink font-semibold mt-1">{model.title}</h2>
+              <p class="body-sm text-mute mt-0.5">
+                Formatted natively with <strong class="text-ink">{model.recommendedSyntax}</strong>.
+              </p>
+            </div>
+          </div>
+
+          <!-- Builder Grid -->
+          <div class="grid gap-8 lg:grid-cols-12 mt-6">
+            <!-- Left: Model Fields -->
+            <div class="lg:col-span-7 space-y-4" id="model-fields-container" data-model-slug={model.slug}>
+              {model.builderFields.map((field) => (
+                <div class="space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <label for={`field-${field.key}`} class="body-sm-strong text-ink flex items-center gap-1.5">
+                      <span>{field.label}</span>
+                    </label>
+                    <span class="caption text-mute text-xs">{field.helperText}</span>
+                  </div>
+
+                  {field.type === 'select' ? (
+                    <select
+                      id={`field-${field.key}`}
+                      data-field-key={field.key}
+                      class="model-field-input w-full p-2.5 rounded-xl border border-hairline bg-canvas-soft text-ink text-sm font-mono focus:bg-canvas focus:border-ink transition-all"
+                    >
+                      {field.options?.map((opt) => (
+                        <option value={opt.value} selected={opt.value === field.defaultValue}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <textarea
+                      id={`field-${field.key}`}
+                      data-field-key={field.key}
+                      rows={field.key === 'subject' || field.key === 'task' || field.key === 'userTask' ? 3 : 2}
+                      class="model-field-input w-full p-3 rounded-xl border border-hairline bg-canvas-soft text-ink text-sm font-sans focus:bg-canvas focus:border-ink transition-all resize-y shadow-inner-sm leading-relaxed"
+                      placeholder={field.placeholder}
+                    >{field.defaultValue}</textarea>
+                  )}
+                </div>
+              ))}
+
+              <div class="pt-2 flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  id="btn-model-clear"
+                  class="btn-secondary-sm py-1.5 px-3.5 rounded-full text-xs text-mute hover:text-ink transition-colors"
+                >
+                  Clear Fields
+                </button>
+                <button
+                  type="button"
+                  id="btn-model-reset"
+                  class="btn-secondary-sm py-1.5 px-3.5 rounded-full text-xs text-mute hover:text-ink transition-colors"
+                >
+                  Reset Defaults
+                </button>
+                <a
+                  href={`/?model=${model.modelKey}#wizard`}
+                  class="body-sm text-link hover:underline ml-auto flex items-center gap-1 text-xs"
+                >
+                  <span>Open in Full Prompt Forge Wizard</span>
+                  <span>→</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Right: Real-time Formatted Output -->
+            <div class="lg:col-span-5 flex flex-col">
+              <div class="flex items-center justify-between mb-2">
+                <span class="caption-mono text-mute uppercase tracking-wider font-semibold flex items-center gap-1.5">
+                  <span>Formatted Output</span>
+                  <span id="model-char-word-count" class="text-mute font-normal text-[11px]">(0 words)</span>
+                </span>
+                <button
+                  type="button"
+                  id="btn-copy-model-prompt"
+                  class="btn-primary py-1 px-3 rounded-full text-xs font-medium inline-flex items-center gap-1.5 shadow-sm"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span id="copy-model-btn-label">Copy Prompt</span>
+                </button>
+              </div>
+
+              <!-- Output Box -->
+              <div class="relative flex-1 bg-canvas border border-hairline rounded-xl overflow-hidden shadow-level-1 flex flex-col min-h-[340px]">
+                <div class="px-3.5 py-2 bg-canvas-soft border-b border-hairline flex items-center justify-between text-[11px] font-mono text-mute">
+                  <span class="font-semibold text-ink">{model.provider} Syntax</span>
+                  <span class="text-cyan-deep font-medium">Ready to copy</span>
+                </div>
+                <div class="p-4 flex-1 overflow-auto bg-canvas">
+                  <pre
+                    id="model-live-output"
+                    class="font-mono text-xs text-ink leading-relaxed whitespace-pre-wrap word-break selection:bg-ink selection:text-on-primary m-0"
+                  >{initialPrompt}</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. SYNTAX RULES & BEST PRACTICES -->
+      <section id="rules-section" class="space-y-6 scroll-mt-20">
+        <div>
+          <div class="caption-mono text-link uppercase tracking-wider mb-1 font-semibold">MODEL OPTIMIZATION GUIDE</div>
+          <h2 class="display-sm text-ink font-semibold">{model.provider} Prompt Engineering Rules</h2>
+          <p class="body-sm text-mute">
+            How to format instructions specifically for {model.provider} to extract maximum accuracy and eliminate hallucinations.
+          </p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2">
+          {model.promptRules.map((rule, idx) => (
+            <div class="card p-6 border border-hairline bg-canvas rounded-xl shadow-level-1">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="caption-mono text-link font-bold text-xs">Rule 0{idx + 1}</span>
+                <h3 class="body-md-strong text-ink">{rule.title}</h3>
+              </div>
+              <p class="body-sm text-body leading-relaxed">{rule.description}</p>
+            </div>
+          ))}
+        </div>
+
+        {model.parameters && model.parameters.length > 0 && (
+          <div class="card p-6 border border-hairline bg-canvas rounded-xl shadow-level-1 mt-6">
+            <h3 class="body-md-strong text-ink mb-4">Official Parameter Cheat Sheet</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse body-sm">
+                <thead>
+                  <tr class="border-b border-hairline caption-mono text-mute uppercase text-xs">
+                    <th class="py-2.5 px-3">Flag / Parameter</th>
+                    <th class="py-2.5 px-3">Purpose &amp; Description</th>
+                    <th class="py-2.5 px-3">Example Syntax</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-hairline">
+                  {model.parameters.map((p) => (
+                    <tr>
+                      <td class="py-2.5 px-3 font-mono text-ink font-semibold">{p.name}</td>
+                      <td class="py-2.5 px-3 text-body">{p.description}</td>
+                      <td class="py-2.5 px-3 font-mono text-xs text-link">{p.example}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </section>
+
+      <!-- 3. WHEN TO USE VS AVOID -->
+      <section class="space-y-6">
+        <div>
+          <div class="caption-mono text-link uppercase tracking-wider mb-1 font-semibold">MODEL FIT</div>
+          <h2 class="display-sm text-ink font-semibold">When to Use {model.provider} vs. When to Avoid</h2>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2">
+          <div class="card p-6 border border-hairline bg-canvas rounded-xl shadow-level-1">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="w-7 h-7 rounded-full bg-cyan-soft/40 text-cyan-deep flex items-center justify-center font-bold text-sm">✓</span>
+              <h3 class="body-md-strong text-ink">Ideal Use Cases</h3>
+            </div>
+            <ul class="space-y-3 list-none p-0 m-0">
+              {model.whenToUse.map((item) => (
+                <li class="flex items-start gap-2.5 body-sm text-body">
+                  <span class="text-cyan-deep font-bold mt-0.5 shrink-0">•</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="card p-6 border border-hairline bg-canvas rounded-xl shadow-level-1">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="w-7 h-7 rounded-full bg-warning-soft text-warning-deep flex items-center justify-center font-bold text-sm">!</span>
+              <h3 class="body-md-strong text-ink">When to Choose Another Model</h3>
+            </div>
+            <ul class="space-y-3 list-none p-0 m-0">
+              {model.whenToAvoid.map((item) => (
+                <li class="flex items-start gap-2.5 body-sm text-body">
+                  <span class="text-warning-deep font-bold mt-0.5 shrink-0">•</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. THREE CONCRETE BEFORE & AFTER EXAMPLES -->
+      <section class="space-y-8">
+        <div>
+          <div class="caption-mono text-link uppercase tracking-wider mb-1 font-semibold">PRODUCTION EVIDENCE</div>
+          <h2 class="display-sm text-ink font-semibold">3 Concrete Before &amp; After Examples</h2>
+          <p class="body-sm text-mute">
+            Notice how model-specific syntax eliminates hallucinations, waxy visuals, and token drift.
+          </p>
+        </div>
+
+        <div class="space-y-8">
+          {model.examples.map((ex, idx) => (
+            <div class="card p-6 sm:p-8 border border-hairline bg-canvas rounded-2xl shadow-level-2">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-hairline mb-6">
+                <div>
+                  <span class="caption-mono text-link uppercase font-semibold tracking-wider text-xs">{ex.category}</span>
+                  <h3 class="display-sm text-ink font-semibold mt-0.5">{idx + 1}. {ex.title}</h3>
+                </div>
+                <span class="caption text-mute italic max-w-sm text-xs sm:text-right">{ex.scenario}</span>
+              </div>
+
+              <div class="grid gap-6 lg:grid-cols-2">
+                <!-- Weak Prompt -->
+                <div class="space-y-3">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-error-soft text-error-deep flex items-center justify-center font-bold text-xs">✕</span>
+                    <h4 class="body-md-strong text-ink">Weak / Generic Prompt</h4>
+                  </div>
+                  <div class="p-3.5 rounded-xl border border-error/30 bg-canvas-soft font-mono text-xs text-body leading-relaxed whitespace-pre-wrap">
+                    {ex.weakPrompt}
+                  </div>
+                  <div class="space-y-1.5 pt-1">
+                    <span class="caption-mono text-error uppercase text-[11px] font-semibold">Model Friction &amp; Failures:</span>
+                    <ul class="space-y-1 list-none p-0 m-0">
+                      {ex.weakProblems.map((prob) => (
+                        <li class="body-sm text-mute text-xs flex items-start gap-1.5">
+                          <span class="text-error font-bold">•</span>
+                          <span>{prob}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Strong Model Prompt -->
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="w-6 h-6 rounded-full bg-cyan-soft text-cyan-deep flex items-center justify-center font-bold text-xs">✓</span>
+                      <h4 class="body-md-strong text-ink">Optimized {model.provider} Prompt</h4>
+                    </div>
+                    <button
+                      type="button"
+                      class="btn-secondary-sm py-1 px-2.5 rounded-full text-xs font-mono copy-model-example-btn"
+                      data-prompt={ex.strongPrompt}
+                    >
+                      Copy Prompt
+                    </button>
+                  </div>
+                  <div class="p-3.5 rounded-xl border border-cyan/40 bg-canvas-soft font-mono text-xs text-ink leading-relaxed whitespace-pre-wrap overflow-x-auto max-h-72">
+                    {ex.strongPrompt}
+                  </div>
+                  <div class="space-y-1.5 pt-1">
+                    <span class="caption-mono text-cyan-deep uppercase text-[11px] font-semibold">Why It Outperforms:</span>
+                    <p class="body-sm text-body text-xs leading-relaxed">{ex.whyItWorks}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- 5. FAQ SECTION -->
+      <section class="space-y-6">
+        <div>
+          <div class="caption-mono text-link uppercase tracking-wider mb-1 font-semibold">COMMON QUESTIONS</div>
+          <h2 class="display-sm text-ink font-semibold">Frequently Asked Questions</h2>
+        </div>
+
+        <div class="space-y-4">
+          {model.faqs.map((faq) => (
+            <div class="card p-6 border border-hairline bg-canvas rounded-xl shadow-level-1">
+              <h3 class="body-md-strong text-ink mb-2">{faq.question}</h3>
+              <p class="body-sm text-body leading-relaxed">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- 6. CROSS-LINKS & WORKBENCH CTA -->
+      <section class="pt-8 border-t border-hairline">
+        <div class="card p-8 border border-hairline bg-canvas rounded-2xl shadow-level-2 text-center max-w-3xl mx-auto space-y-6">
+          <div class="caption-mono text-link uppercase tracking-wider font-semibold">CONTINUE EXPLORING</div>
+          <h2 class="display-sm sm:display-md text-ink font-semibold">
+            Ready to Build With {model.provider}?
+          </h2>
+          <p class="body-md text-body max-w-xl mx-auto">
+            Use Prompt Forge to test your prompt across all major AI models simultaneously, compare token usage, and score readiness.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+            <a
+              href={`/?model=${model.modelKey}#wizard`}
+              class="btn-primary py-3 px-8 rounded-full text-base font-semibold shadow-sm hover:shadow"
+            >
+              Open {model.provider} in Full Wizard ⚡
+            </a>
+            <a
+              href="/examples"
+              class="btn-secondary py-3 px-6 rounded-full text-base font-medium"
+            >
+              View More Prompt Examples
+            </a>
+          </div>
+
+          <div class="pt-6 border-t border-hairline flex flex-wrap items-center justify-center gap-4 text-xs text-mute">
+            <span>Explore other AI model guides:</span>
+            {model.relatedModels.map((rel) => (
+              <a href={`/models/${rel.slug}`} class="text-link hover:underline font-medium">
+                {rel.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <Footer />
+  <PromptHistory />
+  <ApiKeySettings />
+</Layout>
+
+<script>
+  // Model Mini-Builder Client Script
+  const container = document.getElementById('model-fields-container');
+  const slug = container?.dataset.modelSlug;
+  const outputPre = document.getElementById('model-live-output');
+  const charWordCount = document.getElementById('model-char-word-count');
+  const copyBtn = document.getElementById('btn-copy-model-prompt');
+  const copyBtnLabel = document.getElementById('copy-model-btn-label');
+  const btnClear = document.getElementById('btn-model-clear');
+  const btnReset = document.getElementById('btn-model-reset');
+
+  function getModelFields(): Record<string, string> {
+    const fields: Record<string, string> = {};
+    const inputs = document.querySelectorAll<HTMLTextAreaElement | HTMLSelectElement>('.model-field-input');
+    inputs.forEach((input) => {
+      const key = input.dataset.fieldKey;
+      if (key) {
+        fields[key] = input.value;
+      }
+    });
+    return fields;
+  }
+
+  function formatModelPrompt(fields: Record<string, string>, currentSlug: string | undefined): string {
+    if (!currentSlug) return '';
+
+    if (currentSlug === 'claude-xml-prompt-generator') {
+      const parts: string[] = [];
+      if (fields.role?.trim()) parts.push(`<role>\n${fields.role.trim()}\n</role>`);
+      if (fields.context?.trim()) parts.push(`<context>\n${fields.context.trim()}\n</context>`);
+      if (fields.task?.trim()) parts.push(`<task>\n${fields.task.trim()}\n</task>`);
+      if (fields.rules?.trim()) parts.push(`<rules>\n${fields.rules.trim()}\n</rules>`);
+      if (fields.output_format?.trim()) parts.push(`<output_format>\n${fields.output_format.trim()}\n</output_format>`);
+      return parts.join('\n\n');
+    }
+
+    if (currentSlug === 'chatgpt-markdown-prompt-generator') {
+      const parts: string[] = [];
+      if (fields.role?.trim()) parts.push(`## Role\n${fields.role.trim()}`);
+      if (fields.context?.trim()) parts.push(`## Context\n${fields.context.trim()}`);
+      if (fields.task?.trim()) parts.push(`## Instructions\n${fields.task.trim()}`);
+      if (fields.constraints?.trim()) parts.push(`## Constraints\n${fields.constraints.trim()}`);
+      if (fields.outputFormat?.trim()) parts.push(`## Output Format\n${fields.outputFormat.trim()}`);
+      return parts.join('\n\n');
+    }
+
+    if (currentSlug === 'gemini-prompt-generator') {
+      const parts: string[] = [];
+      if (fields.role?.trim()) parts.push(`**Role:** ${fields.role.trim()}`);
+      if (fields.context?.trim()) parts.push(`**Context:** ${fields.context.trim()}`);
+      if (fields.task?.trim()) parts.push(`**Task:** ${fields.task.trim()}`);
+      if (fields.grounding?.trim()) parts.push(`**Grounding:** ${fields.grounding.trim()}`);
+      if (fields.outputFormat?.trim()) parts.push(`**Format:** ${fields.outputFormat.trim()}`);
+      return parts.join('\n\n');
+    }
+
+    if (currentSlug === 'midjourney-and-video-prompt-generator') {
+      const descriptors = [fields.subject, fields.medium, fields.lighting, fields.camera].filter((s) => s && s.trim().length > 0);
+      let prompt = descriptors.join(', ');
+      if (fields.aspectRatio?.trim()) prompt += ` --ar ${fields.aspectRatio.trim()}`;
+      if (fields.parameters?.trim()) prompt += ` ${fields.parameters.trim()}`;
+      return prompt;
+    }
+
+    if (currentSlug === 'ollama-local-llm-prompt-generator') {
+      const template = fields.templateFormat || 'Llama3';
+      const sys = fields.systemPrompt?.trim() || '';
+      const task = fields.userTask?.trim() || '';
+      const constraints = fields.constraints?.trim() || '';
+
+      if (template === 'Llama3') {
+        return `<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n${sys}<|eot_id|>\n<|start_header_id|>user<|end_header_id|>\nTask:\n${task}\n\nConstraints:\n${constraints}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>`;
+      } else if (template === 'ChatML') {
+        return `<|im_start|>system\n${sys}<|im_end|>\n<|im_start|>user\nTask:\n${task}\n\nConstraints:\n${constraints}<|im_end|>\n<|im_start|>assistant`;
+      } else if (template === 'Mistral') {
+        return `[INST] ${sys ? sys + '\n\n' : ''}Task:\n${task}\n\nConstraints:\n${constraints} [/INST]`;
+      } else {
+        // DeepSeek
+        return `### System Directive\n${sys}\n\n### Task\n${task}\n\n### Constraints\n${constraints}\n\n### Reasoning\nThink step-by-step before producing the final response.`;
+      }
+    }
+
+    return '';
+  }
+
+  function updateModelOutput() {
+    if (!outputPre) return;
+    const fields = getModelFields();
+    const assembled = formatModelPrompt(fields, slug);
+    outputPre.textContent = assembled || '// Fill in fields to generate model prompt...';
+
+    if (charWordCount) {
+      const words = assembled.trim() ? assembled.trim().split(/\s+/).length : 0;
+      const chars = assembled.length;
+      charWordCount.textContent = `(${words} words, ${chars} chars)`;
+    }
+  }
+
+  document.querySelectorAll<HTMLTextAreaElement | HTMLSelectElement>('.model-field-input').forEach((el) => {
+    el.addEventListener('input', updateModelOutput);
+    el.addEventListener('change', updateModelOutput);
+  });
+
+  btnClear?.addEventListener('click', () => {
+    document.querySelectorAll<HTMLTextAreaElement>('.model-field-input').forEach((ta) => {
+      if (ta.tagName.toLowerCase() === 'textarea') ta.value = '';
+    });
+    updateModelOutput();
+  });
+
+  btnReset?.addEventListener('click', () => {
+    window.location.reload();
+  });
+
+  copyBtn?.addEventListener('click', async () => {
+    const text = outputPre?.textContent || '';
+    if (!text || text.startsWith('//')) return;
+
+    try {
+      await navigator.clipboard.writeText(text);
+      if (copyBtnLabel) {
+        const originalText = copyBtnLabel.textContent;
+        copyBtnLabel.textContent = 'Copied! ✓';
+        copyBtn.classList.add('bg-cyan-deep');
+        setTimeout(() => {
+          copyBtnLabel.textContent = originalText;
+          copyBtn.classList.remove('bg-cyan-deep');
+        }, 2000);
+      }
+    } catch (err) {
+      console.error('Failed to copy', err);
+    }
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('.copy-model-example-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const text = btn.dataset.prompt || '';
+      if (!text) return;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        const original = btn.textContent;
+        btn.textContent = 'Copied! ✓';
+        btn.classList.add('text-cyan-deep', 'border-cyan');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('text-cyan-deep', 'border-cyan');
+        }, 2000);
+      } catch (err) {
+        console.error('Copy failed', err);
+      }
+    });
+  });
+
+  updateModelOutput();
+</script>
