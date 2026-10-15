@@ -1,4 +1,4 @@
-  import { GoalCategory, TargetModel, Framework, EMPTY_FIELDS, FIELD_LABELS, ALL_FIELD_KEYS, type FieldKey, type SavedPrompt } from '../lib/types';
+  import { GoalCategory, TargetModel, Framework, EMPTY_FIELDS, FIELD_LABELS, type FieldKey, type SavedPrompt } from '../lib/types';
   import { FRAMEWORK_META, getFrameworkFieldLabel, getFieldsForFramework } from '../lib/frameworks';
   import { assemblePrompt } from '../lib/promptAssembler';
   import { getHint, getTooltip } from '../lib/fieldHints';
@@ -323,7 +323,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (scoreProgressFill) {
       scoreProgressFill.style.width = `${scoreRes.score}%`;
-      if (scoreRes.score >= 75) {
+      if (scoreRes.score === 0) {
+        scoreProgressFill.style.background = 'transparent';
+      } else if (scoreRes.score >= 75) {
         scoreProgressFill.style.background = 'linear-gradient(90deg, #50e3c2 0%, #0070f3 100%)';
       } else if (scoreRes.score >= 40) {
         scoreProgressFill.style.background = 'linear-gradient(90deg, #f5a623 0%, #0070f3 100%)';
@@ -1266,51 +1268,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ══════════════════════════════════════
-  // COLD-START DEFAULT EXAMPLE
-  // Pre-populates the form on first visit so users immediately see
-  // a live preview and a meaningful Quality Score (not 0/100 F).
-  // Only applied when no URL params, no sessionStorage template, and
-  // localStorage has never been touched by the user (all fields blank).
-  // ══════════════════════════════════════
-  const COLD_START_DEFAULT = {
-    category: GoalCategory.Coding,
-    framework: Framework.RTF,
-    targetModel: TargetModel.Generic,
-    fields: {
-      role: 'A senior Python developer with expertise in web scraping and data engineering',
-      context: '',
-      task: 'Write a Python script using requests and BeautifulSoup to scrape the name, price, and availability of products from a target e-commerce page. Store results in a CSV file.',
-      outputFormat: 'Complete Python script in a fenced code block with inline comments. Include a brief usage section showing how to run it.',
-      tone: 'Professional and concise — written for a mid-level developer',
-      constraints: 'Handle HTTP errors gracefully. Respect robots.txt. Add a 1-second delay between requests. Do not use Selenium.',
-      examples: '',
-    },
-  } as const;
-
-  function applyColdStart() {
-    const anyFilled = ALL_FIELD_KEYS.some((k) => state.fields[k as FieldKey]?.trim());
-    if (anyFilled) return; // User already has content — don't clobber it
-
-    state.category = COLD_START_DEFAULT.category;
-    state.framework = COLD_START_DEFAULT.framework;
-    state.targetModel = COLD_START_DEFAULT.targetModel;
-    state.fields = { ...COLD_START_DEFAULT.fields };
-
-    // Sync UI pickers
-    categoryCards.forEach((c) => (c.dataset.active = c.dataset.category === state.category ? 'true' : 'false'));
-    frameworkTabs.forEach((t) => (t.dataset.active = t.dataset.framework === state.framework ? 'true' : 'false'));
-    if (frameworkDesc) frameworkDesc.textContent = FRAMEWORK_META[state.framework].description;
-    modelTabs.forEach((t) => (t.dataset.active = t.dataset.model === state.targetModel ? 'true' : 'false'));
-    if (modelBadge) modelBadge.textContent = state.targetModel;
-
-    // Fill textareas
-    textareas.forEach((ta) => {
-      const key = ta.dataset.fieldKey as FieldKey;
-      ta.value = state.fields[key] ?? '';
-    });
-  }
-
-  // ══════════════════════════════════════
   // QUICK START BAR — wiring
   // ══════════════════════════════════════
   const qsInput = document.getElementById('quick-start-input') as HTMLInputElement | null;
@@ -1417,12 +1374,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Priority 2: URL query params (share links, ?template=, ?fw=, ?model=)
-  const hadQueryParams = loadFromQueryParams();
-
-  // Priority 3: Cold-start default (first-time visitor — nothing is filled)
-  if (!pendingTemplate && !hadQueryParams) {
-    applyColdStart();
-  }
+  loadFromQueryParams();
 
   updateForm();
   reassemble();

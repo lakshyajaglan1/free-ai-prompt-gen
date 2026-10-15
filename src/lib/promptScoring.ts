@@ -2,9 +2,11 @@
 import type { PromptFields, Framework } from './types';
 import { getFieldsForFramework } from './frameworks';
 
+export type Grade = 'S' | 'A' | 'B' | 'C' | 'D' | 'F' | '—';
+
 export interface ScoreResult {
   score: number;
-  grade: 'S' | 'A' | 'B' | 'C' | 'D' | 'F';
+  grade: Grade;
   label: string;
   tips: string[];
   breakdown: {
@@ -18,6 +20,28 @@ export interface ScoreResult {
 const VAGUE_WORDS = ['good', 'nice', 'awesome', 'something', 'stuff', 'things', 'etc'];
 
 export function scorePrompt(fields: PromptFields, framework: Framework): ScoreResult {
+  const fullText = Object.values(fields).join(' ');
+  const wordCount = fullText.trim().split(/\s+/).filter(Boolean).length;
+
+  if (wordCount === 0) {
+    return {
+      score: 0,
+      grade: '—',
+      label: 'Awaiting input',
+      tips: [
+        'Add a clear, detailed Task (at least 10 characters).',
+        'Assign a clear Role / Persona to prime the AI\'s expertise.',
+        'Specify the exact Output Format (e.g. Markdown headers, JSON schema, bullet list).',
+      ],
+      breakdown: {
+        completeness: 0,
+        specificity: 0,
+        structure: 0,
+        constraints: 0,
+      },
+    };
+  }
+
   const visibleFields = getFieldsForFramework(framework);
   let completeness = 0;
   let specificity = 0;
@@ -43,9 +67,6 @@ export function scorePrompt(fields: PromptFields, framework: Framework): ScoreRe
   }
 
   // 2. Specificity (Max 30)
-  const fullText = Object.values(fields).join(' ');
-  const wordCount = fullText.trim().split(/\s+/).filter(Boolean).length;
-
   if (wordCount >= 80) specificity += 15;
   else if (wordCount >= 40) specificity += 10;
   else if (wordCount >= 20) specificity += 5;
